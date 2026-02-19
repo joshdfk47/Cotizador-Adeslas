@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Acceso — Adeslas Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --brand: #0055A5;
+            --brand2: #0070C9;
+            --safeTop: env(safe-area-inset-top, 0px);
+            --safeBottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+            font-size: 16px;
+            color: #0f172a;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse 120% 80% at 10% 20%, rgba(0, 85, 165, 0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 80% 60% at 90% 80%, rgba(0, 112, 201, 0.14) 0%, transparent 55%),
+                #f0f4fa;
+            padding: calc(var(--safeTop) + 24px) 16px calc(var(--safeBottom) + 24px);
+        }
+
+        /* ============================================================
+       CARD
+    ============================================================ */
+        .loginCard {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.60);
+            border-radius: 24px;
+            box-shadow:
+                0 32px 64px rgba(11, 43, 76, 0.16),
+                0 8px 24px rgba(11, 43, 76, 0.10),
+                inset 0 1px 0 rgba(255, 255, 255, 0.85);
+            overflow: hidden;
+            animation: cardIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(28px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ---- Header ---- */
+        .cardHead {
+            padding: 36px 32px 28px;
+            text-align: center;
+            background: linear-gradient(160deg, var(--brand) 0%, var(--brand2) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cardHead::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(255, 255, 255, 0.18), transparent 70%);
+            pointer-events: none;
+        }
+
+        .logoWrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 12px;
+        }
+
+        .logoSvgWrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(6px);
+            border: 1.5px solid rgba(255, 255, 255, 0.30);
+            border-radius: 16px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .cardHead h1 {
+            font-size: 22px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            margin-bottom: 5px;
+        }
+
+        .cardHead p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.80);
+            font-weight: 600;
+        }
+
+        /* ---- Body ---- */
+        .cardBody {
+            padding: 28px 32px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 12px;
+            font-weight: 800;
+            color: #475569;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .inputWrap {
+            position: relative;
+        }
+
+        .inputWrap svg {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+            flex-shrink: 0;
+        }
+
+        .inputWrap input {
+            width: 100%;
+            padding: 13px 13px 13px 40px;
+            border: 1.5px solid rgba(15, 23, 42, 0.14);
+            border-radius: 12px;
+            background: #ffffff;
+            color: #0f172a;
+            font-size: 15px;
+            font-family: inherit;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .inputWrap input:focus {
+            border-color: rgba(0, 85, 165, 0.50);
+            box-shadow: 0 0 0 4px rgba(0, 85, 165, 0.12);
+        }
+
+        .inputWrap input::placeholder {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        /* ---- Error message ---- */
+        .errorMsg {
+            display: none;
+            background: rgba(239, 68, 68, 0.10);
+            border: 1px solid rgba(239, 68, 68, 0.28);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #b91c1c;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            animation: shake 0.35s ease both;
+        }
+
+        .errorMsg.show {
+            display: block;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-5px);
+            }
+
+            40% {
+                transform: translateX(5px);
+            }
+
+            60% {
+                transform: translateX(-4px);
+            }
+
+            80% {
+                transform: translateX(4px);
+            }
+        }
+
+        /* ---- Button ---- */
+        .btnLogin {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand2) 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 22px rgba(0, 85, 165, 0.30);
+            transition: transform 0.12s ease, box-shadow 0.15s ease, filter 0.12s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btnLogin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 32px rgba(0, 85, 165, 0.38);
+            filter: brightness(1.04);
+        }
+
+        .btnLogin:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 6px 16px rgba(0, 85, 165, 0.25);
+        }
+
+        .btnLogin:disabled {
+            opacity: 0.70;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.65s linear infinite;
+        }
+
+        .btnLogin.loading .spinner {
+            display: block;
+        }
+
+        .btnLogin.loading .btnText {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ---- Footer ---- */
+        .cardFoot {
+            padding: 0 32px 22px;
+            text-align: center;
+        }
+
+        .cardFoot p {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .cardFoot p strong {
+            color: #64748b;
+        }
+
+        /* ---- Decorative dots ---- */
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 18px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(0, 85, 165, 0.18);
+        }
+
+        .dot.active {
+            background: rgba(0, 85, 165, 0.60);
+        }
+
+        /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+        @media (max-width: 480px) {
+            .cardHead {
+                padding: 24px 20px 18px;
+            }
+
+            .cardBody {
+                padding: 20px 20px 24px;
+            }
+
+            .cardFoot {
+                padding: 0 20px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="loginCard" role="main">
+        <div class="cardHead">
+            <div class="logoWrap">
+                <div class="logoSvgWrap">
+                    <!-- Logo Tojumana SVG inline -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 44" height="38" width="190" role="img"
+                        aria-label="Tojumana">
+                        <!-- Icono: letra T estilizada con formas geométricas -->
+                        <g>
+                            <!-- Hexágono corporativo -->
+                            <polygon points="22,4 36,12 36,28 22,36 8,28 8,12" fill="rgba(255,255,255,0.22)"
+                                stroke="rgba(255,255,255,0.6)" stroke-width="1.5" />
+                            <!-- T letra central -->
+                            <rect x="16" y="13" width="12" height="3" rx="1.5" fill="#ffffff" />
+                            <rect x="20.5" y="13" width="3" height="12" rx="1.5" fill="#ffffff" />
+                        </g>
+                        <!-- Nombre TOJUMANA -->
+                        <text x="50" y="30" font-family="'Inter', ui-sans-serif, system-ui, sans-serif" font-size="22"
+                            font-weight="800" letter-spacing="2" fill="#ffffff">TOJUMANA</text>
+                    </svg>
+                </div>
+            </div>
+            <h1>Acceso a la Plataforma</h1>
+            <p>Herramientas comerciales Tojumana</p>
+        </div>
+
+        <div class="cardBody">
+            <div class="field">
+                <label for="loginUser">Usuario</label>
+                <div class="inputWrap">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <input id="loginUser" type="text" placeholder="Escribe tu usuario..." autocomplete="username"
+                        autocapitalize="none" spellcheck="false" />
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="loginPass">Contraseña</label>
+                <div class="inputWrap">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    <input id="loginPass" type="password" placeholder="Contraseña..." autocomplete="current-password" />
+                </div>
+            </div>
+
+            <div class="errorMsg" id="errorMsg" role="alert">Usuario o contraseña incorrectos.</div>
+
+            <button class="btnLogin" id="btnLogin" type="button">
+                <span class="btnText">Entrar</span>
+                <div class="spinner"></div>
+            </button>
+        </div>
+
+        <div class="cardFoot">
+            <p>Acceso restringido para uso interno.<br><strong>Tojumana &mdash; Herramientas Comerciales</strong></p>
+            <div class="dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // Credenciales y roles
+        // ============================================================
+        const USERS = {
+            "admin": { pass: "1234", role: "admin" },
+            "user": { pass: "1234", role: "user" }
+        };
+
+        const STORAGE_KEY_ADMIN = "diblafe_admin_logged_v4";
+        const STORAGE_KEY_ROLE = "adeslas_user_role";
+
+        // Si ya está logueado, redirigir directamente
+        (function checkAlreadyLogged() {
+            try {
+                if (localStorage.getItem(STORAGE_KEY_ADMIN) === "true" || localStorage.getItem(STORAGE_KEY_ADMIN) === "1") {
+                    location.replace("cotizador_comercial_cp_edades_OK_reglas_sin_slider_DUPLICADOS_FIX.html");
+                }
+            } catch (e) { }
+        })();
+
+        // ============================================================
+        // DOM refs
+        // ============================================================
+        const userInput = document.getElementById("loginUser");
+        const passInput = document.getElementById("loginPass");
+        const btnLogin = document.getElementById("btnLogin");
+        const errorMsg = document.getElementById("errorMsg");
+
+        function showError(msg) {
+            errorMsg.textContent = msg || "Usuario o contraseña incorrectos.";
+            errorMsg.classList.remove("show");
+            void errorMsg.offsetWidth; // reflow to restart animation
+            errorMsg.classList.add("show");
+        }
+
+        function hideError() {
+            errorMsg.classList.remove("show");
+        }
+
+        function setLoading(on) {
+            btnLogin.disabled = on;
+            btnLogin.classList.toggle("loading", on);
+        }
+
+        function doLogin() {
+            hideError();
+            const u = (userInput.value || "").trim().toLowerCase();
+            const p = (passInput.value || "").trim();
+
+            if (!u || !p) {
+                showError("Introduce usuario y contraseña.");
+                return;
+            }
+
+            setLoading(true);
+
+            // Simular brevísimo delay para UX (evita click doble)
+            setTimeout(function () {
+                const found = USERS[u];
+                if (found && found.pass === p) {
+                    try {
+                        // Guardar sesión: usamos "true" (string) para mayor compatibilidad
+                        localStorage.setItem(STORAGE_KEY_ADMIN, "true");
+                        localStorage.setItem(STORAGE_KEY_ROLE, found.role);
+                    } catch (e) { }
+
+                    // Redirigir al cotizador (entrada principal de la app)
+                    location.replace("cotizador_comercial_cp_edades_OK_reglas_sin_slider_DUPLICADOS_FIX.html");
+                } else {
+                    setLoading(false);
+                    showError("Usuario o contraseña incorrectos.");
+                    passInput.value = "";
+                    passInput.focus();
+                }
+            }, 380);
+        }
+
+        btnLogin.addEventListener("click", doLogin);
+
+        passInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") { e.preventDefault(); doLogin(); }
+        });
+
+        userInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") { e.preventDefault(); passInput.focus(); }
+        });
+
+        // Focus inicial
+        userInput.focus();
+    </script>
+
+</body>
+
+</html>

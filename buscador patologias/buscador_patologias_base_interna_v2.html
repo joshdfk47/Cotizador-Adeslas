@@ -1,0 +1,2254 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Buscador de Patologías (DIBLAFE)</title>
+
+  <style>
+    :root {
+      /* Paleta estilo Diblafe (azul marino + dorado) */
+      --bg: #ffffff;
+      --panel: #ffffff;
+      --text: #0b1220;
+      --muted: #475569;
+      --line: #e6e8ee;
+
+      --brand: #0055A5;
+      /* Azul Adeslas */
+      --brand2: #0070C9;
+      /* Azul Adeslas (degradado) */
+
+      --gold: #d6a23a;
+      /* dorado */
+      --gold2: #b8862b;
+      /* dorado + */
+
+      --soft: #f6f8fb;
+
+      --shadow: 0 10px 30px rgba(11, 43, 76, .10);
+      --shadow2: 0 6px 18px rgba(11, 43, 76, .08);
+      --radius: 16px;
+
+      --ok: #16a34a;
+      /* verde */
+      --warn: #f59e0b;
+      /* amarillo/ámbar */
+      --bad: #ef4444;
+      /* rojo */
+      --orange: #f97316;
+      /* naranja */
+      --na: #94a3b8;
+      /* gris */
+
+      /* Tamaño base (subido) */
+      --baseFont: 18px;
+
+      /* Safe areas iOS */
+      --safeTop: env(safe-area-inset-top, 0px);
+      --safeBottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      overflow-y: scroll;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.10), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(16, 185, 129, 0.10), transparent 55%),
+        var(--bg);
+      min-height: 100vh;
+      font-size: 16px;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 18px 34px;
+    }
+
+    /* ==========================
+       HEADER CORPORATIVO (UNIFICADO)
+       ========================== */
+    header.main-header {
+      position: sticky;
+      top: 0;
+      z-index: 10000;
+      padding-top: var(--safeTop);
+      background: linear-gradient(180deg, var(--brand) 0%, var(--brand2) 100%);
+      box-shadow: 0 14px 34px rgba(11, 43, 76, .18);
+      border-bottom: 1px solid rgba(255, 255, 255, .14);
+    }
+
+    .header-wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      height: 72px;
+      box-sizing: border-box;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      flex: 1 1 0;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex: 1 1 0;
+    }
+
+    .btn-nav {
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 1000;
+      letter-spacing: .2px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .16);
+      color: #ffffff;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+      transition: all .2s ease;
+      background: rgba(255, 255, 255, .08);
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .btn-nav:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .22);
+      background: rgba(255, 255, 255, .15);
+    }
+
+    .btn-nav.active {
+      background: #ffffff !important;
+      color: var(--brand) !important;
+      border-color: #ffffff !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      text-shadow: none;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .btn-nav.cotizador:not(.active) {
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+    }
+
+    .btn-nav.patologias:not(.active) {
+      background: linear-gradient(135deg, #10b981, #22c55e);
+    }
+
+    .btn-nav.imc:not(.active) {
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+    }
+
+    .btn-nav.chatbot:not(.active) {
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+    }
+
+    .btn-nav.admin:not(.active) {
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .brand-logo {
+      height: 38px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .18));
+    }
+
+    .btn-nav.chatbot:not(.active) {
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+    }
+
+    .btn-nav.admin:not(.active) {
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .brand-logo {
+      height: 38px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .18));
+    }
+
+
+
+    .routeLinks {
+      display: none !important;
+    }
+
+    .routeLink {
+      color: var(--brand);
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(11, 43, 76, .16);
+      background: rgba(255, 255, 255, .85);
+      box-shadow: 0 6px 14px rgba(11, 43, 76, .08);
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .routeLink:hover {
+      background: #ffffff;
+      border-color: rgba(214, 162, 58, .50);
+      transform: translateY(-1px);
+    }
+
+    .routeLink:active {
+      transform: translateY(0px);
+    }
+
+    .routeSep {
+      color: rgba(71, 85, 105, .70);
+      font-weight: 950;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-h {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, var(--soft) 100%);
+    }
+
+    .card-b {
+      padding: 14px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    @media (max-width: 760px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    label {
+      font-size: 12.5px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 900;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      outline: none;
+      color: var(--text);
+      box-shadow: 0 1px 0 rgba(11, 43, 76, .05);
+      font-size: 15px;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+      border-color: rgba(214, 162, 58, .60);
+      box-shadow: 0 0 0 4px rgba(214, 162, 58, .18);
+    }
+
+    .btn {
+      border: 1px solid rgba(0, 85, 165, 0.12);
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color: #fff;
+      font-weight: 800;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .2s ease;
+      font-size: 14px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(0, 85, 165, 0.25);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0, 85, 165, 0.35);
+    }
+
+    .btn:active {
+      transform: translateY(0px) scale(0.98);
+    }
+
+    .btn2 {
+      border: 1px solid rgba(0, 85, 165, 0.12);
+      background: #ffffff;
+      color: var(--brand);
+      font-weight: 800;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .2s ease;
+      font-size: 14px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(11, 43, 76, .05);
+    }
+
+    .btn2:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(11, 43, 76, .12);
+      border-color: rgba(0, 85, 165, 0.3);
+    }
+
+    .btn2:active {
+      transform: translateY(0px) scale(0.98);
+    }
+
+    .hint {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 1px dashed rgba(148, 163, 184, .9);
+      border-radius: 14px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .legend {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .legend .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #fff;
+      font-size: 12.5px;
+      font-weight: 950;
+      color: var(--text);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .dot.ok {
+      background: var(--ok);
+    }
+
+    .dot.warn {
+      background: var(--warn);
+    }
+
+    .dot.bad {
+      background: var(--bad);
+    }
+
+    .dot.warn-red {
+      background: var(--orange);
+    }
+
+    .dot.na {
+      background: var(--na);
+    }
+
+    /* Resultados */
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .patCard {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 12px;
+      box-shadow: 0 6px 16px rgba(11, 43, 76, .06);
+      overflow: hidden;
+    }
+
+    .patTitle {
+      margin: 0;
+      font-weight: 950;
+      font-size: 15.5px;
+      line-height: 1.25;
+      color: var(--brand);
+    }
+
+    /* RESPONSIVE FIX RESULTADOS */
+    .grid {
+      margin-top: 10px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    @media (max-width: 520px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mini {
+      border: 2px solid #E6ECF5;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 0;
+      overflow: hidden;
+      flex-wrap: wrap;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+    .mini:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(10, 20, 40, .10);
+    }
+
+    .mini .c {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      min-width: 0;
+      line-height: 1.4;
+      letter-spacing: .01em;
+      flex: 1 1 auto;
+    }
+
+    .fecha-tag {
+      font-size: 10px;
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: .01em;
+      text-transform: uppercase;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 2px solid var(--line);
+      background: #fff;
+      font-weight: 950;
+      font-size: 12.5px;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: .02em;
+      flex: 0 0 auto;
+    }
+
+    .pill.ok {
+      background: rgba(18, 140, 76, .16);
+      border-color: rgba(18, 140, 76, .55);
+      color: #0B5B2F;
+    }
+
+    .pill.warn {
+      background: rgba(245, 158, 11, .18);
+      border-color: rgba(245, 158, 11, .65);
+      color: #7A4A00;
+    }
+
+    .pill.bad {
+      background: rgba(239, 68, 68, .16);
+      border-color: rgba(239, 68, 68, .55);
+      color: #7A0B0B;
+    }
+
+    .pill.warn-red {
+      background: rgba(249, 115, 22, .16);
+      border-color: rgba(249, 115, 22, .55);
+      color: #944111;
+    }
+
+    .pill.na {
+      background: rgba(148, 163, 184, .22);
+      border-color: rgba(148, 163, 184, .65);
+      color: #334155;
+    }
+
+    /* Fondo por estado */
+    .mini.bg-ok {
+      background: rgba(16, 185, 129, .20);
+      border-color: rgba(16, 185, 129, .60);
+    }
+
+    .mini.bg-warn {
+      background: rgba(245, 158, 11, .22);
+      border-color: rgba(245, 158, 11, .60);
+    }
+
+    .mini.bg-warn-red {
+      background: rgba(249, 115, 22, .20);
+      border-color: rgba(249, 115, 22, .60);
+    }
+
+    .mini.bg-bad {
+      background: rgba(239, 68, 68, .20);
+      border-color: rgba(239, 68, 68, .60);
+    }
+
+    .mini.bg-na {
+      background: rgba(148, 163, 184, .18);
+      border-color: rgba(148, 163, 184, .60);
+    }
+
+    .pill.product {
+      background: rgba(30, 64, 175, .1);
+      border-color: rgba(30, 64, 175, .4);
+      color: #1e40af;
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+
+    .empty {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+      display: none;
+    }
+
+    /* RESPONSIVE TOPBAR */
+    @media (max-width: 760px) {
+      .topbar .wrap {
+        padding: 12px 14px !important;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: flex-start;
+      }
+
+      .brandTitle {
+        flex: 1 1 100%;
+        padding-right: 0;
+      }
+
+      .topbarRight {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .brandLogo {
+        height: 34px;
+      }
+    }
+
+    /* =========================
+       MODAL ADMIN
+       ========================= */
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 9999;
+      padding-bottom: var(--safeBottom);
+    }
+
+    .modal.open {
+      display: block;
+    }
+
+    .modalBackdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(2, 6, 23, .55);
+      backdrop-filter: blur(2px);
+    }
+
+    .modalDialog {
+      position: relative;
+      max-width: 980px;
+      width: calc(100% - 18px);
+      margin: 12px auto;
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid rgba(226, 232, 240, .9);
+      box-shadow: 0 24px 70px rgba(2, 6, 23, .35);
+      overflow: hidden;
+      max-height: calc(100dvh - 24px - var(--safeTop) - var(--safeBottom));
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modalHeader {
+      padding: 14px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, var(--soft) 100%);
+      flex: 0 0 auto;
+    }
+
+    .modalTitle {
+      font-weight: 950;
+      color: var(--brand);
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .modalSub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12.5px;
+    }
+
+    .iconBtn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-weight: 950;
+      color: var(--brand);
+      box-shadow: var(--shadow2);
+      flex: 0 0 auto;
+    }
+
+    .modalBody {
+      padding: 14px;
+      overflow: auto;
+      flex: 1 1 auto;
+    }
+
+    .adminGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    @media (max-width: 900px) {
+      .adminGrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .adminHint {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .adminHint.ok {
+      border-color: rgba(16, 185, 129, .35);
+      background: rgba(16, 185, 129, .10);
+      color: #0B5B2F;
+      font-weight: 900;
+    }
+
+    .adminHint.bad {
+      border-color: rgba(239, 68, 68, .35);
+      background: rgba(239, 68, 68, .10);
+      color: #7f1d1d;
+      font-weight: 900;
+    }
+
+    .adminListWrap {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .adminListHeader {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, var(--soft) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .adminListTitle {
+      font-weight: 950;
+      color: var(--brand);
+      font-size: 14px;
+    }
+
+    .adminListTools {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      min-width: min(420px, 100%);
+      flex: 1 1 auto;
+    }
+
+    .adminList {
+      max-height: 52vh;
+      overflow: auto;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(226, 232, 240, .8);
+      align-items: center;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .rowName {
+      font-weight: 900;
+      color: var(--text);
+      font-size: 13.5px;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .rowRight {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .pill.adminFull {
+      max-width: none;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
+    .tinyBtn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--brand);
+      font-weight: 950;
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(11, 43, 76, .08);
+      font-size: 12.5px;
+      white-space: nowrap;
+    }
+
+    .tinyBtn.danger {
+      border-color: rgba(239, 68, 68, .35);
+      color: #7f1d1d;
+      background: rgba(239, 68, 68, .07);
+    }
+
+    .adminActionsRow {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 520px) {
+      .adminActionsRow {
+        justify-content: flex-start;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .rowRight {
+        justify-content: flex-start;
+      }
+    }
+
+    /* ==========================
+   HEADER TOOLBAR (3 botones) - UNIFICADO POSICIÓN
+   ========================== */
+    .topbarTools {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      /* <-- ACTUALIZADO: pegados a la derecha */
+      margin-left: auto;
+      /* <-- ACTUALIZADO: empuja la botonera a la zona Admin */
+      flex: 0 0 auto;
+    }
+
+
+    /* ==========================
+   TOPBAR - UNIFICADO POSICIÓN
+   ========================== */
+
+    .brandTitle {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      flex: 1 1 0;
+      /* <-- ACTUALIZADO: ocupa 1/3 (equilibrio) */
+      padding-right: 18px;
+    }
+
+    .topbarRight {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-left: 12px;
+      /* <-- ACTUALIZADO: ya NO es auto, queda pegado a la botonera */
+      flex: 0 0 auto;
+      flex-shrink: 0;
+    }
+
+
+
+    .btnTool {
+      border: 1px solid rgba(15, 23, 42, 0.10);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 1000;
+      letter-spacing: .2px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      color: #ffffff;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+      transition: transform .08s ease, box-shadow .15s ease, filter .15s ease;
+      white-space: nowrap;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .btnTool:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+      filter: brightness(1.03);
+    }
+
+    .btnTool:active {
+      transform: translateY(0px) scale(0.99);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.10);
+    }
+
+    .btnTool.patologias {
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+      border-color: rgba(245, 158, 11, 0.30);
+    }
+
+    .btnTool.imc {
+      background: linear-gradient(135deg, #10b981, #22c55e);
+      border-color: rgba(16, 185, 129, 0.30);
+    }
+
+    .btnTool.chatbot {
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      border-color: rgba(37, 99, 235, .30);
+    }
+
+    .btnTool.active {
+      opacity: .78;
+      filter: saturate(.85);
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ==========================
+   CHATBOT PANEL (IFRAME)
+   ========================== */
+    .cbOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, .45);
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+      z-index: 9998;
+    }
+
+    .cbPanel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: min(520px, 92vw);
+      background: #ffffff;
+      border-left: 1px solid rgba(15, 23, 42, 0.12);
+      box-shadow: -18px 0 50px rgba(15, 23, 42, .18);
+      transform: translateX(105%);
+      transition: transform .22s ease;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cbHeader {
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.10);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(255, 255, 255, 0));
+    }
+
+    .cbTitle {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .cbTitle b {
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+
+    .cbTitle small {
+      font-size: 12px;
+      color: rgba(71, 85, 105, 0.95);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cbClose {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: rgba(15, 23, 42, 0.03);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 900;
+      color: rgba(15, 23, 42, 0.85);
+    }
+
+    .cbClose:hover {
+      background: rgba(15, 23, 42, 0.06);
+    }
+
+    .cbBody {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .cbFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    .cbOpen .cbOverlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .cbOpen .cbPanel {
+      transform: translateX(0%);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- TOPBAR -->
+  <header class="main-header">
+    <div class="header-wrap">
+      <div class="brand-block"></div>
+
+      <nav class="header-nav" aria-label="Navegación superior">
+        <a class="btn-nav cotizador" href="#" id="btnOpenCotizador">Cotizador</a>
+        <a class="btn-nav patologias active" href="#" id="btnOpenPatologias">Buscador Patologías</a>
+        <a class="btn-nav imc" href="#" id="btnOpenIMC">Calculadora IMC</a>
+        <a class="btn-nav chatbot" href="#" id="btnOpenChatbot">Chatbot FAQ</a>
+        <a class="btn-nav admin" href="#" id="btnOpenAdmin">Admin</a>
+      </nav>
+
+      <div class="header-right">
+        <button id="btnLogout" class="btn-nav"
+          style="font-size:13px;padding:8px 14px;background:rgba(239,68,68,0.18);border-color:rgba(239,68,68,0.35);color:#fff;"
+          title="Cerrar sesión">⬤ Salir</button>
+        <img class="brand-logo" src="logo-adeslas.png" alt="Adeslas">
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO -->
+  <div class="wrap">
+    <section class="card">
+      <div class="card-h">
+        <div class="controls">
+          <div>
+            <label for="q">Enfermedad / Patología</label>
+            <input id="q" type="text" placeholder="Escribe para buscar... (ej: hipertensión, cáncer, epoc)"
+              autocomplete="off" />
+          </div>
+
+          <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
+            <button class="btn" id="btnBuscar" type="button">Buscar</button>
+            <button class="btn2" id="btnLimpiar" type="button">Limpiar</button>
+          </div>
+        </div>
+
+        <div class="hint" id="hintBar">
+          <span>Escribe y pulsa <strong>Buscar</strong>. No se muestra ninguna lista hasta que busques.</span>
+          <span class="legend">
+            <span class="tag"><span class="dot ok"></span> ACEPTADO</span>
+            <span class="tag"><span class="dot bad"></span> RECHAZO</span>
+            <span class="tag"><span class="dot warn-red"></span> EXCLUSION</span>
+            <span class="tag"><span class="dot warn"></span> INFORME</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="card-b">
+        <div id="results" class="results"></div>
+        <div id="noResults" class="empty">
+          <strong>Sin resultados.</strong><br>
+          Prueba con menos texto o una palabra más general.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- =========================
+       MODAL ADMIN (LOGIN + CRUD + COMPAÑÍAS)
+       ========================= -->
+  <div class="modal" id="adminModal" aria-hidden="true">
+    <div class="modalBackdrop" id="adminBackdrop"></div>
+
+    <div class="modalDialog" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+      <div class="modalHeader">
+        <div>
+          <div class="modalTitle" id="adminTitle">Administración</div>
+          <div class="modalSub">Añadir / editar / eliminar patologías y productos (persistente).</div>
+        </div>
+        <button class="iconBtn" id="btnCloseAdmin" type="button" aria-label="Cerrar">✕</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="modalBody" id="adminLoginBox">
+        <div class="adminGrid" style="grid-template-columns: 1fr;">
+          <div>
+            <label for="loginUser">Usuario</label>
+            <input id="loginUser" type="text" placeholder="Tu usuario" autocomplete="off"
+              style="margin-bottom: 12px;" />
+            <label for="adminPass">Contraseña</label>
+            <input id="adminPass" type="password" placeholder="Tu contraseña" autocomplete="off" />
+          </div>
+
+          <div class="adminActionsRow">
+            <button class="btn" id="btnAdminLogin" type="button">Entrar</button>
+            <button class="btn2" id="btnAdminCancel" type="button" style="display:none;">Cancelar</button>
+          </div>
+
+          <div class="adminHint bad" id="adminLoginHint" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- PANEL -->
+      <div class="modalBody" id="adminPanelBox" style="display:none;">
+        <div class="adminGrid">
+          <!-- GESTIÓN DE PRODUCTOS -->
+          <div style="grid-column: 1 / -1;">
+            <label>Gestión de Productos</label>
+            <div
+              style="display: flex; gap: 8px; margin-bottom: 12px; background: rgba(241,245,249,0.5); padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <select id="adminProductAction" style="width: 140px; margin-bottom: 0;">
+                <option value="add">Añadir Nuevo</option>
+                <option value="delete">Eliminar Existente</option>
+              </select>
+
+              <div id="boxAddProduct" style="display: flex; gap: 8px; flex: 1;">
+                <input id="adminNewProduct" type="text" placeholder="Nombre del nuevo producto..."
+                  style="margin-bottom: 0;" autocomplete="off" />
+                <button class="btn" id="btnAddProduct" type="button" style="padding: 0 20px;">Añadir</button>
+              </div>
+
+              <div id="boxDeleteProduct" style="display: none; gap: 8px; flex: 1;">
+                <select id="adminProductToDelete" style="margin-bottom: 0;"></select>
+                <button class="btn2 danger" id="btnDeleteProduct" type="button"
+                  style="padding: 0 20px;">Eliminar</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="grid-column: 1 / -1; height: 1px; background: rgba(226,232,240,.9); margin: 4px 0 12px;"></div>
+
+          <!-- SELECT PRODUCTO ACTUAL -->
+          <div style="grid-column: 1 / -1;">
+            <label for="adminProduct">Producto Actual para editar patologías</label>
+            <select id="adminProduct"></select>
+          </div>
+
+
+
+          <!-- CRUD PATOLOGÍAS -->
+          <div>
+            <label for="adminPatologia">Patología</label>
+            <input id="adminPatologia" type="text" placeholder="Ej: Cáncer tratado hace menos de 5 años"
+              autocomplete="off" />
+          </div>
+
+          <div>
+            <label for="adminContratable">Resultado / Estado</label>
+            <select id="adminContratable">
+              <option value="ACEPTADO">ACEPTADO</option>
+              <option value="RECHAZO">RECHAZO</option>
+              <option value="EXCLUSION">EXCLUSION</option>
+              <option value="INFORME">INFORME</option>
+            </select>
+          </div>
+
+
+
+          <div class="adminActionsRow">
+            <button class="btn" id="btnAdminSave" type="button">Guardar</button>
+            <button class="btn2" id="btnAdminClearForm" type="button">Limpiar</button>
+            <button class="btn2" id="btnAdminLogout" type="button">Salir</button>
+          </div>
+
+          <div class="adminHint" id="adminCrudHint" style="display:none; grid-column: 1 / -1;"></div>
+
+          <div class="adminListWrap" style="grid-column: 1 / -1;">
+            <div class="adminListHeader">
+              <div class="adminListTitle">Patologías del producto seleccionado</div>
+              <div class="adminListTools">
+                <input id="adminFilter" type="text" placeholder="Filtrar dentro del producto..." autocomplete="off" />
+              </div>
+            </div>
+            <div class="adminList" id="adminList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // =========================================================
+    // 1) PEGA AQUÍ TU DICCIONARIO COMPLETO (BASE)
+    // =========================================================
+    // FORMATO:
+    // const PATHOLOGIES_BASE = {
+    //   "HELVETIA": [{ "patologia":"...", "contratable":"SI|INFORME MEDICO" }, ...],
+    //   "EUROPEA":  [...],
+    //   ...
+    const PATHOLOGIES_BASE = {
+      "SENIORS": [
+        {
+          "patologia": "SENIOR operada en los dos ojos de miopia",
+          "contratable": "ACEPTADO",
+          "fecha": "12/01/2026 14:00"
+        }
+      ]
+    };
+    // 2) STORAGE (Persistencia admin)
+    // =========================================================
+    // ACTUALIZADO: v4 para soportar "deletedCompanies" y migración desde v3
+    const STORAGE_KEY_DATA_V3 = "diblafe_pathologies_overrides_v3";
+    const STORAGE_KEY_DATA_V4 = "diblafe_pathologies_overrides_v4";
+    const STORAGE_KEY_ADMIN = "diblafe_admin_logged_v4";
+    const STORAGE_KEY_USER_ROLE = "adeslas_user_role";
+
+    const USERS = {
+      "admin": { pass: "1234", role: "admin" },
+      "user": { pass: "1234", role: "user" }
+    };
+
+    // Trabajamos con una copia "viva" que mezcla BASE + OVERRIDES - ELIMINADAS
+    let PATHOLOGIES = {};
+
+    // =========================================================
+    // Utilidades
+    // =========================================================
+    function normalizeText(s) {
+      if (s === null || s === undefined) return "";
+      return String(s)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+    }
+
+    function safeVal(v) {
+      if (v === null || v === undefined) return "";
+      return String(v).trim();
+    }
+
+    function normalizeCompanyKey(k) {
+      const nk = normalizeText(k).toUpperCase();
+      return nk;
+    }
+
+    function badgeClassByContratable(v) {
+      const nv = normalizeText(v);
+      if (nv === "aceptado") return "ok";
+      if (nv === "rechazo") return "bad";
+      if (nv === "exclusion") return "warn-red";
+      if (nv === "informe") return "warn";
+      return "warn";
+    }
+
+    function debounce(fn, wait) {
+      let t;
+      return function () {
+        const args = arguments;
+        clearTimeout(t);
+        t = setTimeout(function () { fn.apply(null, args); }, wait);
+      }
+    }
+
+    function deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj || {}));
+    }
+
+    // =========================================================
+    // OVERRIDES v4: { data: {COMPANY:[...]}, deleted: [COMPANY,...] }
+    // Migración desde v3 (formato antiguo: {COMPANY:[...], COMPANY2:[...]} )
+    // =========================================================
+    function loadOverridesV4() {
+      // 1) intenta v4
+      try {
+        const raw4 = localStorage.getItem(STORAGE_KEY_DATA_V4);
+        if (raw4) {
+          const parsed4 = JSON.parse(raw4);
+          if (parsed4 && typeof parsed4 === "object") {
+            const data = (parsed4.data && typeof parsed4.data === "object") ? parsed4.data : {};
+            const deleted = Array.isArray(parsed4.deleted) ? parsed4.deleted : [];
+            return { data: data, deleted: deleted };
+          }
+        }
+      } catch (e) { }
+
+      // 2) migra v3 si existe
+      try {
+        const raw3 = localStorage.getItem(STORAGE_KEY_DATA_V3);
+        if (raw3) {
+          const parsed3 = JSON.parse(raw3);
+          if (parsed3 && typeof parsed3 === "object") {
+            // si parece v4 ya, lo aceptamos
+            if (parsed3.data || parsed3.deleted) {
+              const data2 = (parsed3.data && typeof parsed3.data === "object") ? parsed3.data : {};
+              const deleted2 = Array.isArray(parsed3.deleted) ? parsed3.deleted : [];
+              const migrated = { data: data2, deleted: deleted2 };
+              saveOverridesV4(migrated);
+              return migrated;
+            }
+
+            // si es v3 plano: { COMPANY:[...] }
+            const migrated = { data: parsed3, deleted: [] };
+            saveOverridesV4(migrated);
+            return migrated;
+          }
+        }
+      } catch (e) { }
+
+      return { data: {}, deleted: [] };
+    }
+
+    function saveOverridesV4(overrides) {
+      try {
+        const clean = overrides && typeof overrides === "object" ? overrides : { data: {}, deleted: [] };
+        if (!clean.data || typeof clean.data !== "object") clean.data = {};
+        if (!Array.isArray(clean.deleted)) clean.deleted = [];
+        localStorage.setItem(STORAGE_KEY_DATA_V4, JSON.stringify(clean));
+      } catch (e) {
+        // sin acciones extra
+      }
+    }
+
+    function canonicalizeProducts(obj) {
+      const out = {};
+      Object.keys(obj || {}).forEach(function (k) {
+        const ck = normalizeCompanyKey(k);
+        if (!ck) return;
+        const arr = Array.isArray(obj[k]) ? obj[k] : [];
+        if (!out[ck]) out[ck] = [];
+        out[ck] = out[ck].concat(deepClone(arr));
+      });
+
+      Object.keys(out).forEach(function (k) {
+        if (!Array.isArray(out[k])) out[k] = [];
+      });
+
+      return out;
+    }
+
+    function dedupeProductList(list) {
+      const seen = new Set();
+      const out = [];
+      (list || []).forEach(function (r) {
+        const name = safeVal(r && r.patologia);
+        const key = normalizeText(name);
+        if (!key) return;
+        if (seen.has(key)) return;
+        seen.add(key);
+        out.push({
+          patologia: name,
+          contratable: safeVal(r && r.contratable),
+          productor: safeVal(r && r.productor)
+        });
+      });
+      return out;
+    }
+
+    function mergeBaseAndOverrides() {
+      const baseRaw = canonicalizeProducts(PATHOLOGIES_BASE);
+
+      const ov = loadOverridesV4();
+      const ovData = canonicalizeProducts(ov.data || {});
+      const deleted = (ov.deleted || []).map(function (x) { return normalizeCompanyKey(x); });
+
+      const out = deepClone(baseRaw);
+
+      // aplica overrides (sustitución total por producto)
+      Object.keys(ovData).forEach(function (product) {
+        if (!Array.isArray(ovData[product])) return;
+        out[product] = dedupeProductList(ovData[product]);
+      });
+
+      // dedupe final
+      Object.keys(out).forEach(function (product) {
+        out[product] = dedupeProductList(out[product]);
+      });
+
+      // aplica eliminadas
+      deleted.forEach(function (c) {
+        if (out[c]) delete out[c];
+      });
+
+      PATHOLOGIES = out;
+    }
+
+    // =========================================================
+    // BUSCADOR
+    // =========================================================
+    const PREFERRED_PRODUCT_ORDER = ["SENIORS"];
+    let PRODUCTS = [];
+    const INDEX = {};
+
+    const elQ = document.getElementById("q");
+    const elBtnBuscar = document.getElementById("btnBuscar");
+    const elBtnLimpiar = document.getElementById("btnLimpiar");
+    const elResults = document.getElementById("results");
+    const elNoResults = document.getElementById("noResults");
+
+    function buildProducts() {
+      const keys = Object.keys(PATHOLOGIES || {});
+      // Si no hay productos, forzamos ADESLAS por defecto
+      if (keys.length === 0) {
+        PATHOLOGIES["ADESLAS"] = [];
+        keys.push("ADESLAS");
+      }
+      const set = new Set(keys.map(function (k) { return normalizeCompanyKey(k); }));
+
+      const ordered = [];
+      PREFERRED_PRODUCT_ORDER.forEach(function (k) {
+        const ck = normalizeCompanyKey(k);
+        if (set.has(ck)) ordered.push(ck);
+      });
+
+      const rest = keys
+        .map(function (k) { return normalizeCompanyKey(k); })
+        .filter(function (k) { return ordered.indexOf(k) === -1; });
+
+      const restUnique = Array.from(new Set(rest)).sort();
+      PRODUCTS = ordered.concat(restUnique);
+    }
+
+    function buildIndex() {
+      buildProducts();
+      // limpia index previo
+      Object.keys(INDEX).forEach(function (k) { delete INDEX[k]; });
+
+      PRODUCTS.forEach(function (c) {
+        const map = {};
+        (PATHOLOGIES[c] || []).forEach(function (r) {
+          const key = normalizeText(r.patologia);
+          if (!key) return;
+          if (map[key] === undefined) map[key] = safeVal(r.contratable);
+        });
+        INDEX[c] = map;
+      });
+    }
+
+    function clearResults() {
+      elResults.innerHTML = "";
+      elNoResults.style.display = "none";
+    }
+
+    function findBestRowInProduct(product, nq, preferredKey) {
+      const rows = (PATHOLOGIES[product] || []);
+      if (!rows.length) return null;
+
+      if (preferredKey) {
+        for (let i = 0; i < rows.length; i++) {
+          const k = normalizeText(rows[i].patologia);
+          if (k && k === preferredKey) return rows[i];
+        }
+      }
+
+      for (let i = 0; i < rows.length; i++) {
+        const k = normalizeText(rows[i].patologia);
+        if (k && k.includes(nq)) return rows[i];
+      }
+
+      return null;
+    }
+
+    function search() {
+      const q = (elQ.value || "").trim();
+      clearResults();
+      if (!q) return;
+
+      const nq = normalizeText(q);
+      let foundAny = false;
+
+      PRODUCTS.forEach(function (pName) {
+        const productMatches = (PATHOLOGIES[pName] || []).filter(function (r) {
+          return normalizeText(r.patologia).includes(nq);
+        });
+
+        if (productMatches.length === 0) return;
+        foundAny = true;
+
+        const card = document.createElement("div");
+        card.className = "patCard";
+
+        const title = document.createElement("p");
+        title.className = "patTitle";
+        title.style.color = "var(--primary)";
+        title.style.textTransform = "uppercase";
+        title.style.fontSize = "16px";
+        title.textContent = pName;
+
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        productMatches.forEach(function (m) {
+          const mini = document.createElement("div");
+          mini.className = "mini";
+
+          const cc = document.createElement("div");
+          cc.className = "c";
+          cc.textContent = m.patologia;
+
+          const rightSide = document.createElement("div");
+          rightSide.style.display = "flex";
+          rightSide.style.flexDirection = "column";
+          rightSide.style.alignItems = "flex-end";
+          rightSide.style.gap = "4px";
+          rightSide.style.flexShrink = "0";
+
+          const val = safeVal(m.contratable);
+          const cls = badgeClassByContratable(val);
+
+          const pill = document.createElement("span");
+          pill.className = "pill " + cls;
+          pill.textContent = val || "SIN DATO";
+
+          if (cls === "ok") mini.classList.add("bg-ok");
+          else if (cls === "bad") mini.classList.add("bg-bad");
+          else if (cls === "warn-red") mini.classList.add("bg-warn-red");
+          else mini.classList.add("bg-warn");
+
+          if (m.fecha) {
+            const ftag = document.createElement("span");
+            ftag.className = "fecha-tag";
+            ftag.textContent = "Fecha: " + m.fecha;
+            rightSide.appendChild(ftag);
+          }
+
+          rightSide.prepend(pill);
+          mini.appendChild(cc);
+          mini.appendChild(rightSide);
+          grid.appendChild(mini);
+        });
+
+        card.appendChild(title);
+        card.appendChild(grid);
+        elResults.appendChild(card);
+      });
+
+      if (!foundAny) {
+        elNoResults.style.display = "block";
+      }
+    }
+
+    // =========================================================
+    // ADMIN
+    // =========================================================
+    const btnOpenAdmin = document.getElementById("btnOpenAdmin");
+    const adminModal = document.getElementById("adminModal");
+    const adminBackdrop = document.getElementById("adminBackdrop");
+    const btnCloseAdmin = document.getElementById("btnCloseAdmin");
+
+    const adminLoginBox = document.getElementById("adminLoginBox");
+    const adminPanelBox = document.getElementById("adminPanelBox");
+
+    const adminPass = document.getElementById("adminPass");
+    const btnAdminLogin = document.getElementById("btnAdminLogin");
+    const btnAdminCancel = document.getElementById("btnAdminCancel");
+    const adminLoginHint = document.getElementById("adminLoginHint");
+
+    const adminProductAction = document.getElementById("adminProductAction");
+    const boxAddProduct = document.getElementById("boxAddProduct");
+    const boxDeleteProduct = document.getElementById("boxDeleteProduct");
+    const adminProductToDelete = document.getElementById("adminProductToDelete");
+
+    const adminNewProduct = document.getElementById("adminNewProduct");
+    const btnAddProduct = document.getElementById("btnAddProduct");
+
+    const adminProduct = document.getElementById("adminProduct");
+    const btnDeleteProduct = document.getElementById("btnDeleteProduct");
+
+    const adminPatologia = document.getElementById("adminPatologia");
+    const adminContratable = document.getElementById("adminContratable");
+
+    const btnAdminSave = document.getElementById("btnAdminSave");
+    const btnAdminClearForm = document.getElementById("btnAdminClearForm");
+    const btnAdminLogout = document.getElementById("btnAdminLogout");
+    const adminCrudHint = document.getElementById("adminCrudHint");
+    const adminFilter = document.getElementById("adminFilter");
+    const adminList = document.getElementById("adminList");
+
+    let adminEditingKey = null;
+
+    function isAdminLogged() {
+      try {
+        const v = localStorage.getItem(STORAGE_KEY_ADMIN);
+        return (v === "true" || v === "1");
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function setAdminLogged(val) {
+      try {
+        localStorage.setItem(STORAGE_KEY_ADMIN, val ? "true" : "false");
+      } catch (e) { }
+    }
+
+    function openAdmin() {
+      adminModal.classList.add("open");
+      adminModal.setAttribute("aria-hidden", "false");
+
+      adminLoginHint.style.display = "none";
+      adminCrudHint.style.display = "none";
+
+      if (isAdminLogged()) {
+        showAdminPanel();
+      } else {
+        showAdminLogin();
+      }
+    }
+
+    function closeAdmin() {
+      adminModal.classList.remove("open");
+      adminModal.setAttribute("aria-hidden", "true");
+      adminPass.value = "";
+      adminLoginHint.style.display = "none";
+      adminCrudHint.style.display = "none";
+    }
+
+    function showAdminLogin() {
+      adminLoginBox.style.display = "block";
+      adminPanelBox.style.display = "none";
+      adminPass.value = "";
+      adminPass.focus();
+    }
+
+    function showAdminPanel() {
+      adminLoginBox.style.display = "none";
+      adminPanelBox.style.display = "block";
+      fillProductSelects();
+      resetAdminForm();
+      renderAdminList();
+    }
+
+    function fillProductSelects() {
+      adminProduct.innerHTML = "";
+      adminProductToDelete.innerHTML = "";
+
+      const sorted = PRODUCTS.slice().sort();
+
+      sorted.forEach(function (c) {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        adminProduct.appendChild(opt);
+
+        const optDel = document.createElement("option");
+        optDel.value = c;
+        optDel.textContent = c;
+        adminProductToDelete.appendChild(optDel);
+      });
+
+      if ((!adminProduct.value || !PATHOLOGIES[adminProduct.value]) && PRODUCTS.length) {
+        adminProduct.value = PRODUCTS[0];
+      }
+    }
+
+    function resetAdminForm() {
+      adminEditingKey = null;
+      adminPatologia.value = "";
+      adminContratable.value = "ACEPTADO";
+
+      adminCrudHint.style.display = "none";
+    }
+
+    function showCrudHint(text, kind) {
+      adminCrudHint.textContent = text;
+      adminCrudHint.className = "adminHint " + (kind === "ok" ? "ok" : (kind === "bad" ? "bad" : ""));
+      adminCrudHint.style.display = "block";
+    }
+
+    function showLoginHint(text) {
+      adminLoginHint.textContent = text;
+      adminLoginHint.style.display = "block";
+    }
+
+    function getProductList(p) {
+      const ck = normalizeCompanyKey(p);
+      const list = Array.isArray(PATHOLOGIES[ck]) ? PATHOLOGIES[ck] : [];
+      return list;
+    }
+
+    function setProductList(p, list) {
+      const ck = normalizeCompanyKey(p);
+      if (!PATHOLOGIES) PATHOLOGIES = {};
+      PATHOLOGIES[ck] = Array.isArray(list) ? list : [];
+    }
+
+    function persistProduct(p) {
+      const ck = normalizeCompanyKey(p);
+      const ov = loadOverridesV4();
+      if (!ov.data || typeof ov.data !== "object") ov.data = {};
+      if (!Array.isArray(ov.deleted)) ov.deleted = [];
+
+      ov.data[ck] = deepClone(getProductList(ck));
+      ov.deleted = ov.deleted.filter(function (x) { return normalizeCompanyKey(x) !== ck; });
+
+      saveOverridesV4(ov);
+      mergeBaseAndOverrides();
+      buildIndex();
+    }
+
+    function addProduct(name) {
+      const raw = safeVal(name);
+      const ck = normalizeCompanyKey(raw);
+
+      if (!raw) {
+        showCrudHint("El producto no puede estar vacío.", "bad");
+        return false;
+      }
+      if (!ck) {
+        showCrudHint("Nombre de producto inválido.", "bad");
+        return false;
+      }
+
+      if (PATHOLOGIES[ck]) {
+        showCrudHint("El producto ya existe: " + ck, "bad");
+        return false;
+      }
+
+      const ov = loadOverridesV4();
+      if (!ov.data || typeof ov.data !== "object") ov.data = {};
+      ov.deleted = (ov.deleted || []).filter(function (x) { return normalizeCompanyKey(x) !== ck; });
+      ov.data[ck] = Array.isArray(ov.data[ck]) ? ov.data[ck] : [];
+      saveOverridesV4(ov);
+
+      mergeBaseAndOverrides();
+      buildIndex();
+
+      fillProductSelects();
+      adminProduct.value = ck;
+      renderAdminList();
+
+      showCrudHint("Producto añadido: " + ck, "ok");
+      return true;
+    }
+
+    function deleteProduct(p) {
+      const ck = normalizeCompanyKey(p);
+      if (!ck) return false;
+      if (!PATHOLOGIES[ck]) return false;
+
+      const ok = window.confirm("¿Eliminar el producto '" + ck + "' y TODAS sus patologías?");
+      if (!ok) return false;
+
+      const ov = loadOverridesV4();
+      if (!ov.data || typeof ov.data !== "object") ov.data = {};
+      if (!Array.isArray(ov.deleted)) ov.deleted = [];
+
+      if (ov.deleted.map(function (x) { return normalizeCompanyKey(x); }).indexOf(ck) === -1) {
+        ov.deleted.push(ck);
+      }
+      if (ov.data[ck]) delete ov.data[ck];
+
+      saveOverridesV4(ov);
+      mergeBaseAndOverrides();
+      buildIndex();
+
+      fillProductSelects();
+      resetAdminForm();
+      adminFilter.value = "";
+      renderAdminList();
+
+      if ((elQ.value || "").trim()) search();
+
+      showCrudHint("Producto eliminado: " + ck, "ok");
+      return true;
+    }
+
+    function upsertPathology(p, patText, contratable) {
+      const ck = normalizeCompanyKey(p);
+      const name = safeVal(patText);
+      const val = safeVal(contratable) || "SI";
+      // Generamos fecha automáticamente al guardar
+      const fecha = new Date().toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const key = normalizeText(name);
+
+      if (!name) {
+        showCrudHint("La patología no puede estar vacía.", "bad");
+        return false;
+      }
+
+      if (!PATHOLOGIES[ck]) setProductList(ck, []);
+
+      const list = deepClone(getProductList(ck));
+      let foundIdx = -1;
+
+      for (let i = 0; i < list.length; i++) {
+        if (normalizeText(list[i].patologia) === key) {
+          foundIdx = i;
+          break;
+        }
+      }
+
+      if (foundIdx >= 0) {
+        list[foundIdx].patologia = name;
+        list[foundIdx].contratable = val;
+        list[foundIdx].fecha = fecha;
+      } else {
+        list.push({ patologia: name, contratable: val, fecha: fecha });
+      }
+
+      list.sort(function (a, b) {
+        const ka = normalizeText(a.patologia);
+        const kb = normalizeText(b.patologia);
+        if (ka < kb) return -1;
+        if (ka > kb) return 1;
+        return 0;
+      });
+
+      setProductList(ck, dedupeProductList(list));
+      persistProduct(ck);
+
+      showCrudHint(foundIdx >= 0 ? "Actualizado correctamente." : "Añadido correctamente.", "ok");
+      return true;
+    }
+
+    function deletePathology(p, normalizedKey) {
+      const ck = normalizeCompanyKey(p);
+      const list = deepClone(getProductList(ck));
+      const filtered = list.filter(function (r) {
+        return normalizeText(r.patologia) !== normalizedKey;
+      });
+
+      setProductList(ck, filtered);
+      persistProduct(ck);
+
+      showCrudHint("Eliminado correctamente.", "ok");
+      return true;
+    }
+
+    function renderAdminList() {
+      const p = normalizeCompanyKey(adminProduct.value);
+      const filter = normalizeText(adminFilter.value || "");
+      const list = deepClone(getProductList(p));
+
+      adminList.innerHTML = "";
+
+      if (!p || !PATHOLOGIES[p]) {
+        const empty = document.createElement("div");
+        empty.style.padding = "12px";
+        empty.style.color = "#475569";
+        empty.style.fontWeight = "900";
+        empty.textContent = "No hay producto seleccionado.";
+        adminList.appendChild(empty);
+        return;
+      }
+
+      const rows = list.filter(function (r) {
+        const n = normalizeText(r.patologia);
+        return !filter || n.includes(filter);
+      });
+
+      if (!rows.length) {
+        const empty = document.createElement("div");
+        empty.style.padding = "12px";
+        empty.style.color = "#475569";
+        empty.style.fontWeight = "900";
+        empty.textContent = "No hay patologías (o el filtro no coincide).";
+        adminList.appendChild(empty);
+        return;
+      }
+
+      rows.forEach(function (r) {
+        const row = document.createElement("div");
+        row.className = "row";
+
+        const name = document.createElement("div");
+        name.className = "rowName";
+        name.title = safeVal(r.patologia);
+        name.textContent = safeVal(r.patologia);
+
+        const right = document.createElement("div");
+        right.className = "rowRight";
+
+        const pTag = document.createElement("span");
+        pTag.className = "pill product";
+        pTag.textContent = p;
+        right.appendChild(pTag);
+
+        const pill = document.createElement("span");
+        const cls = badgeClassByContratable(r.contratable);
+        pill.className = "pill adminFull " + cls;
+        pill.textContent = safeVal(r.contratable) || "SIN DATO";
+
+        if (r.fecha) {
+          const fTag = document.createElement("span");
+          fTag.className = "fecha-tag";
+          fTag.style.marginLeft = "8px";
+          fTag.textContent = r.fecha;
+          right.appendChild(fTag);
+        }
+
+        const btnEdit = document.createElement("button");
+        btnEdit.type = "button";
+        btnEdit.className = "tinyBtn";
+        btnEdit.textContent = "Editar";
+
+        btnEdit.addEventListener("click", function () {
+          adminEditingKey = normalizeText(r.patologia);
+          adminPatologia.value = safeVal(r.patologia);
+          adminContratable.value = safeVal(r.contratable);
+          showCrudHint("Editando: guarda para aplicar cambios.", "");
+          adminPatologia.focus();
+        });
+
+        const btnDel = document.createElement("button");
+        btnDel.type = "button";
+        btnDel.className = "tinyBtn danger";
+        btnDel.textContent = "Eliminar";
+
+        btnDel.addEventListener("click", function () {
+          deletePathology(p, normalizeText(r.patologia));
+          renderAdminList();
+          resetAdminForm();
+        });
+
+        right.appendChild(pill);
+        right.appendChild(btnEdit);
+        right.appendChild(btnDel);
+
+        row.appendChild(name);
+        row.appendChild(right);
+        adminList.appendChild(row);
+      });
+    }
+
+    function adminSave() {
+      const p = adminProduct.value;
+      const pat = adminPatologia.value;
+      const contr = adminContratable.value;
+
+      const ok = upsertPathology(p, pat, contr);
+      if (!ok) return;
+
+      renderAdminList();
+      adminEditingKey = null;
+      if ((elQ.value || "").trim()) search();
+    }
+
+    // =========================================================
+    // INIT
+    // =========================================================
+    function init() {
+      mergeBaseAndOverrides();
+      buildIndex();
+      clearResults();
+    }
+
+    // =========================================================
+    // EVENTOS BUSCADOR
+    // =========================================================
+    elBtnBuscar.addEventListener("click", function () { search(); });
+
+    elBtnLimpiar.addEventListener("click", function () {
+      elQ.value = "";
+      clearResults();
+      elQ.focus();
+    });
+
+    elQ.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        search();
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        elQ.value = "";
+        clearResults();
+      }
+    });
+
+    // búsqueda rápida (si quieres SOLO botón, comenta estas 3 líneas)
+    elQ.addEventListener("input", debounce(function () {
+      search();
+    }, 180));
+
+    // =========================================================
+    // EVENTOS ADMIN
+    // =========================================================
+    btnOpenAdmin.addEventListener("click", function (e) { if (e) e.preventDefault(); openAdmin(); });
+
+
+    btnCloseAdmin.addEventListener("click", function () { closeAdmin(); });
+    adminBackdrop.addEventListener("click", function () { closeAdmin(); });
+
+    document.addEventListener("keydown", function (e) {
+      if (!adminModal.classList.contains("open")) return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeAdmin();
+      }
+    });
+
+    btnAdminCancel.addEventListener("click", function () {
+      closeAdmin();
+    });
+
+    btnAdminLogin.addEventListener("click", function () {
+      const u = safeVal(document.getElementById("loginUser").value);
+      const pass = safeVal(adminPass.value);
+
+      const found = USERS[u];
+      if (found && found.pass === pass) {
+        localStorage.setItem(STORAGE_KEY_USER_ROLE, found.role);
+        setAdminLogged(true);
+        applyRoleAccess();
+        adminLoginHint.style.display = "none";
+
+        if (found.role === "admin") {
+          showAdminPanel();
+        } else {
+          closeAdmin();
+        }
+      } else {
+        showLoginHint("Usuario o contraseña incorrectos.");
+      }
+    });
+
+    function applyRoleAccess() {
+      const role = localStorage.getItem(STORAGE_KEY_USER_ROLE);
+      const btnAdminHeader = document.getElementById("btnOpenAdmin");
+
+      if (role === "admin") {
+        if (btnAdminHeader) btnAdminHeader.style.display = "inline-flex";
+      } else {
+        if (btnAdminHeader) btnAdminHeader.style.display = "none";
+      }
+
+      // Actualizar iframe del chatbot con el rol (defer para que el DOM esté listo)
+      setTimeout(function () {
+        const iframe = document.getElementById("chatbotFrame");
+        if (iframe) {
+          let baseSrc = iframe.getAttribute("src").split("?")[0];
+          iframe.setAttribute("src", baseSrc + "?role=" + (role || "user"));
+        }
+      }, 0);
+    }
+
+    function checkAuth() {
+      const isLogged = isAdminLogged();
+      if (!isLogged) {
+        // Redirigir a la página de login centralizada
+        location.replace("../login.html");
+        return;
+      }
+      applyRoleAccess();
+    }
+
+    adminPass.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        btnAdminLogin.click();
+      }
+    });
+
+    btnAdminLogout.addEventListener("click", function () {
+      setAdminLogged(false);
+      localStorage.removeItem(STORAGE_KEY_USER_ROLE);
+      location.replace("../login.html");
+    });
+
+    btnAdminClearForm.addEventListener("click", function () {
+      resetAdminForm();
+      adminPatologia.focus();
+    });
+
+    btnAdminSave.addEventListener("click", function () {
+      adminSave();
+    });
+
+    adminProduct.addEventListener("change", function () {
+      resetAdminForm();
+      adminFilter.value = "";
+      renderAdminList();
+    });
+
+    adminFilter.addEventListener("input", debounce(function () {
+      renderAdminList();
+    }, 120));
+
+    // Añadir producto
+    btnAddProduct.addEventListener("click", function () {
+      const ok = addProduct(adminNewProduct.value);
+      if (ok) {
+        adminNewProduct.value = "";
+        adminFilter.value = "";
+        resetAdminForm();
+        renderAdminList();
+      }
+    });
+
+    adminProductAction.addEventListener("change", function () {
+      const v = adminProductAction.value;
+      boxAddProduct.style.display = (v === "add" ? "flex" : "none");
+      boxDeleteProduct.style.display = (v === "delete" ? "flex" : "none");
+    });
+
+    adminNewProduct.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        btnAddProduct.click();
+      }
+    });
+
+    // Eliminar producto
+    btnDeleteProduct.addEventListener("click", function () {
+      const c = adminProductToDelete.value;
+      const ok = deleteProduct(c);
+      if (ok) {
+        fillProductSelects();
+        renderAdminList();
+      }
+    });
+
+    // =========================================================
+    // ARRANQUE
+    // =========================================================
+    init();
+    checkAuth();
+
+    // -- Botón Salir del header --
+    (function initHeaderLogout() {
+      const btn = document.getElementById("btnLogout");
+      if (btn) btn.addEventListener("click", function () {
+        try {
+          localStorage.setItem("diblafe_admin_logged_v4", "false");
+          localStorage.removeItem("adeslas_user_role");
+        } catch (e) { }
+        location.replace("../login.html");
+      });
+    })();
+
+    // Auto-abrir Admin si vienes con #admin
+    try {
+      if (String(location.hash || "").toLowerCase() === "#admin") {
+        // esperamos al arranque para que todo exista
+        setTimeout(() => { try { openAdmin(); } catch (_e) { } }, 0);
+      }
+    } catch (_e) { }
+
+    // ==========================
+    // NAVEGACIÓN Y CHATBOT (DOMContentLoaded: chatbot panel está al final del body)
+    // ==========================
+    document.addEventListener("DOMContentLoaded", () => {
+      const btnOpenCotizador = document.getElementById("btnOpenCotizador");
+      const btnOpenIMC = document.getElementById("btnOpenIMC");
+      const btnOpenChatbot = document.getElementById("btnOpenChatbot");
+      // btnOpenAdmin ya tiene listener: no añadir otro aquí
+
+      const chatbotOverlay = document.getElementById("chatbotOverlay");
+      const chatbotPanel = document.getElementById("chatbotPanel");
+      const btnCloseChatbot = document.getElementById("btnCloseChatbot");
+
+      function openToolPage(kind) {
+        let url = "";
+
+        if (kind === "imc") {
+          url = "../calculadoraIMC.html";
+        } else if (kind === "patologias") {
+          url = "buscador_patologias_base_interna_v2.html";
+        } else if (kind === "cotizador") {
+          url = "../cotizador_comercial_cp_edades_OK_reglas_sin_slider_DUPLICADOS_FIX.html";
+        } else if (kind === "admin") {
+          url = "buscador_patologias_base_interna_v2.html#admin";
+        } else {
+          return;
+        }
+
+        location.href = url;
+      }
+
+      if (btnOpenCotizador) btnOpenCotizador.addEventListener("click", (e) => { e.preventDefault(); openToolPage("cotizador"); });
+      if (btnOpenIMC) btnOpenIMC.addEventListener("click", (e) => { e.preventDefault(); openToolPage("imc"); });
+      // NO añadimos otro listener para btnOpenAdmin (ya está en línea 2003)
+
+      function toggleChatbot(forceState) {
+        const isOpen = document.documentElement.classList.contains("cbOpen");
+        const nextState = (typeof forceState === "boolean") ? forceState : !isOpen;
+
+        document.documentElement.classList.toggle("cbOpen", nextState);
+        if (chatbotOverlay) chatbotOverlay.setAttribute("aria-hidden", !nextState);
+        if (chatbotPanel) chatbotPanel.setAttribute("aria-hidden", !nextState);
+
+        // Pasar rol al iframe cuando se abre el chatbot
+        if (nextState) {
+          const iframe = document.getElementById("chatbotFrame");
+          const role = localStorage.getItem("adeslas_user_role") || "user";
+          if (iframe) {
+            let baseSrc = iframe.getAttribute("src").split("?")[0];
+            iframe.setAttribute("src", baseSrc + "?role=" + role);
+          }
+        }
+      }
+
+      if (btnOpenChatbot) btnOpenChatbot.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleChatbot();
+      });
+      if (btnCloseChatbot) btnCloseChatbot.addEventListener("click", () => toggleChatbot(false));
+      if (chatbotOverlay) chatbotOverlay.addEventListener("click", () => toggleChatbot(false));
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") toggleChatbot(false);
+      });
+    });
+
+  </script>
+  <!-- ==========================
+     PANEL CHATBOT (IFRAME)
+     ========================== -->
+  <div id="chatbotOverlay" class="cbOverlay" aria-hidden="true"></div>
+
+  <aside id="chatbotPanel" class="cbPanel" aria-hidden="true" role="dialog" aria-label="Chatbot FAQ">
+    <div class="cbHeader">
+      <div class="cbTitle">
+        <b>Chatbot FAQ</b>
+        <small>Responde solo con el conocimiento cargado</small>
+      </div>
+      <button id="btnCloseChatbot" class="cbClose" type="button" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="cbBody">
+      <!-- Patologías suele estar en subcarpeta: por eso ../fackbot.html -->
+      <iframe id="chatbotFrame" class="cbFrame" src="../fackbot.html" title="FAQ Bot" loading="lazy"
+        referrerpolicy="no-referrer"></iframe>
+    </div>
+  </aside>
+
+</body>
+
+</html>

@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ Bot</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: rgba(15, 23, 42, .65);
+      --line: rgba(15, 23, 42, .12);
+      --brand: #0055A5;
+      --brand2: #0070C9;
+      --bubble: #e3f2fd;
+      --dangerBg: #ffebee;
+      --dangerText: #b91c1c;
+      --shadow: 0 18px 40px rgba(15, 23, 42, .10);
+      --r: 16px;
+      --good: #10b981;
+      --good2: #22c55e;
+      --warn: #f59e0b;
+      --safeTop: env(safe-area-inset-top, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: stretch;
+      padding: 0;
+      font-size: 16px;
+      line-height: 1.35;
+      -webkit-text-size-adjust: 100%;
+    }
+
+
+
+    /* Ocultar header si estamos en iframe */
+    body.is-iframe header.main-header {
+      display: none;
+    }
+
+    body.is-iframe {
+      min-height: 100vh;
+      height: 100vh;
+    }
+
+
+    .wrap {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      flex: 1;
+      min-height: 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      min-height: 0;
+    }
+
+    .left {
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+
+    @media (max-width: 920px) {
+      .wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .left {
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      /* importantísimo dentro de grids */
+    }
+
+    .right {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px 16px;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* Vistas de rol */
+    body.role-user .right {
+      display: none !important;
+    }
+
+    body.role-user .wrap {
+      grid-template-columns: 1fr;
+    }
+
+    body.role-user .left {
+      border-right: none;
+    }
+
+    @media (max-width: 920px) {
+      .left {
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+
+    .topbar {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: linear-gradient(180deg, rgba(0, 86, 179, .06), rgba(0, 86, 179, 0));
+    }
+
+    .title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .title h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .title p {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.25;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      /* + grande */
+      line-height: 1.2;
+      /* evita cortes */
+      color: rgba(15, 23, 42, .85);
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, .03);
+      padding: 9px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+
+    .pill.dot::before {
+      content: "●";
+      font-size: 12px;
+      line-height: 1;
+      opacity: .9;
+    }
+
+    .pill.good {
+      border-color: rgba(16, 185, 129, .25);
+      background: rgba(16, 185, 129, .08);
+    }
+
+    .pill.good.dot::before {
+      color: var(--good);
+    }
+
+    .pill.warn {
+      border-color: rgba(245, 158, 11, .25);
+      background: rgba(245, 158, 11, .10);
+    }
+
+    .pill.warn.dot::before {
+      color: var(--warn);
+    }
+
+    .pill.bad {
+      border-color: rgba(185, 28, 28, .25);
+      background: rgba(185, 28, 28, .08);
+    }
+
+    .pill.bad.dot::before {
+      color: var(--dangerText);
+    }
+
+    #chat-box {
+      flex: 1;
+      padding: 16px 14px;
+      overflow-y: auto;
+      background: linear-gradient(180deg, rgba(227, 242, 253, .35), transparent 40%);
+    }
+
+    .row {
+      display: flex;
+      margin-bottom: 10px;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .row.user {
+      justify-content: flex-end;
+    }
+
+    .row.bot {
+      justify-content: flex-start;
+    }
+
+    .bubble {
+      max-width: 92%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      font-size: 15px;
+      /* + grande */
+      line-height: 1.45;
+      /* + aire */
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+
+    .bubble.user {
+      background: rgba(0, 86, 179, .10);
+      border-color: rgba(0, 86, 179, .18);
+      color: rgba(0, 86, 179, .95);
+      border-bottom-right-radius: 6px;
+      text-align: left;
+    }
+
+    .bubble.bot {
+      background: var(--bubble);
+      border-color: rgba(0, 86, 179, .16);
+      color: rgba(15, 23, 42, .95);
+      border-bottom-left-radius: 6px;
+      text-align: left;
+    }
+
+    .bubble.error {
+      background: var(--dangerBg);
+      color: var(--dangerText);
+      border-color: rgba(185, 28, 28, .25);
+    }
+
+    .inputArea {
+      border-top: 1px solid var(--line);
+      padding: 12px;
+      display: flex;
+      gap: 10px;
+      background: rgba(255, 255, 255, .92);
+      backdrop-filter: blur(6px);
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+
+    input[type="text"]:focus {
+      border-color: rgba(0, 86, 179, .45);
+      box-shadow: 0 0 0 4px rgba(0, 86, 179, .12);
+    }
+
+    button {
+      padding: 12px 15px;
+      background: linear-gradient(135deg, var(--brand), #2f7ae5);
+      color: white;
+      border: 1px solid rgba(0, 86, 179, .35);
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+      /* 1000 a veces recorta glifos */
+      font-size: 14px;
+      /* + grande */
+      line-height: 1.2;
+      /* evita cortes */
+      letter-spacing: .2px;
+      box-shadow: 0 10px 18px rgba(0, 86, 179, .18);
+      transition: transform .08s ease, filter .12s ease, box-shadow .12s ease;
+      white-space: nowrap;
+    }
+
+
+    button:hover {
+      filter: brightness(1.02);
+      box-shadow: 0 12px 22px rgba(0, 86, 179, .22);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0px);
+      box-shadow: 0 8px 14px rgba(0, 86, 179, .18);
+    }
+
+    button:disabled {
+      opacity: .65;
+      cursor: not-allowed;
+      filter: none;
+      transform: none;
+      box-shadow: none;
+    }
+
+
+
+
+    .panelTitle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .panelTitle h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 1000;
+      letter-spacing: .2px;
+    }
+
+    .kbBox {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(15, 23, 42, .02);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      min-height: 0;
+      /* FIX: grid/flex */
+      overflow: auto;
+      /* FIX: cada caja scrollea si hace falta */
+    }
+
+
+    .row2 {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .fileInput {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    input[type="file"] {
+      border: 1px dashed rgba(15, 23, 42, .22);
+      background: #fff;
+      padding: 10px;
+      border-radius: 12px;
+      width: 100%;
+    }
+
+    .btnGreen {
+      background: linear-gradient(135deg, var(--good), var(--good2));
+      border-color: rgba(16, 185, 129, .30);
+      box-shadow: 0 10px 18px rgba(16, 185, 129, .18);
+    }
+
+    .btnGreen:hover {
+      box-shadow: 0 12px 22px rgba(16, 185, 129, .22);
+    }
+
+    .btnGhost {
+      background: rgba(15, 23, 42, .04);
+      color: rgba(15, 23, 42, .88);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    /* FIX: diagnóstico con URLs largas no debe romper layout */
+    #diagBox {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      /* parte URLs largas */
+      word-break: break-word;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      max-height: 320px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 10px;
+      outline: none;
+      font-size: 12.5px;
+      line-height: 1.35;
+      background: #fff;
+      color: rgba(15, 23, 42, .92);
+    }
+
+    textarea:focus {
+      border-color: rgba(16, 185, 129, .35);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, .10);
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .kcard {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .kcard .klabel {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .kcard .kvalue {
+      font-size: 13px;
+      font-weight: 1000;
+    }
+
+    .hint {
+      border-left: 4px solid rgba(0, 86, 179, .35);
+      background: rgba(0, 86, 179, .06);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      color: rgba(15, 23, 42, .80);
+      line-height: 1.35;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, .03);
+      color: rgba(15, 23, 42, .85);
+      white-space: nowrap;
+    }
+
+    /* ==========================
+   FIX GRID (evita cortes/scroll raro dentro de iframe)
+   ========================== */
+    .left,
+    .right,
+    #chat-box,
+    .kbBox,
+    .wrap {
+      min-height: 0;
+    }
+
+    #chat-box {
+      overscroll-behavior: contain;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="left">
+      <div class="topbar">
+        <div class="title">
+          <h2>FAQ Bot</h2>
+          <p>Responde SOLO con el conocimiento cargado (PDF/TXT/JSON). Si no está, lo dirá.</p>
+        </div>
+        <div class="pill dot warn" id="statusPill">Conocimiento: vacío</div>
+      </div>
+
+      <div id="chat-box"></div>
+
+      <div class="inputArea">
+        <input type="text" id="user-input" placeholder="Escribe tu pregunta..." autocomplete="off" />
+        <button id="send-btn" type="button">Enviar</button>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="panelTitle">
+        <h3>Conocimiento (Cerebro)</h3>
+        <button id="btnClearKB" class="btnGhost" type="button">Vaciar</button>
+      </div>
+
+      <div class="kbBox">
+        <div class="fileInput">
+          <input id="kbFile" type="file" accept=".pdf,.txt,.md,.json" />
+          <div class="row2">
+            <button id="btnLoadKB" class="btnGreen" type="button">Cargar archivo</button>
+            <button id="btnUseTextarea" class="btnGhost" type="button">Usar texto pegado</button>
+          </div>
+        </div>
+
+        <p class="small">
+          El bot NO inventará: si no encuentra la respuesta en el texto cargado, dirá:
+          <span class="mono">No lo sé. No está en el documento.</span>
+        </p>
+
+        <div class="kpi">
+          <div class="kcard">
+            <div class="klabel">Estado</div>
+            <div class="kvalue" id="kbState">Vacío</div>
+          </div>
+          <div class="kcard">
+            <div class="klabel">Tamaño aprox.</div>
+            <div class="kvalue" id="kbSize">0 caracteres</div>
+          </div>
+        </div>
+
+        <div class="hint">
+          <b>Modelo activo (auto):</b><br />
+          <span class="mono" id="modelActive">sin inicializar</span>
+        </div>
+
+        <textarea id="kbTextarea" class="mono"
+          placeholder="(Opcional) Pega aquí el texto/FAQ manualmente y pulsa 'Usar texto pegado'..."></textarea>
+      </div>
+
+      <div class="kbBox">
+        <div class="panelTitle">
+          <h3>Opciones</h3>
+          <span class="badge" id="kbChunksBadge">Fragmentos: 0</span>
+        </div>
+        <p class="small">
+          Se seleccionan fragmentos relevantes del documento y se mandan como contexto. Si no hay fragmentos relevantes,
+          se responde que no está en el documento.
+        </p>
+        <div class="kpi">
+          <div class="kcard">
+            <div class="klabel">Fragmentos enviados</div>
+            <div class="kvalue" id="kbUsedInfo">0</div>
+          </div>
+          <div class="kcard">
+            <div class="klabel">Límite contexto</div>
+            <div class="kvalue" id="kbLimitInfo">6500 chars</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kbBox">
+        <div class="panelTitle">
+          <h3>Diagnóstico</h3>
+        </div>
+        <p class="small mono" id="diagBox">—</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF.js (versión estable que expone window.pdfjsLib) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    }
+  </script>
+
+  <script type="module">
+
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    // ⚠️ SOLO pruebas locales (API Key en frontend)
+    const API_KEY = "AIzaSyDnTcncshy9aGenFudFLmnTN65EfN55cbU";
+
+    // =============================
+    // 1) KB (Conocimiento)
+    // =============================
+    let KB_TEXT = "";
+    let KB_SOURCE = "";
+    let KB_TYPE = "";
+    let KB_CHUNKS = [];
+    let FAQ_PAIRS = [];
+    // =============================
+    // CACHE (persistencia en localStorage)
+    // =============================
+    const KB_CACHE_KEY = "FAQBOT_KB_CACHE_V1";
+    // Intentar restaurar KB desde cache al abrir la página
+    loadKBCache();
+
+    function saveKBCache() {
+      try {
+        const payload = {
+          t: Date.now(),
+          KB_TEXT,
+          KB_SOURCE,
+          KB_TYPE
+        };
+        localStorage.setItem(KB_CACHE_KEY, JSON.stringify(payload));
+      } catch (e) {
+        // sin romper nada
+        console.warn("No pude guardar cache KB:", e);
+      }
+    }
+
+    function loadKBCache() {
+      try {
+        const raw = localStorage.getItem(KB_CACHE_KEY);
+        if (!raw) return false;
+        const payload = JSON.parse(raw);
+        if (!payload || !payload.KB_TEXT) return false;
+
+        KB_TEXT = String(payload.KB_TEXT || "");
+        KB_SOURCE = String(payload.KB_SOURCE || "cache");
+        KB_TYPE = String(payload.KB_TYPE || "cache");
+
+        KB_CHUNKS = buildChunksFromText(KB_TEXT);
+        FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
+
+        updateKBUI();
+        addMsg(
+          "bot",
+          "Conocimiento restaurado desde cache.\nFragmentos indexados: " + KB_CHUNKS.length +
+          "\nFAQs detectadas (Q/A): " + FAQ_PAIRS.length
+        );
+
+        return true;
+      } catch (e) {
+        console.warn("No pude cargar cache KB:", e);
+        return false;
+      }
+    }
+
+    function clearKBCache() {
+      try { localStorage.removeItem(KB_CACHE_KEY); } catch (e) { }
+    }
+
+    const KB_CONTEXT_LIMIT = 6500;
+    const KB_MAX_CHUNKS = 8;
+
+    // =============================
+    // 1.B) FAQ PAIRS + MODO LOCAL (fallback por cuota)
+    // =============================
+    let LOCAL_ONLY = false;           // si true -> NO usa API, responde por FAQ_PAIRS
+    let LOCAL_REASON = "";            // texto de diagnóstico
+
+    // =============================
+    // 2) UI refs
+    // =============================
+    const chatBox = document.getElementById("chat-box");
+    const inputField = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+    const statusPill = document.getElementById("statusPill");
+
+    const kbFile = document.getElementById("kbFile");
+    const btnLoadKB = document.getElementById("btnLoadKB");
+    const btnUseTextarea = document.getElementById("btnUseTextarea");
+    const btnClearKB = document.getElementById("btnClearKB");
+    const kbTextarea = document.getElementById("kbTextarea");
+
+    const kbState = document.getElementById("kbState");
+    const kbSize = document.getElementById("kbSize");
+    const kbLimitInfo = document.getElementById("kbLimitInfo");
+    const kbChunksBadge = document.getElementById("kbChunksBadge");
+    const kbUsedInfo = document.getElementById("kbUsedInfo");
+    const modelActiveEl = document.getElementById("modelActive");
+    const diagBox = document.getElementById("diagBox");
+
+    kbLimitInfo.textContent = KB_CONTEXT_LIMIT + " chars";
+
+    function setDiag(text) {
+      diagBox.textContent = text || "—";
+    }
+
+    function setStatus(text, mode = "warn", busy = false) {
+      statusPill.className = "pill dot " + (mode === "good" ? "good" : mode === "bad" ? "bad" : "warn");
+      statusPill.textContent = text;
+
+      sendBtn.disabled = !!busy;
+      inputField.disabled = !!busy;
+      btnLoadKB.disabled = !!busy;
+      btnUseTextarea.disabled = !!busy;
+      btnClearKB.disabled = !!busy;
+      kbFile.disabled = !!busy;
+      kbTextarea.disabled = !!busy;
+    }
+
+    function addMsg(who, text, isError = false) {
+      const row = document.createElement("div");
+      row.className = "row " + (who === "user" ? "user" : "bot");
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + (who === "user" ? "user" : "bot") + (isError ? " error" : "");
+      bubble.textContent = text;
+
+      row.appendChild(bubble);
+      chatBox.appendChild(row);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function addThinking() {
+      const row = document.createElement("div");
+      row.className = "row bot";
+      row.id = "thinkingRow";
+      const bubble = document.createElement("div");
+      bubble.className = "bubble bot";
+      bubble.textContent = "Pensando...";
+      row.appendChild(bubble);
+      chatBox.appendChild(row);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function removeThinking() {
+      const el = document.getElementById("thinkingRow");
+      if (el) el.remove();
+    }
+
+    // =============================
+    // 3) Helpers KB
+    // =============================
+    function normalizeText(s) {
+      return (s || "")
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^\p{L}\p{N}\s]+/gu, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    // =============================
+    // 3.B) FAQ helpers (Q/A) + Local Search
+    // =============================
+    function _isLikelyQuestionLine(line) {
+      const l = (line || "").trim();
+      if (!l) return false;
+
+      const low = normalizeText(l);
+
+      if (l.startsWith("P:") || l.startsWith("p:")) return true;
+      if (low.startsWith("pregunta ")) return true;
+      if (low.startsWith("pregunta:")) return true;
+      if (l.startsWith("¿") && l.endsWith("?")) return true;
+      if (l.endsWith("?") && l.length >= 6) return true;
+
+      return false;
+    }
+
+    function _cleanQuestionLine(line) {
+      let l = (line || "").trim();
+      if (!l) return "";
+      l = l.replace(/^(P:|p:)\s*/g, "");
+      l = l.replace(/^(Pregunta:|pregunta:)\s*/g, "");
+      return l.trim();
+    }
+
+    function _cleanAnswerLine(line) {
+      let l = (line || "").trim();
+      if (!l) return "";
+      l = l.replace(/^(R:|r:)\s*/g, "");
+      l = l.replace(/^(Respuesta:|respuesta:)\s*/g, "");
+      return l.trim();
+    }
+
+    function parseFAQPairsFromText(text) {
+      const raw = String(text || "");
+      if (!raw.trim()) return [];
+
+      // 1) Normalizamos formato SIN destruir saltos
+      //    + FIX CLAVE: si PDF.js pegó "?... SiguientePregunta?" en la misma línea,
+      //      insertamos salto tras "?" cuando venga otra frase/pregunta.
+      let cleaned = raw
+        .replace(/\r/g, "")
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+
+      // FIX: separar cosas tipo "... ? Un cliente..." o "... ? ¿Un cliente..."
+      // (muy típico en extracción PDF)
+      cleaned = cleaned.replace(/\?\s+(?=[A-ZÁÉÍÓÚÑ¿])/g, "?\n");
+
+      // 2) Parser por líneas (principal)
+      //    (con esta separación ya detecta bien y NO arrastra la siguiente pregunta)
+      const lines = cleaned
+        .split("\n")
+        .map(x => String(x || "").replace(/\s+/g, " ").trim())
+        .filter(x => x !== "");
+
+      const pairsLine = [];
+      let currentQ = "";
+      let currentA = [];
+
+      function _isLikelyQuestionLine_local(line) {
+        const l = (line || "").trim();
+        if (!l) return false;
+
+        const low = normalizeText(l);
+
+        if (l.startsWith("P:") || l.startsWith("p:")) return true;
+        if (low.startsWith("pregunta:")) return true;
+        if (low.startsWith("pregunta ")) return true;
+
+        // con o sin "¿"
+        if (l.endsWith("?") && l.length >= 6) return true;
+
+        return false;
+      }
+
+      function _cleanQuestionLine_local(line) {
+        let l = (line || "").trim();
+        l = l.replace(/^(P:|p:)\s*/g, "");
+        l = l.replace(/^(Pregunta:|pregunta:)\s*/g, "");
+        return l.trim();
+      }
+
+      function _cleanAnswerLine_local(line) {
+        let l = (line || "").trim();
+        l = l.replace(/^(R:|r:)\s*/g, "");
+        l = l.replace(/^(Respuesta:|respuesta:)\s*/g, "");
+        return l.trim();
+      }
+
+      // Detecta si dentro de un texto empieza "otra pregunta" (aunque falte ¿)
+      // Heurística: un segmento que termina en "?" y parece pregunta.
+      function _cutIfContainsNextQuestion(answerRaw) {
+        let a = String(answerRaw || "").trim();
+        if (!a) return a;
+
+        // Si aparece un "¿", normalmente es inicio de otra pregunta -> cortamos ahí
+        const idxInv = a.indexOf("¿");
+        if (idxInv > 0) a = a.slice(0, idxInv).trim();
+
+        // Si no hay "¿", buscamos patrón " ? " ya separado o interno:
+        // Por seguridad, cortamos si detectamos una frase con "?" que parece pregunta.
+        // Ej: ".... servicio. Un cliente que traspasamos debe...?"
+        // Buscamos el PRIMER punto donde empiece algo que termine en "?" (otra pregunta).
+        const m = a.match(/(?:^|[.!]\s+)([A-ZÁÉÍÓÚÑ][^?]{3,300}\?)/);
+        if (m && m.index != null) {
+          const cutPos = m.index;
+          if (cutPos > 0) a = a.slice(0, cutPos).trim();
+        }
+
+        return a;
+      }
+
+      function flushLine() {
+        const q = (currentQ || "").trim();
+        let a = (currentA || []).join("\n").trim();
+
+        // FIX: evitar que la respuesta contenga la siguiente pregunta
+        a = _cutIfContainsNextQuestion(a);
+
+        if (q && a) {
+          pairsLine.push({
+            q,
+            a,
+            qNorm: normalizeText(q),
+            aNorm: normalizeText(a)
+          });
+        }
+        currentQ = "";
+        currentA = [];
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const ln = normalizeText(line);
+
+        // Saltos típicos de encabezados
+        if (ln === "preguntas y respuestas frecuentes") continue;
+
+        if (_isLikelyQuestionLine_local(line)) {
+          flushLine();
+          currentQ = _cleanQuestionLine_local(line);
+          continue;
+        }
+
+        if (!currentQ) continue;
+
+        const aLine = _cleanAnswerLine_local(line);
+        if (aLine) currentA.push(aLine);
+      }
+      flushLine();
+
+      // 3) Segundo intento (backup) por bloque continuo:
+      //    Lo dejamos, pero con corte extra para que jamás arrastre preguntas.
+      const pairsBlock = [];
+
+      const continuous = cleaned
+        .replace(/\n{2,}/g, " \n\n ")
+        .replace(/\n/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      // Preguntas con "¿...?" (si el PDF las mantiene)
+      const reInv = /¿\s*([^?]{3,300}?)\s*\?\s*([\s\S]*?)(?=(¿\s*[^?]{3,300}?\s*\?)|$)/g;
+
+      let m2;
+      while ((m2 = reInv.exec(continuous)) !== null) {
+        const qRaw = ("¿" + m2[1].trim() + "?").trim();
+        let aRaw = (m2[2] || "").trim();
+
+        aRaw = aRaw
+          .replace(/\s+(P:|p:|Pregunta:|pregunta:)\s+[\s\S]*$/g, "")
+          .trim();
+
+        // FIX: cortar si mete otra pregunta dentro (con o sin "¿")
+        aRaw = _cutIfContainsNextQuestion(aRaw);
+
+        if (qRaw.length >= 6 && aRaw.length >= 2) {
+          pairsBlock.push({
+            q: qRaw,
+            a: aRaw,
+            qNorm: normalizeText(qRaw),
+            aNorm: normalizeText(aRaw)
+          });
+        }
+      }
+
+      // 4) Mezclar, deduplicar por qNorm
+      const all = [...pairsLine, ...pairsBlock];
+
+      const seen = new Set();
+      const out = [];
+
+      for (const p of all) {
+        const key = (p.qNorm || "").slice(0, 260);
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        out.push(p);
+      }
+
+      return out;
+    }
+
+
+    // =============================
+    // 3.B) Local Search (MEJORADO)
+    // - Sinónimos controlados (no IA)
+    // - Stopwords ES
+    // - Tokenización más flexible
+    // - Scoring: exact/includes + jaccard(expandido) + bigram overlap + match en respuesta
+    // =============================
+
+    const LOCAL_STOPWORDS = new Set([
+      "a", "al", "algo", "algun", "alguna", "algunas", "alguno", "algunos",
+      "ante", "antes", "asi", "aun", "aunque",
+      "bajo", "bien", "cada", "casi", "como", "con", "contra", "cual", "cuales", "cuando", "cuanto",
+      "de", "del", "desde", "donde", "dos", "el", "ella", "ellas", "ello", "ellos", "en", "entre", "era", "es", "esa", "esas", "ese", "eso", "esos", "esta", "estan", "estar", "este", "esto", "estos", "etc",
+      "fue", "ha", "haber", "hay", "hace", "hacia", "han", "hasta",
+      "igual", "incluso", "la", "las", "le", "les", "lo", "los",
+      "mas", "me", "mi", "mis", "mismo", "mismos", "muy",
+      "no", "nos", "nuestra", "nuestro", "nuestros", "nuestras",
+      "o", "os", "otra", "otro", "otros", "otras",
+      "para", "pero", "poco", "por", "porque", "puede", "pueden", "puedo", "pues",
+      "que", "qué", "quien", "quienes", "se", "sea", "segun", "si", "sí", "sin", "sobre", "son", "su", "sus",
+      "tambien", "tampoco", "tan", "te", "tengo", "tiene", "tienen", "todo", "todos", "toda", "todas", "tras", "tu", "tus",
+      "un", "una", "unas", "uno", "unos", "y", "ya"
+    ]);
+
+    // Sinónimos CONTROLADOS (solo para tu dominio FAQ)
+    // Puedes ampliar esta tabla con tus términos típicos.
+    const LOCAL_SYNONYMS = {
+      // cartas
+      "temporal": ["provisional"],
+      "provisional": ["temporal"],
+      "carta": ["documento", "comunicacion"],
+      "documento": ["carta"],
+
+      // póliza / estado
+      "poliza": ["seguro", "contrato"],
+      "seguro": ["poliza", "contrato"],
+      "contrato": ["poliza", "seguro"],
+      "activa": ["vigente", "en_vigor"],
+      "vigente": ["activa", "en_vigor"],
+      "en_vigor": ["activa", "vigente"],
+
+      // enviar
+      "enviar": ["mandar", "remitir"],
+      "mandar": ["enviar", "remitir"],
+      "remitir": ["enviar", "mandar"],
+
+      // cliente
+      "cliente": ["tomador", "asegurado"],
+      "tomador": ["cliente", "asegurado"],
+      "asegurado": ["cliente", "tomador"]
+    };
+
+    function _normalizeToken(t) {
+      let x = String(t || "").trim();
+      if (!x) return "";
+      // normalización suave: quitar plural simple y variantes comunes
+      // (sin lematizador pesado)
+      if (x.length >= 5 && x.endsWith("s")) x = x.slice(0, -1);
+      if (x.length >= 6 && x.endsWith("es")) x = x.slice(0, -2);
+      return x;
+    }
+
+    function _tokenizeNorm(norm) {
+      return String(norm || "")
+        .split(" ")
+        .map(t => _normalizeToken(t))
+        .filter(t => t && t.length >= 2 && !LOCAL_STOPWORDS.has(t));
+    }
+
+    function _expandTokens(tokens) {
+      const out = new Set();
+      for (const t of tokens) {
+        out.add(t);
+        const syn = LOCAL_SYNONYMS[t];
+        if (syn && Array.isArray(syn)) {
+          for (const s of syn) {
+            out.add(_normalizeToken(s));
+          }
+        }
+      }
+      return Array.from(out);
+    }
+
+    function _jaccardScore(tokensA, tokensB) {
+      if (!tokensA.length || !tokensB.length) return 0;
+      const setA = new Set(tokensA);
+      const setB = new Set(tokensB);
+      let inter = 0;
+      for (const t of setA) {
+        if (setB.has(t)) inter++;
+      }
+      const union = setA.size + setB.size - inter;
+      if (union <= 0) return 0;
+      return inter / union;
+    }
+
+    function _bigrams(tokens) {
+      const out = [];
+      for (let i = 0; i < tokens.length - 1; i++) {
+        out.push(tokens[i] + "_" + tokens[i + 1]);
+      }
+      return out;
+    }
+
+    function _overlapScore(listA, listB) {
+      if (!listA.length || !listB.length) return 0;
+      const setB = new Set(listB);
+      let hit = 0;
+      const setA = new Set(listA);
+      for (const a of setA) {
+        if (setB.has(a)) hit++;
+      }
+      return hit / Math.max(1, setA.size);
+    }
+
+    function localFindBestAnswer(question) {
+      if (!FAQ_PAIRS || FAQ_PAIRS.length === 0) return "";
+
+      const qNorm = normalizeText(question);
+      if (!qNorm) return "";
+
+      // tokens y expansión de sinónimos
+      const qTokensBase = _tokenizeNorm(qNorm);
+      const qTokens = _expandTokens(qTokensBase);
+
+      // Si el usuario pregunta ultra-corto tipo "carta temporal", aún debe funcionar
+      const qBigrams = _bigrams(qTokensBase);
+
+      let best = null;
+      let bestScore = 0;
+
+      for (const p of FAQ_PAIRS) {
+        const pq = p.qNorm || "";
+        if (!pq) continue;
+
+        let score = 0;
+
+        // señales fuertes de literalidad
+        if (pq === qNorm) score += 1.40;
+        if (pq.includes(qNorm) && qNorm.length >= 8) score += 1.00;
+        if (qNorm.includes(pq) && pq.length >= 8) score += 0.70;
+
+        // tokens pregunta FAQ
+        const pTokensBase = _tokenizeNorm(pq);
+        const pTokens = _expandTokens(pTokensBase);
+
+        // jaccard tokens (con sinónimos)
+        score += _jaccardScore(qTokens, pTokens) * 1.25;
+
+        // bigram overlap (cuando hay 2+ tokens)
+        const pBigrams = _bigrams(pTokensBase);
+        score += _overlapScore(qBigrams, pBigrams) * 0.60;
+
+        // BONUS: si también aparecen tokens en la RESPUESTA (muy útil cuando falta parte de la pregunta)
+        const pa = p.aNorm || "";
+        if (pa) {
+          const aTokensBase = _tokenizeNorm(pa);
+          const aTokens = _expandTokens(aTokensBase);
+          score += _jaccardScore(qTokens, aTokens) * 0.55;
+        }
+
+        // BONUS: si coincide 2+ tokens “núcleo” (carta/cliente etc.)
+        let coreHits = 0;
+        const core = ["carta", "cliente", "poliza", "activa", "vigente", "provisional", "temporal", "enviar", "mandar"];
+        const pSet = new Set(pTokens);
+        for (const c of core) {
+          if (qTokens.includes(c) && pSet.has(c)) coreHits++;
+        }
+        if (coreHits >= 2) score += 0.22;
+        if (coreHits >= 3) score += 0.18;
+
+        if (score > bestScore) {
+          bestScore = score;
+          best = p;
+        }
+      }
+
+      if (!best) return "";
+
+      // Umbrales:
+      // - si es muy fuerte (literal/includes) => acepta
+      // - si no, exige score suficiente o “coreHits” (ya sumó) y mínimo tokens
+      const bestQ = best.qNorm || "";
+      const isStrong =
+        (bestQ === qNorm) ||
+        (bestQ.includes(qNorm) && qNorm.length >= 8) ||
+        (qNorm.includes(bestQ) && bestQ.length >= 8);
+
+      // ✅ Nuevo: umbral más inteligente para preguntas cortas/parafraseadas
+      // - si hay pocos tokens, dejamos pasar con score menor
+      const tokenCount = _tokenizeNorm(qNorm).length;
+      const minScore = (tokenCount <= 3) ? 0.20 : 0.30;
+
+      if (!isStrong && bestScore < minScore) return "";
+
+      return (best.a || "").trim();
+    }
+
+
+    function isQuotaOrRateLimitError(err) {
+      const msg = (err && err.message) ? String(err.message) : String(err || "");
+      const m = msg.toLowerCase();
+      if (m.includes("429")) return true;
+      if (m.includes("resource_exhausted")) return true;
+      if (m.includes("quota")) return true;
+      if (m.includes("rate limit")) return true;
+      if (m.includes("too many requests")) return true;
+      return false;
+    }
+
+    function enableLocalMode(reason) {
+      LOCAL_ONLY = true;
+      LOCAL_REASON = reason || "Exceso de cuota.";
+      modelActiveEl.textContent = "MODO LOCAL";
+      setDiag("MODO LOCAL ACTIVO: " + LOCAL_REASON);
+      setStatus("Modo local (sin API)", "warn", false);
+    }
+
+    function buildChunksFromText(text) {
+      const raw = (text || "").split(/\n{2,}|(?:\r?\n){2,}/g).map(x => x.trim()).filter(Boolean);
+      let parts = raw.length ? raw : (text || "").split(/\r?\n/g).map(x => x.trim()).filter(Boolean);
+
+      const merged = [];
+      let buf = "";
+      for (const p of parts) {
+        const clean = p.replace(/\s+/g, " ").trim();
+        if (!clean) continue;
+
+        if ((buf.length + clean.length) < 700) {
+          buf = buf ? (buf + " " + clean) : clean;
+        } else {
+          if (buf) merged.push(buf);
+          buf = clean;
+        }
+      }
+      if (buf) merged.push(buf);
+
+      const seen = new Set();
+      const out = [];
+      for (const m of merged) {
+        const key = normalizeText(m).slice(0, 220);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push(m);
+      }
+      return out;
+    }
+
+    function scoreChunk(queryNorm, chunk) {
+      const cNorm = normalizeText(chunk);
+      if (!cNorm) return 0;
+
+      const qTerms = queryNorm.split(" ").filter(t => t.length >= 3);
+      if (qTerms.length === 0) return 0;
+
+      let score = 0;
+
+      if (cNorm.includes(queryNorm) && queryNorm.length >= 8) score += 25;
+
+      for (const t of qTerms) {
+        if (cNorm.includes(t)) score += 3;
+      }
+
+      const distinct = new Set();
+      for (const t of qTerms) {
+        if (cNorm.includes(t)) distinct.add(t);
+      }
+      score += distinct.size * 2;
+
+      return score;
+    }
+
+    function pickRelevantContext(question) {
+      if (!KB_TEXT || KB_CHUNKS.length === 0) return { context: "", used: [] };
+
+      const qNorm = normalizeText(question);
+      const scored = KB_CHUNKS
+        .map(ch => ({ ch, s: scoreChunk(qNorm, ch) }))
+        .filter(x => x.s > 0)
+        .sort((a, b) => b.s - a.s)
+        .slice(0, KB_MAX_CHUNKS);
+
+      if (scored.length === 0) return { context: "", used: [] };
+
+      let ctx = "";
+      const used = [];
+
+      for (const it of scored) {
+        const block = it.ch.trim();
+        const candidate = (ctx ? (ctx + "\n\n---\n\n" + block) : block);
+        if (candidate.length > KB_CONTEXT_LIMIT) break;
+        ctx = candidate;
+        used.push(block);
+      }
+
+      return { context: ctx, used };
+    }
+
+    function updateKBUI() {
+      const has = !!KB_TEXT;
+      kbState.textContent = has ? ("Cargado: " + (KB_SOURCE || "texto")) : "Vacío";
+      kbSize.textContent = (KB_TEXT ? KB_TEXT.length : 0) + " caracteres";
+      kbChunksBadge.textContent = "Fragmentos: " + String(KB_CHUNKS.length || 0);
+
+      // Si está en LOCAL, mostramos el estado local; si no, estado normal de KB
+      if (LOCAL_ONLY) {
+        setStatus("Modo local (sin API)", "warn", false);
+        modelActiveEl.textContent = "MODO LOCAL";
+      } else {
+        setStatus(has ? "Conocimiento: cargado" : "Conocimiento: vacío", has ? "good" : "warn", false);
+      }
+    }
+
+    // =============================
+    // ACTUALIZADO: clearKB limpia FAQ_PAIRS y desactiva LOCAL_ONLY
+    // =============================
+    function clearKB() {
+      KB_TEXT = "";
+      KB_SOURCE = "";
+      KB_TYPE = "";
+      KB_CHUNKS = [];
+      FAQ_PAIRS = [];
+      kbTextarea.value = "";
+      kbUsedInfo.textContent = "0";
+
+      LOCAL_ONLY = false;
+      LOCAL_REASON = "";
+
+      modelActiveEl.textContent = ACTIVE_MODEL_ID ? ACTIVE_MODEL_ID : (model ? "inicializado" : "sin inicializar");
+
+      updateKBUI();
+      addMsg("bot", "He vaciado el conocimiento. Carga un PDF/TXT/JSON para empezar.");
+      setDiag("KB vacía. FAQ_PAIRS=0. LOCAL_ONLY=false");
+    }
+
+    // =============================
+    // 4) Loaders
+    // =============================
+    async function readFileAsText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error || new Error("Error leyendo archivo"));
+        reader.readAsText(file, "utf-8");
+      });
+    }
+    async function loadPDF(file) {
+      const pdfjs = window.pdfjsLib;
+      if (!pdfjs || typeof pdfjs.getDocument !== "function") {
+        throw new Error("PDF.js no se ha cargado (pdfjsLib undefined). Revisa el CDN de pdf.js.");
+      }
+
+      if (pdfjs.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerSrc) {
+        pdfjs.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      }
+
+      let ab;
+      if (file instanceof ArrayBuffer) {
+        ab = file;
+      } else {
+        ab = await file.arrayBuffer();
+      }
+
+      const pdf = await pdfjs.getDocument({ data: ab }).promise;
+
+      let fullText = "";
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+
+        // Importante: disableCombineTextItems=false para que pdf.js marque hasEOL en items
+        const content = await page.getTextContent({ disableCombineTextItems: false });
+
+        // Reconstrucción: respeta hasEOL para no “aplanar” el PDF
+        let pageText = "";
+        for (const it of (content.items || [])) {
+          const s = (it && it.str) ? String(it.str) : "";
+          const clean = s.replace(/\s+/g, " ").trim();
+          if (clean) pageText += clean + " ";
+          if (it && it.hasEOL) pageText += "\n";
+        }
+
+        // Limpieza suave: colapsa espacios pero mantiene saltos
+        pageText = pageText
+          .replace(/[ \t]+\n/g, "\n")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+
+        if (pageText) fullText += pageText + "\n\n";
+      }
+
+      return fullText.trim();
+    }
+
+    function loadJSONToKB(jsonText) {
+      const obj = JSON.parse(jsonText);
+
+      // Array [{q,a}] o variantes
+      if (Array.isArray(obj)) {
+        const lines = [];
+        for (const item of obj) {
+          const q = (item && (item.q || item.question || item.p || item.pregunta)) ? String(item.q || item.question || item.p || item.pregunta) : "";
+          const a = (item && (item.a || item.answer || item.r || item.respuesta)) ? String(item.a || item.answer || item.r || item.respuesta) : "";
+          if (q && a) {
+            lines.push("P: " + q);
+            lines.push("R: " + a);
+            lines.push("");
+          }
+        }
+        return lines.join("\n").trim();
+      }
+
+      // Objeto {"pregunta":"respuesta"}
+      if (obj && typeof obj === "object") {
+        const lines = [];
+        for (const k of Object.keys(obj)) {
+          const v = obj[k];
+          if (v === null || v === undefined) continue;
+          lines.push("P: " + String(k));
+          lines.push("R: " + String(v));
+          lines.push("");
+        }
+        return lines.join("\n").trim();
+      }
+
+      return "";
+    }
+
+    // =============================
+    // ACTUALIZADO: loadKBFromFile genera FAQ_PAIRS y respeta LOCAL_ONLY
+    // =============================
+    async function loadKBFromFile() {
+      const file = kbFile.files && kbFile.files[0] ? kbFile.files[0] : null;
+      if (!file) {
+        addMsg("bot", "Selecciona un archivo (PDF/TXT/JSON) antes de cargar.", true);
+        return;
+      }
+
+      setStatus("Cargando conocimiento…", "warn", true);
+      setDiag("Cargando KB…");
+
+      try {
+        const name = file.name || "archivo";
+        const ext = (name.split(".").pop() || "").toLowerCase();
+
+        let text = "";
+
+        if (ext === "pdf") {
+          KB_TYPE = "pdf";
+          text = await loadPDF(file);
+        } else if (ext === "json") {
+          KB_TYPE = "json";
+          const raw = await readFileAsText(file);
+          text = loadJSONToKB(raw);
+          if (!text) throw new Error("JSON no reconocido o vacío (usa [{q,a}] o {pregunta:respuesta}).");
+        } else {
+          KB_TYPE = "text";
+          text = await readFileAsText(file);
+        }
+
+        KB_TEXT = text || "";
+        KB_SOURCE = name;
+
+        KB_CHUNKS = buildChunksFromText(KB_TEXT);
+
+        // NUEVO: construir FAQ_PAIRS para modo local
+        FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
+
+        kbUsedInfo.textContent = "0";
+        updateKBUI();
+        saveKBCache();
+
+
+        addMsg(
+          "bot",
+          "Conocimiento cargado: " + name +
+          "\nFragmentos indexados: " + KB_CHUNKS.length +
+          "\nFAQs detectadas (Q/A): " + FAQ_PAIRS.length
+        );
+
+        setDiag("OK: KB cargado (" + KB_CHUNKS.length + " fragmentos). FAQ_PAIRS=" + FAQ_PAIRS.length + ". LOCAL_ONLY=" + String(LOCAL_ONLY));
+      } catch (err) {
+        console.error(err);
+        addMsg("bot", "No pude cargar el archivo: " + (err && err.message ? err.message : String(err)), true);
+        setStatus("Conocimiento: error", "bad", false);
+        setDiag("ERROR KB: " + (err && err.message ? err.message : String(err)));
+      } finally {
+        if (LOCAL_ONLY) {
+          setStatus("Modo local (sin API)", "warn", false);
+        } else {
+          setStatus(KB_TEXT ? "Conocimiento: cargado" : "Conocimiento: vacío", KB_TEXT ? "good" : "warn", false);
+        }
+      }
+    }
+
+    // =============================
+    // AUTO-CARGA DESDE CARPETA (faq/faq.pdf)
+    // =============================
+    async function autoLoadDefaultKB() {
+      const DEFAULT_PDF_PATH = "faq/faq.pdf";
+
+      try {
+        console.log("Intentando auto-cargar:", DEFAULT_PDF_PATH);
+        const resp = await fetch(DEFAULT_PDF_PATH);
+        if (!resp.ok) {
+          throw new Error("No se pudo encontrar el archivo " + DEFAULT_PDF_PATH + " para la auto-carga.");
+        }
+
+        const ab = await resp.arrayBuffer();
+
+        setStatus("Cargando FAQ automática…", "warn", true);
+        setDiag("Auto-cargando " + DEFAULT_PDF_PATH);
+
+        const text = await loadPDF(ab);
+
+        KB_TEXT = text || "";
+        KB_SOURCE = "faq.pdf (Auto)";
+        KB_TYPE = "pdf";
+        KB_CHUNKS = buildChunksFromText(KB_TEXT);
+        FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
+
+        updateKBUI();
+        saveKBCache();
+
+        addMsg("bot", "Conocimiento FAQ cargado automáticamente.\n¿En qué puedo ayudarte?");
+        setDiag("Auto-KB OK: " + KB_CHUNKS.length + " fragmentos.");
+      } catch (err) {
+        console.warn("Auto-carga fallida:", err);
+        setDiag("Aviso: No se pudo auto-cargar " + DEFAULT_PDF_PATH + ". Se recomienda usar un servidor local.");
+        // NO removemos auto-kb para no mostrar los botones, el usuario pidió que no salgan
+        // document.body.classList.remove("auto-kb");
+      } finally {
+        if (LOCAL_ONLY) {
+          setStatus("Modo local (sin API)", "warn", false);
+        } else {
+          setStatus(KB_TEXT ? "Conocimiento: cargado" : "Conocimiento: vacío", KB_TEXT ? "good" : "warn", false);
+        }
+      }
+    }
+
+    // =============================
+    // ACTUALIZADO: loadKBFromTextarea genera FAQ_PAIRS
+    // =============================
+    function loadKBFromTextarea() {
+      const t = (kbTextarea.value || "").trim();
+      if (!t) {
+        addMsg("bot", "Pega texto en el cuadro antes de usarlo.", true);
+        return;
+      }
+      KB_TEXT = t;
+      KB_SOURCE = "texto pegado";
+      KB_TYPE = "textarea";
+      KB_CHUNKS = buildChunksFromText(KB_TEXT);
+
+      // NUEVO: construir FAQ_PAIRS para modo local
+      FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
+
+      kbUsedInfo.textContent = "0";
+      updateKBUI();
+      saveKBCache();
+
+      addMsg(
+        "bot",
+        "Conocimiento cargado desde texto pegado.\nFragmentos indexados: " + KB_CHUNKS.length +
+        "\nFAQs detectadas (Q/A): " + FAQ_PAIRS.length
+      );
+      setDiag("OK: KB desde textarea (" + KB_CHUNKS.length + " fragmentos). FAQ_PAIRS=" + FAQ_PAIRS.length + ". LOCAL_ONLY=" + String(LOCAL_ONLY));
+    }
+
+    // =============================
+    // 5) Modelo Gemini: AUTO-DETECCIÓN
+    // =============================
+
+    // Instrucción estricta (NO SALIR DEL DOCUMENTO)
+    const STRICT_SYSTEM = `
+Eres un asistente de FAQ. REGLAS OBLIGATORIAS:
+1) Responde SOLO con información que exista explícitamente en el CONTEXTO proporcionado.
+2) Si la respuesta no está en el CONTEXTO, responde exactamente: "No lo sé. No está en el documento."
+3) No inventes, no adivines, no uses conocimiento general fuera del CONTEXTO.
+4) Si hay ambigüedad, pide una aclaración muy concreta (1 pregunta) PERO sin salir del documento.
+5) Responde en español y de forma clara.`;
+
+    const MODEL_CANDIDATES = [
+      "gemini-1.5-flash",
+      "gemini-1.5-flash-latest",
+      "gemini-2.0-flash-exp",
+      "gemini-1.5-pro",
+      "gemini-1.5-pro-latest"
+    ];
+
+    const genAI = new GoogleGenerativeAI(API_KEY);
+
+    let ACTIVE_MODEL_ID = "";
+    let model = null;
+    let chat = null;
+
+    async function tryModelId(modelId) {
+      const m = genAI.getGenerativeModel({
+        model: modelId,
+        systemInstruction: STRICT_SYSTEM
+      });
+
+      const res = await m.generateContent("ping");
+      const txt = (res && res.response && typeof res.response.text === "function") ? res.response.text() : "";
+      if (!txt) return m;
+      return m;
+    }
+
+    async function initModelAuto() {
+      setDiag("Inicializando modelo… probando candidatos: " + MODEL_CANDIDATES.join(", "));
+      modelActiveEl.textContent = "probando…";
+      setStatus("Inicializando modelo…", "warn", true);
+
+      let lastErr = null;
+
+      for (const id of MODEL_CANDIDATES) {
+        try {
+          const m = await tryModelId(id);
+          model = m;
+          ACTIVE_MODEL_ID = id;
+          chat = model.startChat();
+          modelActiveEl.textContent = ACTIVE_MODEL_ID;
+          setDiag("OK: modelo activo = " + ACTIVE_MODEL_ID);
+          setStatus(KB_TEXT ? "Conocimiento: cargado" : "Conocimiento: vacío", KB_TEXT ? "good" : "warn", false);
+          return;
+        } catch (e) {
+          lastErr = e;
+          console.warn("Model failed:", id, e);
+        }
+      }
+
+      model = null;
+      chat = null;
+      ACTIVE_MODEL_ID = "";
+      modelActiveEl.textContent = "NO DISPONIBLE";
+
+      const msg = (lastErr && lastErr.message) ? lastErr.message : String(lastErr || "error");
+      setDiag("ERROR: " + msg);
+
+      // Asegurar que el UI quede habilitado aunque falle el modelo
+      setStatus("Modelo: error", "bad", false);
+    }
+
+    // =============================
+    // 6) Envío (RAG) + Fallback LOCAL por cuota
+    // =============================
+    async function sendMessage() {
+      const question = inputField.value.trim();
+      if (!question) return;
+
+      addMsg("user", question);
+      inputField.value = "";
+
+      if (!KB_TEXT) {
+        addMsg("bot", "No lo sé. No está en el documento.");
+        return;
+      }
+
+      // MODO LOCAL: responde SOLO por FAQ_PAIRS (sin API)
+      if (LOCAL_ONLY) {
+        const ans = localFindBestAnswer(question);
+        if (!ans) {
+          addMsg("bot", "No lo sé. No está en el documento.");
+        } else {
+          // SOLO la respuesta (sin extras)
+          addMsg("bot", ans);
+        }
+        return;
+      }
+
+      // Si no hay modelo, degradamos a local (no es cuota, pero deja trabajar)
+      if (!model || !chat) {
+        setDiag("Modelo no inicializado. Degradando a modo local.");
+        enableLocalMode("Modelo no disponible (fallback local).");
+
+        const ans = localFindBestAnswer(question);
+        if (!ans) {
+          addMsg("bot", "No lo sé. No está en el documento.");
+        } else {
+          addMsg("bot", ans);
+        }
+        return;
+      }
+
+      setStatus("Consultando…", "warn", true);
+      addThinking();
+
+      try {
+        const { context, used } = pickRelevantContext(question);
+        kbUsedInfo.textContent = String(used.length || 0);
+
+        if (!context) {
+          removeThinking();
+          addMsg("bot", "No lo sé. No está en el documento.");
+          setStatus("Conocimiento: cargado", "good", false);
+          return;
+        }
+
+        const prompt = `
+CONTEXTO (extraído de: ${KB_SOURCE}):
+${context}
+
+PREGUNTA:
+${question}
+
+RECUERDA: si la respuesta no está explícitamente en el CONTEXTO, responde exactamente:
+"No lo sé. No está en el documento."
+`;
+
+        const result = await chat.sendMessage(prompt);
+        removeThinking();
+
+        const text = result.response.text();
+        const lower = (text || "").toLowerCase();
+
+        if (!text || lower.includes("no lo sé. no está en el documento.") || lower.includes("no lo se. no esta en el documento.")) {
+          addMsg("bot", "No lo sé. No está en el documento.");
+        } else {
+          addMsg("bot", text);
+        }
+
+        setStatus("Conocimiento: cargado", "good", false);
+      } catch (error) {
+        removeThinking();
+        console.error(error);
+
+        // NUEVO: si es CUOTA / RATE LIMIT -> activar MODO LOCAL y seguir trabajando
+        if (isQuotaOrRateLimitError(error)) {
+          addMsg("bot", "Exceso de cuota en la API. Activo modo local para seguir funcionando.", true);
+          enableLocalMode("Exceso de cuota / rate limit detectado.");
+
+          const ans = localFindBestAnswer(question);
+          if (!ans) {
+            addMsg("bot", "No lo sé. No está en el documento.");
+          } else {
+            addMsg("bot", ans);
+          }
+          return;
+        }
+
+        const msg = (error && error.message) ? error.message : String(error);
+        addMsg("bot", "Error de Gemini. Revisa API Key / modelo.\n\n" + msg, true);
+
+        setStatus("Conocimiento: cargado", KB_TEXT ? "good" : "warn", false);
+        setDiag("ERROR Gemini: " + msg);
+      }
+    }
+
+    // =============================
+    // 7) Eventos
+    // =============================
+    btnLoadKB.addEventListener("click", loadKBFromFile);
+    btnUseTextarea.addEventListener("click", loadKBFromTextarea);
+    btnClearKB.addEventListener("click", () => {
+      clearKBCache();
+      clearKB();
+    });
+
+
+    sendBtn.addEventListener("click", sendMessage);
+    inputField.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    // =============================
+    // 8) INIT
+    // =============================
+    addMsg("bot", "Hola 👋\n1) Carga un PDF/TXT/JSON en “Conocimiento”.\n2) Pregunta lo que quieras.\nResponderé SOLO con lo que exista en el documento.");
+
+    // Detección de iframe para ocultar header
+    (function detectIframe() {
+      if (window.self !== window.top) {
+        document.body.classList.add('is-iframe');
+      }
+    })();
+
+    // Navegación
+    (function initNav() {
+      // Detectar rol: primero URL param, luego localStorage (fallback cuando el iframe recarga)
+      const urlParams = new URLSearchParams(window.location.search);
+      let role = urlParams.get('role');
+      if (!role) {
+        // fallback a localStorage del padre (compartido si mismo origen)
+        try { role = localStorage.getItem('adeslas_user_role') || 'user'; } catch (e) { role = 'user'; }
+      }
+      document.body.classList.add('role-' + role);
+
+      const btnOpenCotizador = document.getElementById("btnOpenCotizador");
+      const btnOpenPatologias = document.getElementById("btnOpenPatologias");
+      const btnOpenIMC = document.getElementById("btnOpenIMC");
+      const btnOpenAdmin = document.getElementById("btnOpenAdmin");
+
+      function openToolPage(kind) {
+        let url = "";
+        if (kind === "imc") {
+          url = "calculadoraIMC.html";
+        } else if (kind === "patologias") {
+          url = "buscador patologias/buscador_patologias_base_interna_v2.html";
+        } else if (kind === "admin") {
+          url = "buscador patologias/buscador_patologias_base_interna_v2.html#admin";
+        } else if (kind === "cotizador") {
+          url = "cotizador_comercial_cp_edades_OK_reglas_sin_slider_DUPLICADOS_FIX.html";
+        } else {
+          return;
+        }
+        location.href = url;
+      }
+
+      if (btnOpenCotizador) btnOpenCotizador.addEventListener("click", (e) => { e.preventDefault(); openToolPage("cotizador"); });
+      if (btnOpenPatologias) btnOpenPatologias.addEventListener("click", (e) => { e.preventDefault(); openToolPage("patologias"); });
+      if (btnOpenIMC) btnOpenIMC.addEventListener("click", (e) => { e.preventDefault(); openToolPage("imc"); });
+      if (btnOpenAdmin) btnOpenAdmin.addEventListener("click", (e) => { e.preventDefault(); openToolPage("admin"); });
+    })();
+
+    // Generamos fragmentos para el texto embebido si existe
+    if (KB_TEXT) {
+      KB_CHUNKS = buildChunksFromText(KB_TEXT);
+      FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
+    }
+
+    updateKBUI();
+    initModelAuto();
+
+    // Solo auto-carga desde archivo si NO hay KB ya cargada (evita sobreescribir cache)
+    if (!KB_TEXT) {
+      autoLoadDefaultKB();
+    }
+  </script>
+</body>
+
+</html>

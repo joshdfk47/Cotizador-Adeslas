@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cotizador (CP + Edades) — Base y Dental</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: rgba(15, 23, 42, 0.10);
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow2: 0 6px 18px rgba(15, 23, 42, 0.07);
+      --radius: 16px;
+      --radius2: 12px;
+      --focus: rgba(37, 99, 235, 0.20);
+      --accent: #2563eb;
+      --good: #16a34a;
+      --bad: #ef4444;
+      --warn: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(37,99,235,0.10), transparent 60%),
+                  radial-gradient(900px 500px at 90% 0%, rgba(16,185,129,0.10), transparent 55%),
+                  var(--bg);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 18px 34px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .title {
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .title h1 {
+      font-size: 20px;
+      line-height: 1.2;
+      margin: 0;
+      letter-spacing: .2px;
+    }
+    .title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 14px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr 1fr 1fr 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 560px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field {
+      display:flex;
+      flex-direction:column;
+      gap: 7px;
+      min-width: 0;
+    }
+    .label {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .hint {
+      font-weight: 600;
+      color: rgba(71, 85, 105, 0.95);
+      font-size: 12px;
+    }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 12px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+      box-shadow: 0 0 0 0 transparent;
+      transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, select:focus {
+      border-color: rgba(37, 99, 235, 0.5);
+      box-shadow: 0 0 0 4px var(--focus);
+    }
+
+    .row {
+      display:flex;
+      gap: 8px;
+      align-items:center;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .15s ease, border-color .15s ease;
+      white-space: nowrap;
+      user-select:none;
+    }
+    .btn:hover {
+      border-color: rgba(15,23,42,0.20);
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.10);
+      transform: translateY(-1px);
+    }
+    .btn:active {
+      transform: translateY(0px) scale(0.99);
+      box-shadow: none;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, rgba(37,99,235,1), rgba(99,102,241,1));
+      border-color: transparent;
+      color: #fff;
+    }
+    .btn.danger {
+      background: rgba(239, 68, 68, 0.10);
+      border-color: rgba(239, 68, 68, 0.25);
+      color: rgba(185, 28, 28, 1);
+    }
+
+    .chips {
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 2px;
+    }
+    .chip {
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(37,99,235,0.08);
+      border: 1px solid rgba(37,99,235,0.16);
+      font-weight: 900;
+      font-size: 13px;
+    }
+    .chip small {
+      font-weight: 800;
+      color: rgba(30, 64, 175, 0.95);
+    }
+    .chip .x {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(37,99,235,0.25);
+      background: rgba(255,255,255,0.85);
+      cursor: pointer;
+      display:grid;
+      place-items:center;
+      font-weight: 1000;
+      line-height: 1;
+      color: rgba(30,64,175,0.95);
+    }
+    .chip .x:hover {
+      background: #fff;
+    }
+
+    .toggle {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      background: #fff;
+    }
+    .toggle .ttext {
+      display:flex; flex-direction:column; gap:2px;
+    }
+    .toggle .ttext b {
+      font-size: 13px;
+    }
+    .toggle .ttext span {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .switch {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.15);
+      cursor:pointer;
+      transition: background .15s ease;
+      flex: 0 0 auto;
+    }
+    .switch::after {
+      content:"";
+      position:absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 999px;
+      box-shadow: 0 4px 10px rgba(15,23,42,0.18);
+      transition: transform .15s ease;
+    }
+    .switch.on {
+      background: rgba(22,163,74,0.40);
+    }
+    .switch.on::after {
+      transform: translateX(20px);
+    }
+
+    .meta {
+      margin-top: 12px;
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items:center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .badge {
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.7);
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(37,99,235,0.9);
+    }
+    .dot.warn { background: rgba(245,158,11,0.95); }
+    .dot.bad { background: rgba(239,68,68,0.95); }
+
+    .results {
+      margin-top: 14px;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 1100px) {
+      .results { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 820px) {
+      .results { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .results { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 14px 14px 12px;
+      overflow:hidden;
+      min-height: 152px;
+    }
+    .card::before {
+      content:"";
+      position:absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, rgba(37,99,235,1), rgba(16,185,129,1));
+      opacity: 0.95;
+    }
+
+    .card h3 {
+      margin: 6px 0 8px;
+      font-size: 15px;
+      letter-spacing: .2px;
+    }
+    .prices {
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .priceLine {
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(15,23,42,0.08);
+      background: rgba(15,23,42,0.02);
+    }
+    .priceLine b {
+      font-size: 13px;
+    }
+    .priceLine .val {
+      font-weight: 1000;
+      font-size: 16px;
+      letter-spacing: .2px;
+    }
+    .priceLine .val small {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--muted);
+    }
+    .priceLine.active {
+      border-color: rgba(22,163,74,0.25);
+      background: rgba(22,163,74,0.06);
+    }
+    .no {
+      color: var(--bad);
+      font-weight: 1000;
+      font-size: 14px;
+      padding: 10px 10px;
+      border-radius: 12px;
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.18);
+      margin-top: 10px;
+    }
+
+    details {
+      margin-top: 10px;
+      border-top: 1px dashed rgba(15,23,42,0.12);
+      padding-top: 10px;
+    }
+    summary {
+      cursor:pointer;
+      list-style:none;
+      font-weight: 900;
+      color: rgba(30,41,59,0.95);
+      font-size: 13px;
+    }
+    summary::-webkit-details-marker { display:none; }
+    .detailBox {
+      margin-top: 8px;
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+      color: rgba(51,65,85,0.95);
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .detailRow {
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(2,6,23,0.02);
+      border: 1px solid rgba(2,6,23,0.06);
+    }
+
+    .rightTools {
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center;
+    }
+
+    .searchBox {
+      display:flex; gap: 8px; align-items:center;
+      min-width: 260px;
+    }
+    .searchBox input {
+      padding: 10px 12px;
+      border-radius: 999px;
+    }
+
+    footer {
+      margin-top: 18px;
+      color: rgba(71,85,105,0.9);
+      font-size: 12px;
+      font-weight: 700;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Cotizador por <span style="color:var(--accent);font-weight:1000;">CP + Edades</span> — muestra <u>todos</u> los productos</h1>
+        <p>Introduce CP y edades. El cotizador calcula <b>precio base</b> y <b>con dental</b> (si aplica) de forma clara para uso comercial.</p>
+      </div>
+      <div class="rightTools">
+        <div class="searchBox">
+          <input id="filterProduct" type="text" placeholder="Filtrar productos (ej: Plena, Go, Seniors…)" />
+        </div>
+        <button class="btn danger" id="btnReset" type="button">Limpiar</button>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="controls">
+        <div class="field">
+          <div class="label">
+            <span>CP (5 dígitos)</span>
+            <span class="hint" id="zoneHint">—</span>
+          </div>
+          <input id="cpInput" type="text" inputmode="numeric" placeholder="Ej: 46019" maxlength="5" />
+          <div class="hint" id="cpMsg">Escribe un CP válido para detectar provincia y zona.</div>
+        </div>
+
+        <div class="field">
+          <div class="label">
+            <span>Edades (añadir varias)</span>
+            <span class="hint" id="livesCount">0 asegurados</span>
+          </div>
+          <div class="row">
+            <input id="ageInput" type="number" min="0" max="120" placeholder="Edad" />
+            <button class="btn primary" id="btnAddAge" type="button">+ Añadir</button>
+          </div>
+          <div class="chips" id="agesChips"></div>
+        </div>
+
+        <div class="field">
+          <div class="label">
+            <span>Dental</span>
+            <span class="hint" id="dentalHint">—</span>
+          </div>
+          <div class="toggle" role="button" tabindex="0" id="dentalToggle">
+            <div class="ttext">
+              <b>Incluir dental</b>
+              <span>Calcula “con dental” usando nº asegurados</span>
+            </div>
+            <div class="switch" id="switchDental" aria-label="Toggle dental"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="label">
+            <span>Descuento</span>
+            <span class="hint" id="discHint">—</span>
+          </div>
+          <select id="discountSelect">
+            <option value="0">0%</option>
+            <option value="5">5%</option>
+            <option value="10">10%</option>
+            <option value="15">15%</option>
+            <option value="20">20%</option>
+          </select>
+          <div class="hint">Se aplica al precio final (base / con dental).</div>
+        </div>
+
+        <div class="field">
+          <div class="label">
+            <span>Pago</span>
+            <span class="hint" id="payHint">—</span>
+          </div>
+          <select id="paySelect">
+            <option value="mensual">Mensual</option>
+            <option value="anual">Anual (equiv. mensual)</option>
+          </select>
+          <div class="hint">En “Anual” se muestra equivalente mensual (total/12).</div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="badge" id="badgeStatus">
+          <span class="dot warn" id="dotStatus"></span>
+          <span id="statusText">Pendiente: introduce CP y al menos 1 edad</span>
+        </div>
+        <div class="badge" id="badgeZone">
+          <span class="dot" id="dotZone"></span>
+          <span id="zoneText">Zona: —</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="results" id="results"></div>
+
+    <footer>
+      Datos cargados desde tus Excel (CP→Zona, Base por Edad/Zona/Producto, Dental por Nº Asegurados). Sin backend.
+    </footer>
+  </div>
+
+  <script>
+    // ====== DATOS (embebidos desde Excel) ======
+    const DATA = {"products": ["Go", "NIF", "Plena", "Plena Extra 150", "Plena Plus", "Plena Total", "Plena Total Vital", "Plena Vital", "Pymes Total", "Seniors", "Seniors total"], "price_table": {"Go": {"1": [{"min": 0, "max": 54, "price": 20.0}, {"min": 55, "max": 69, "price": 37.0}, {"min": 70, "max": 120, "price": 45.0}], "2": [{"min": 0, "max": 54, "price": 21.0}, {"min": 55, "max": 69, "price": 37.0}, {"min": 70, "max": 120, "price": 45.0}], "3": [{"min": 0, "max": 54, "price": 21.0}, {"min": 55, "max": 69, "price": 38.0}, {"min": 70, "max": 120, "price": 45.0}], "4": [{"min": 0, "max": 54, "price": 22.0}, {"min": 55, "max": 69, "price": 38.0}, {"min": 70, "max": 120, "price": 45.0}]}, "NIF": {"1": [{"min": 0, "max": 24, "price": 53.5}, {"min": 25, "max": 44, "price": 58.5}, {"min": 45, "max": 54, "price": 75.0}, {"min": 55, "max": 59, "price": 115.0}, {"min": 60, "max": 64, "price": 140.0}, {"min": 65, "max": 69, "price": 215.0}, {"min": 70, "max": 120, "price": 220.0}], "2": [{"min": 0, "max": 24, "price": 54.5}, {"min": 25, "max": 44, "price": 60.5}, {"min": 45, "max": 54, "price": 77.0}, {"min": 55, "max": 59, "price": 118.0}, {"min": 60, "max": 64, "price": 147.0}, {"min": 65, "max": 69, "price": 221.0}, {"min": 70, "max": 120, "price": 229.0}], "3": [{"min": 0, "max": 24, "price": 56.5}, {"min": 25, "max": 44, "price": 62.5}, {"min": 45, "max": 54, "price": 80.0}, {"min": 55, "max": 59, "price": 123.0}, {"min": 60, "max": 64, "price": 159.0}, {"min": 65, "max": 69, "price": 234.0}, {"min": 70, "max": 120, "price": 241.0}], "4": [{"min": 0, "max": 24, "price": 58.0}, {"min": 25, "max": 44, "price": 63.5}, {"min": 45, "max": 54, "price": 81.0}, {"min": 55, "max": 59, "price": 126.0}, {"min": 60, "max": 64, "price": 159.0}, {"min": 65, "max": 69, "price": 234.0}, {"min": 70, "max": 120, "price": 242.0}]}, "Plena": {"1": [{"min": 0, "max": 24, "price": 49.0}, {"min": 25, "max": 44, "price": 58.0}, {"min": 45, "max": 54, "price": 69.0}, {"min": 55, "max": 59, "price": 100.0}, {"min": 60, "max": 64, "price": 120.0}, {"min": 65, "max": 69, "price": 156.0}, {"min": 70, "max": 120, "price": 211.0}], "2": [{"min": 0, "max": 24, "price": 50.0}, {"min": 25, "max": 44, "price": 59.0}, {"min": 45, "max": 54, "price": 70.0}, {"min": 55, "max": 59, "price": 102.0}, {"min": 60, "max": 64, "price": 122.0}, {"min": 65, "max": 69, "price": 158.0}, {"min": 70, "max": 120, "price": 213.0}], "3": [{"min": 0, "max": 24, "price": 51.0}, {"min": 25, "max": 44, "price": 61.0}, {"min": 45, "max": 54, "price": 72.0}, {"min": 55, "max": 59, "price": 103.0}, {"min": 60, "max": 64, "price": 124.0}, {"min": 65, "max": 69, "price": 160.0}, {"min": 70, "max": 120, "price": 215.0}], "4": [{"min": 0, "max": 24, "price": 52.0}, {"min": 25, "max": 44, "price": 62.0}, {"min": 45, "max": 54, "price": 74.0}, {"min": 55, "max": 59, "price": 105.0}, {"min": 60, "max": 64, "price": 126.0}, {"min": 65, "max": 69, "price": 162.0}, {"min": 70, "max": 120, "price": 217.0}]}, "Plena Extra 150": {"1": [{"min": 0, "max": 24, "price": 87.0}, {"min": 25, "max": 44, "price": 103.0}, {"min": 45, "max": 54, "price": 108.0}, {"min": 55, "max": 59, "price": 159.0}, {"min": 60, "max": 64, "price": 185.0}, {"min": 65, "max": 69, "price": 265.0}, {"min": 70, "max": 120, "price": 275.0}], "2": [{"min": 0, "max": 24, "price": 90.0}, {"min": 25, "max": 44, "price": 105.0}, {"min": 45, "max": 54, "price": 112.0}, {"min": 55, "max": 59, "price": 164.0}, {"min": 60, "max": 64, "price": 190.0}, {"min": 65, "max": 69, "price": 272.0}, {"min": 70, "max": 120, "price": 282.0}], "3": [{"min": 0, "max": 24, "price": 98.0}, {"min": 25, "max": 44, "price": 115.0}, {"min": 45, "max": 54, "price": 122.0}, {"min": 55, "max": 59, "price": 179.0}, {"min": 60, "max": 64, "price": 205.0}, {"min": 65, "max": 69, "price": 289.0}, {"min": 70, "max": 120, "price": 299.0}], "4": [{"min": 0, "max": 24, "price": 98.0}, {"min": 25, "max": 44, "price": 115.0}, {"min": 45, "max": 54, "price": 122.0}, {"min": 55, "max": 59, "price": 179.0}, {"min": 60, "max": 64, "price": 205.0}, {"min": 65, "max": 69, "price": 289.0}, {"min": 70, "max": 120, "price": 299.0}]}, "Plena Plus": {"1": [{"min": 0, "max": 24, "price": 59.0}, {"min": 25, "max": 44, "price": 69.0}, {"min": 45, "max": 54, "price": 88.0}, {"min": 55, "max": 59, "price": 141.0}, {"min": 60, "max": 64, "price": 163.0}, {"min": 65, "max": 69, "price": 224.0}, {"min": 70, "max": 120, "price": 235.0}], "2": [{"min": 0, "max": 24, "price": 61.0}, {"min": 25, "max": 44, "price": 71.0}, {"min": 45, "max": 54, "price": 89.0}, {"min": 55, "max": 59, "price": 145.0}, {"min": 60, "max": 64, "price": 167.0}, {"min": 65, "max": 69, "price": 236.0}, {"min": 70, "max": 120, "price": 245.0}], "3": [{"min": 0, "max": 24, "price": 63.0}, {"min": 25, "max": 44, "price": 73.0}, {"min": 45, "max": 54, "price": 93.0}, {"min": 55, "max": 59, "price": 150.0}, {"min": 60, "max": 64, "price": 179.0}, {"min": 65, "max": 69, "price": 253.0}, {"min": 70, "max": 120, "price": 259.0}], "4": [{"min": 0, "max": 24, "price": 64.0}, {"min": 25, "max": 44, "price": 75.0}, {"min": 45, "max": 54, "price": 94.0}, {"min": 55, "max": 59, "price": 151.0}, {"min": 60, "max": 64, "price": 181.0}, {"min": 65, "max": 69, "price": 255.0}, {"min": 70, "max": 120, "price": 260.0}]}, "Plena Total": {"1": [{"min": 0, "max": 24, "price": 80.0}, {"min": 25, "max": 44, "price": 95.0}, {"min": 45, "max": 54, "price": 114.0}, {"min": 55, "max": 59, "price": 155.0}, {"min": 60, "max": 62, "price": 190.0}, {"min": 63, "max": 120, "price": 250.0}], "2": [{"min": 0, "max": 24, "price": 81.0}, {"min": 25, "max": 44, "price": 98.0}, {"min": 45, "max": 54, "price": 117.0}, {"min": 55, "max": 59, "price": 160.0}, {"min": 60, "max": 62, "price": 200.0}, {"min": 63, "max": 120, "price": 260.0}], "3": [{"min": 0, "max": 24, "price": 83.0}, {"min": 25, "max": 44, "price": 100.0}, {"min": 45, "max": 54, "price": 122.0}, {"min": 55, "max": 59, "price": 165.0}, {"min": 60, "max": 62, "price": 210.0}, {"min": 63, "max": 120, "price": 270.0}], "4": [{"min": 0, "max": 24, "price": 84.0}, {"min": 25, "max": 44, "price": 103.0}, {"min": 45, "max": 54, "price": 125.0}, {"min": 55, "max": 59, "price": 170.0}, {"min": 60, "max": 62, "price": 220.0}, {"min": 63, "max": 120, "price": 285.0}]}, "Plena Total Vital": {"1": [{"min": 0, "max": 24, "price": 47.0}, {"min": 25, "max": 44, "price": 58.0}, {"min": 45, "max": 54, "price": 69.0}, {"min": 55, "max": 59, "price": 100.0}, {"min": 60, "max": 62, "price": 120.0}, {"min": 63, "max": 120, "price": 180.0}], "2": [{"min": 0, "max": 24, "price": 48.0}, {"min": 25, "max": 44, "price": 59.0}, {"min": 45, "max": 54, "price": 70.0}, {"min": 55, "max": 59, "price": 101.0}, {"min": 60, "max": 62, "price": 121.0}, {"min": 63, "max": 120, "price": 185.0}], "3": [{"min": 0, "max": 24, "price": 49.0}, {"min": 25, "max": 44, "price": 60.0}, {"min": 45, "max": 54, "price": 71.0}, {"min": 55, "max": 59, "price": 103.0}, {"min": 60, "max": 62, "price": 123.0}, {"min": 63, "max": 120, "price": 190.0}], "4": [{"min": 0, "max": 24, "price": 50.0}, {"min": 25, "max": 44, "price": 61.0}, {"min": 45, "max": 54, "price": 72.0}, {"min": 55, "max": 59, "price": 104.0}, {"min": 60, "max": 62, "price": 124.0}, {"min": 63, "max": 120, "price": 200.0}]}, "Plena Vital": {"1": [{"min": 0, "max": 24, "price": 37.0}, {"min": 25, "max": 44, "price": 48.0}, {"min": 45, "max": 54, "price": 59.0}, {"min": 55, "max": 59, "price": 90.0}, {"min": 60, "max": 64, "price": 110.0}, {"min": 65, "max": 69, "price": 146.0}, {"min": 70, "max": 120, "price": 156.0}], "2": [{"min": 0, "max": 24, "price": 38.0}, {"min": 25, "max": 44, "price": 49.0}, {"min": 45, "max": 54, "price": 60.0}, {"min": 55, "max": 59, "price": 91.0}, {"min": 60, "max": 64, "price": 111.0}, {"min": 65, "max": 69, "price": 148.0}, {"min": 70, "max": 120, "price": 158.0}], "3": [{"min": 0, "max": 24, "price": 39.0}, {"min": 25, "max": 44, "price": 50.0}, {"min": 45, "max": 54, "price": 61.0}, {"min": 55, "max": 59, "price": 93.0}, {"min": 60, "max": 64, "price": 113.0}, {"min": 65, "max": 69, "price": 149.0}, {"min": 70, "max": 120, "price": 159.0}], "4": [{"min": 0, "max": 24, "price": 40.0}, {"min": 25, "max": 44, "price": 51.0}, {"min": 45, "max": 54, "price": 62.0}, {"min": 55, "max": 59, "price": 94.0}, {"min": 60, "max": 64, "price": 114.0}, {"min": 65, "max": 69, "price": 150.0}, {"min": 70, "max": 120, "price": 161.0}]}, "Pymes Total": {"1": [{"min": 0, "max": 44, "price": 52.2}, {"min": 45, "max": 54, "price": 62.1}, {"min": 55, "max": 59, "price": 79.2}, {"min": 60, "max": 67, "price": 100.8}, {"min": 68, "max": 120, "price": 150.3}], "2": [{"min": 0, "max": 44, "price": 54.0}, {"min": 45, "max": 54, "price": 63.9}, {"min": 55, "max": 59, "price": 80.1}, {"min": 60, "max": 67, "price": 104.4}, {"min": 68, "max": 120, "price": 157.5}], "3": [{"min": 0, "max": 44, "price": 55.8}, {"min": 45, "max": 54, "price": 66.6}, {"min": 55, "max": 59, "price": 84.6}, {"min": 60, "max": 67, "price": 108.9}, {"min": 68, "max": 120, "price": 166.5}], "4": [{"min": 0, "max": 44, "price": 56.7}, {"min": 45, "max": 54, "price": 67.5}, {"min": 55, "max": 59, "price": 86.4}, {"min": 60, "max": 67, "price": 112.5}, {"min": 68, "max": 120, "price": 168.3}]}, "Seniors": {"1": [{"min": 0, "max": 49, "price": 0.0}, {"min": 50, "max": 54, "price": 65.0}, {"min": 55, "max": 59, "price": 65.0}, {"min": 60, "max": 64, "price": 82.0}, {"min": 65, "max": 69, "price": 98.0}, {"min": 70, "max": 74, "price": 129.0}, {"min": 75, "max": 79, "price": 155.0}, {"min": 80, "max": 120, "price": 160.0}], "2": [{"min": 0, "max": 49, "price": 0.0}, {"min": 50, "max": 54, "price": 67.0}, {"min": 55, "max": 59, "price": 67.0}, {"min": 60, "max": 64, "price": 85.0}, {"min": 65, "max": 69, "price": 101.0}, {"min": 70, "max": 74, "price": 132.0}, {"min": 75, "max": 79, "price": 159.0}, {"min": 80, "max": 120, "price": 165.0}], "3": [{"min": 0, "max": 49, "price": 0.0}, {"min": 50, "max": 54, "price": 69.0}, {"min": 55, "max": 59, "price": 69.0}, {"min": 60, "max": 64, "price": 88.0}, {"min": 65, "max": 69, "price": 105.0}, {"min": 70, "max": 74, "price": 137.0}, {"min": 75, "max": 79, "price": 165.0}, {"min": 80, "max": 120, "price": 171.0}], "4": [{"min": 0, "max": 49, "price": 0.0}, {"min": 50, "max": 54, "price": 70.0}, {"min": 55, "max": 59, "price": 70.0}, {"min": 60, "max": 64, "price": 89.0}, {"min": 65, "max": 69, "price": 107.0}, {"min": 70, "max": 74, "price": 140.0}, {"min": 75, "max": 79, "price": 168.0}, {"min": 80, "max": 120, "price": 174.0}]}, "Seniors total": {"1": [{"min": 0, "max": 59, "price": 0.0}, {"min": 60, "max": 62, "price": 99.0}, {"min": 63, "max": 64, "price": 99.0}, {"min": 65, "max": 69, "price": 134.0}, {"min": 70, "max": 74, "price": 164.0}, {"min": 75, "max": 84, "price": 220.0}], "2": [{"min": 0, "max": 59, "price": 0.0}, {"min": 60, "max": 62, "price": 100.0}, {"min": 63, "max": 64, "price": 100.0}, {"min": 65, "max": 69, "price": 137.0}, {"min": 70, "max": 74, "price": 169.0}, {"min": 75, "max": 84, "price": 229.0}], "3": [{"min": 0, "max": 59, "price": 0.0}, {"min": 60, "max": 62, "price": 107.0}, {"min": 63, "max": 64, "price": 107.0}, {"min": 65, "max": 69, "price": 139.0}, {"min": 70, "max": 74, "price": 177.0}, {"min": 75, "max": 84, "price": 237.0}], "4": [{"min": 0, "max": 59, "price": 0.0}, {"min": 60, "max": 62, "price": 109.0}, {"min": 63, "max": 64, "price": 109.0}, {"min": 65, "max": 69, "price": 146.0}, {"min": 70, "max": 74, "price": 179.0}, {"min": 75, "max": 84, "price": 239.0}]}}, "cp_map": {"01": {"provincia": "Alava", "zona": 0}, "02": {"provincia": "Albacete", "zona": 3}, "03": {"provincia": "Alicante", "zona": 2}, "04": {"provincia": "Almeria", "zona": 2}, "05": {"provincia": "Avila", "zona": 2}, "06": {"provincia": "Badajoz", "zona": 1}, "08": {"provincia": "Barcelona", "zona": 4}, "48": {"provincia": "Bilbao", "zona": 0}, "09": {"provincia": "Burgos", "zona": 2}, "10": {"provincia": "Caceres", "zona": 1}, "11": {"provincia": "Cadiz", "zona": 2}, "12": {"provincia": "Castellón", "zona": 2}, "51": {"provincia": "Ceuta", "zona": 2}, "13": {"provincia": "Ciudad Real", "zona": 3}, "14": {"provincia": "Cordoba", "zona": 2}, "15": {"provincia": "A Coruña", "zona": 1}, "16": {"provincia": "Cuenca", "zona": 3}, "20": {"provincia": "Donostia / San Sebastián", "zona": 0}, "17": {"provincia": "Girona", "zona": 3}, "18": {"provincia": "Granada", "zona": 2}, "19": {"provincia": "Guadalajara", "zona": 3}, "21": {"provincia": "Huelva", "zona": 2}, "22": {"provincia": "Huesca", "zona": 3}, "23": {"provincia": "Jaen", "zona": 2}, "26": {"provincia": "La Rioja", "zona": 2}, "24": {"provincia": "Leon", "zona": 2}, "25": {"provincia": "Lleida", "zona": 3}, "27": {"provincia": "Lugo", "zona": 1}, "28": {"provincia": "Madrid", "zona": 3}, "29": {"provincia": "Malaga", "zona": 2}, "52": {"provincia": "Melilla", "zona": 2}, "30": {"provincia": "Murcia", "zona": 1}, "31": {"provincia": "Navarra", "zona": 0}, "32": {"provincia": "Ourense", "zona": 1}, "33": {"provincia": "Oviedo", "zona": 0}, "34": {"provincia": "Palencia", "zona": 2}, "07": {"provincia": "Palma", "zona": 4}, "35": {"provincia": "Palmas de Gran Canaria", "zona": 2}, "36": {"provincia": "Pontevedra", "zona": 1}, "37": {"provincia": "Salamanca", "zona": 2}, "38": {"provincia": "Santa Cruz de Tenerife", "zona": 2}, "39": {"provincia": "Santander", "zona": 2}, "40": {"provincia": "Segovia", "zona": 2}, "41": {"provincia": "Sevilla", "zona": 2}, "42": {"provincia": "Soria", "zona": 2}, "43": {"provincia": "Tarragona", "zona": 3}, "44": {"provincia": "Teruel", "zona": 3}, "45": {"provincia": "Toledo", "zona": 3}, "46": {"provincia": "Valencia", "zona": 2}, "47": {"provincia": "Valladolid", "zona": 2}, "49": {"provincia": "Zamora", "zona": 2}, "50": {"provincia": "Zaragoza", "zona": 3}}, "dental_map": {"1": 8.93, "2": 6.37, "3": 5.95, "4": 4.46, "5": 4.25, "6": 3.54, "7": 3.54, "8": 3.54}};
+  </script>
+
+  <script>
+    // ====== ESTADO ======
+    const state = {
+      cp: "",
+      provCode: "",
+      provincia: "",
+      zona: null,
+      zonaRaw: null,
+      ages: [],
+      dentalOn: false,
+      discount: 0,
+      pay: "mensual",
+      filter: ""
+    };
+
+    // ====== HELPERS ======
+    function fmtEUR(n) {
+      if (n === null || n === undefined || Number.isNaN(n)) return "—";
+      return n.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    }
+
+    function clampInt(v, min, max) {
+      const x = parseInt(v, 10);
+      if (Number.isNaN(x)) return null;
+      return Math.max(min, Math.min(max, x));
+    }
+
+    function uniqueSortedAges(arr) {
+      const s = new Set();
+      for (const a of arr) {
+        const x = clampInt(a, 0, 120);
+        if (x === null) continue;
+        s.add(x);
+      }
+      return Array.from(s).sort((a,b)=>a-b);
+    }
+
+    function getProvCodeFromCP(cp5) {
+      if (!/^[0-9]{5}$/.test(cp5)) return "";
+      return cp5.slice(0,2);
+    }
+
+    function resolveZone(cp5) {
+      const provCode = getProvCodeFromCP(cp5);
+      if (!provCode) return null;
+
+      const rec = DATA.cp_map[provCode];
+      if (!rec) return null;
+
+      return {
+        provCode,
+        provincia: rec.provincia,
+        zonaRaw: rec.zona,
+        // ZONA 0 -> fallback zona 1 (porque base solo tiene 1..4)
+        zona: (rec.zona === 0 ? 1 : rec.zona),
+        fallback: (rec.zona === 0)
+      };
+    }
+
+    function priceForAge(product, zona, age) {
+      const zKey = String(zona);
+      const rows = (DATA.price_table[product] && DATA.price_table[product][zKey]) ? DATA.price_table[product][zKey] : null;
+      if (!rows) return null;
+
+      for (const r of rows) {
+        if (age >= r.min && age <= r.max) {
+          return r.price;
+        }
+      }
+      return null;
+    }
+
+    function dentalPerInsured(n) {
+      const key = String(n);
+      if (DATA.dental_map[key] !== undefined) return DATA.dental_map[key];
+
+      // fallback: usa el último tramo disponible
+      const keys = Object.keys(DATA.dental_map).map(k=>parseInt(k,10)).filter(x=>!Number.isNaN(x)).sort((a,b)=>a-b);
+      if (!keys.length) return null;
+      const last = keys[keys.length-1];
+      return DATA.dental_map[String(last)];
+    }
+
+    function applyDiscount(value, discountPct) {
+      const d = (discountPct || 0) / 100;
+      return value * (1 - d);
+    }
+
+    function equivMensualIfAnual(valueMensual, payMode) {
+      // El excel base ya está en "precio" unitario mensual.
+      // Para "Anual (equiv. mensual)" mantenemos el equivalente mensual para que sea comparable.
+      // Si en tu negocio hay recargos/bonificaciones por anual, se puede ajustar aquí sin tocar el resto.
+      return valueMensual;
+    }
+
+    // ====== UI REFS ======
+    const elCP = document.getElementById("cpInput");
+    const elAge = document.getElementById("ageInput");
+    const elAddAge = document.getElementById("btnAddAge");
+    const elChips = document.getElementById("agesChips");
+    const elLives = document.getElementById("livesCount");
+    const elZoneHint = document.getElementById("zoneHint");
+    const elCPMsg = document.getElementById("cpMsg");
+
+    const elToggle = document.getElementById("dentalToggle");
+    const elSwitch = document.getElementById("switchDental");
+    const elDentalHint = document.getElementById("dentalHint");
+
+    const elDiscount = document.getElementById("discountSelect");
+    const elDiscHint = document.getElementById("discHint");
+
+    const elPay = document.getElementById("paySelect");
+    const elPayHint = document.getElementById("payHint");
+
+    const elResults = document.getElementById("results");
+    const elReset = document.getElementById("btnReset");
+    const elFilter = document.getElementById("filterProduct");
+
+    const elStatusText = document.getElementById("statusText");
+    const elDotStatus = document.getElementById("dotStatus");
+    const elZoneText = document.getElementById("zoneText");
+    const elDotZone = document.getElementById("dotZone");
+
+    // ====== RENDER ======
+    function renderAges() {
+      elChips.innerHTML = "";
+      for (const a of state.ages) {
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        chip.innerHTML = `<span>${a}</span><small>años</small>`;
+        const x = document.createElement("button");
+        x.className = "x";
+        x.type = "button";
+        x.textContent = "×";
+        x.title = "Quitar";
+        x.onclick = () => {
+          state.ages = state.ages.filter(v => v !== a);
+          renderAll();
+        };
+        chip.appendChild(x);
+        elChips.appendChild(chip);
+      }
+      elLives.textContent = `${state.ages.length} asegurados`;
+    }
+
+    function setStatus(msg, kind) {
+      elStatusText.textContent = msg;
+      elDotStatus.classList.remove("warn","bad");
+      if (kind === "bad") elDotStatus.classList.add("bad");
+      else elDotStatus.classList.add("warn");
+    }
+
+    function renderMeta() {
+      const z = (state.zona !== null && state.zona !== undefined) ? state.zona : "—";
+      const prov = state.provincia ? ` — ${state.provincia}` : "";
+      const raw = (state.zonaRaw !== null && state.zonaRaw !== undefined) ? state.zonaRaw : null;
+
+      if (z === "—") {
+        elZoneText.textContent = "Zona: —";
+        elZoneHint.textContent = "—";
+        elCPMsg.textContent = "Escribe un CP válido para detectar provincia y zona.";
+        elDotZone.className = "dot warn";
+      } else {
+        const fb = (raw === 0) ? " (zona 0 → se tarifica como zona 1)" : "";
+        elZoneText.textContent = `Zona: ${z}${prov}${fb}`;
+        elZoneHint.textContent = `Zona ${z}`;
+        elCPMsg.textContent = (raw === 0)
+          ? "Tu tabla CP devuelve zona 0 en esta provincia. Se aplica fallback a zona 1 para tarificar."
+          : "Zona detectada correctamente por provincia (2 primeras cifras del CP).";
+        elDotZone.className = (raw === 0) ? "dot warn" : "dot";
+      }
+
+      const n = state.ages.length;
+      if (state.dentalOn) {
+        const per = dentalPerInsured(n);
+        if (per === null) {
+          elDentalHint.textContent = "Dental: sin tabla";
+        } else {
+          elDentalHint.textContent = `Dental: ${fmtEUR(per)} / asegurado`;
+        }
+      } else {
+        elDentalHint.textContent = "Dental: desactivado";
+      }
+
+      elDiscHint.textContent = `-${state.discount}%`;
+      elPayHint.textContent = (state.pay === "mensual") ? "Mensual" : "Equiv. mensual";
+    }
+
+    function computeProduct(product) {
+      if (!state.zona || !state.ages.length) {
+        return { ok: false, reason: "Faltan datos", product };
+      }
+
+      let baseTotal = 0;
+      const breakdown = [];
+      for (const age of state.ages) {
+        const p = priceForAge(product, state.zona, age);
+        if (p === null) {
+          return { ok: false, reason: "No asegurable", product };
+        }
+        breakdown.push({ age, base: p });
+        baseTotal += p;
+      }
+
+      // pago: mantenemos equivalente mensual
+      baseTotal = equivMensualIfAnual(baseTotal, state.pay);
+
+      // dental
+      const n = state.ages.length;
+      const per = dentalPerInsured(n);
+      let dentalTotal = 0;
+      if (per !== null) {
+        dentalTotal = per * n;
+      }
+
+      const baseDisc = applyDiscount(baseTotal, state.discount);
+      const withDentalDisc = applyDiscount(baseTotal + dentalTotal, state.discount);
+
+      return {
+        ok: true,
+        product,
+        baseTotal,
+        baseDisc,
+        dentalTotal,
+        withDentalTotal: baseTotal + dentalTotal,
+        withDentalDisc,
+        breakdown,
+        dentalPer: per,
+      };
+    }
+
+    function renderResults() {
+      elResults.innerHTML = "";
+
+      const ready = (state.zona !== null && state.ages.length > 0 && /^[0-9]{5}$/.test(state.cp));
+      if (!ready) {
+        setStatus("Pendiente: introduce CP y al menos 1 edad", "warn");
+        return;
+      }
+
+      // compute all
+      let computed = DATA.products.map(p => computeProduct(p));
+
+      // filter by text
+      const f = (state.filter || "").trim().toLowerCase();
+      if (f) {
+        computed = computed.filter(x => x.product.toLowerCase().includes(f));
+      }
+
+      // sort by selected highlight (if dentalOn => con dental, else base)
+      computed.sort((a,b) => {
+        const va = (!a.ok) ? 1e18 : (state.dentalOn ? a.withDentalDisc : a.baseDisc);
+        const vb = (!b.ok) ? 1e18 : (state.dentalOn ? b.withDentalDisc : b.baseDisc);
+        return va - vb;
+      });
+
+      // status
+      const oks = computed.filter(x => x.ok).length;
+      const total = computed.length;
+      setStatus(`Tarificación lista: ${oks}/${total} productos con precio`, "warn");
+
+      for (const r of computed) {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const title = document.createElement("h3");
+        title.textContent = r.product;
+        card.appendChild(title);
+
+        if (!r.ok) {
+          const no = document.createElement("div");
+          no.className = "no";
+          no.textContent = (r.reason === "No asegurable") ? "No asegurable con estas edades" : "Faltan datos";
+          card.appendChild(no);
+          elResults.appendChild(card);
+          continue;
+        }
+
+        // price lines
+        const prices = document.createElement("div");
+        prices.className = "prices";
+
+        const lineBase = document.createElement("div");
+        lineBase.className = "priceLine" + (!state.dentalOn ? " active" : "");
+        lineBase.innerHTML = `
+          <b>Base (sin dental)</b>
+          <span class="val">${fmtEUR(r.baseDisc)} <small>/mes</small></span>
+        `;
+        prices.appendChild(lineBase);
+
+        const lineDental = document.createElement("div");
+        lineDental.className = "priceLine" + (state.dentalOn ? " active" : "");
+        lineDental.innerHTML = `
+          <b>Con dental</b>
+          <span class="val">${fmtEUR(r.withDentalDisc)} <small>/mes</small></span>
+        `;
+        prices.appendChild(lineDental);
+
+        card.appendChild(prices);
+
+        // details breakdown
+        const det = document.createElement("details");
+        det.innerHTML = `<summary>Ver desglose por edad</summary>`;
+        const box = document.createElement("div");
+        box.className = "detailBox";
+
+        for (const b of r.breakdown) {
+          const row = document.createElement("div");
+          row.className = "detailRow";
+          row.innerHTML = `<span>Edad ${b.age}</span><span>${fmtEUR(b.base)} /mes</span>`;
+          box.appendChild(row);
+        }
+
+        // dental info
+        const n = state.ages.length;
+        const per = r.dentalPer;
+        const drow = document.createElement("div");
+        drow.className = "detailRow";
+        drow.innerHTML = `<span>Dental (n=${n})</span><span>${(per===null) ? "—" : (fmtEUR(per)+" /asegurado")}</span>`;
+        box.appendChild(drow);
+
+        // totals without discount (reference)
+        const ref = document.createElement("div");
+        ref.className = "detailRow";
+        ref.innerHTML = `<span>Base sin descuento</span><span>${fmtEUR(r.baseTotal)} /mes</span>`;
+        box.appendChild(ref);
+
+        const ref2 = document.createElement("div");
+        ref2.className = "detailRow";
+        ref2.innerHTML = `<span>Con dental sin descuento</span><span>${fmtEUR(r.withDentalTotal)} /mes</span>`;
+        box.appendChild(ref2);
+
+        det.appendChild(box);
+        card.appendChild(det);
+
+        elResults.appendChild(card);
+      }
+    }
+
+    function renderAll() {
+      renderAges();
+      renderMeta();
+      renderResults();
+    }
+
+    // ====== EVENTS ======
+    function onCPChange() {
+      const v = (elCP.value || "").trim();
+      state.cp = v;
+
+      const z = resolveZone(v);
+      if (!z) {
+        state.provCode = "";
+        state.provincia = "";
+        state.zona = null;
+        state.zonaRaw = null;
+      } else {
+        state.provCode = z.provCode;
+        state.provincia = z.provincia;
+        state.zona = z.zona;
+        state.zonaRaw = z.zonaRaw;
+      }
+      renderAll();
+    }
+
+    function addAgeFromInput() {
+      const v = clampInt(elAge.value, 0, 120);
+      if (v === null) return;
+      state.ages = uniqueSortedAges([ ...state.ages, v ]);
+      elAge.value = "";
+      renderAll();
+    }
+
+    function toggleDental() {
+      state.dentalOn = !state.dentalOn;
+      elSwitch.classList.toggle("on", state.dentalOn);
+      renderAll();
+    }
+
+    function resetAll() {
+      state.cp = "";
+      state.provCode = "";
+      state.provincia = "";
+      state.zona = null;
+      state.zonaRaw = null;
+      state.ages = [];
+      state.dentalOn = false;
+      state.discount = 0;
+      state.pay = "mensual";
+      state.filter = "";
+
+      elCP.value = "";
+      elAge.value = "";
+      elFilter.value = "";
+      elDiscount.value = "0";
+      elPay.value = "mensual";
+      elSwitch.classList.remove("on");
+
+      renderAll();
+    }
+
+    // Input shortcuts: pegar varias edades
+    function parseAndAddManyAges(text) {
+      const nums = (text || "")
+        .replace(/\n/g, " ")
+        .split(/[^0-9]+/)
+        .filter(Boolean)
+        .map(x => clampInt(x, 0, 120))
+        .filter(x => x !== null);
+
+      if (!nums.length) return;
+      state.ages = uniqueSortedAges([ ...state.ages, ...nums ]);
+      renderAll();
+    }
+
+    // ====== WIRE ======
+    elCP.addEventListener("input", () => {
+      // Solo números
+      elCP.value = (elCP.value || "").replace(/[^0-9]/g, "").slice(0,5);
+      onCPChange();
+    });
+
+    elAddAge.addEventListener("click", addAgeFromInput);
+
+    elAge.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addAgeFromInput();
+      }
+    });
+
+    // pegar múltiples edades en el input de edad
+    elAge.addEventListener("paste", (e) => {
+      const txt = (e.clipboardData || window.clipboardData).getData("text");
+      if (!txt) return;
+      e.preventDefault();
+      parseAndAddManyAges(txt);
+    });
+
+    elToggle.addEventListener("click", toggleDental);
+    elToggle.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleDental();
+      }
+    });
+
+    elDiscount.addEventListener("change", () => {
+      state.discount = parseInt(elDiscount.value, 10) || 0;
+      renderAll();
+    });
+
+    elPay.addEventListener("change", () => {
+      state.pay = elPay.value || "mensual";
+      renderAll();
+    });
+
+    elReset.addEventListener("click", resetAll);
+
+    elFilter.addEventListener("input", () => {
+      state.filter = elFilter.value || "";
+      renderAll();
+    });
+
+    // ====== INIT ======
+    resetAll();
+
+    // Demo UX: si escriben "33 33 3 4 5" en edades (como en tu captura) al pegar, lo mete de golpe.
+  </script>
+</body>
+</html>

@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Calculadora de IMC</title>
+
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: rgba(15, 23, 42, 0.10);
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow2: 0 6px 18px rgba(15, 23, 42, 0.07);
+      --radius: 16px;
+      --radius2: 12px;
+      --focus: rgba(37, 99, 235, 0.20);
+      --accent: #2563eb;
+      --good: #16a34a;
+      --bad: #ef4444;
+
+      /* ====== corporativo ====== */
+      --safeTop: env(safe-area-inset-top, 0px);
+      --brand: #0055A5;
+      /* Azul Adeslas */
+      --brand2: #0070C9;
+      /* Azul Adeslas (degradado) */
+
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      overflow-y: scroll;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.10), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(16, 185, 129, 0.10), transparent 55%),
+        var(--bg);
+      min-height: 100vh;
+      font-size: 16px;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 18px 34px;
+    }
+
+    /* Header centrado como la foto */
+    .topTitle {
+      text-align: center;
+      margin: 8px 0 16px;
+    }
+
+    .topTitle h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: .2px;
+      color: rgba(30, 64, 175, 0.95);
+      font-weight: 1000;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 18px;
+    }
+
+    /* ==========================
+      RUTA / ENLACES (breadcrumbs) dentro del panel
+      ========================== */
+    .routeLinks {
+      display: none !important;
+    }
+
+    .routeLink {
+      color: var(--brand);
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(11, 43, 76, .16);
+      background: rgba(255, 255, 255, .92);
+      box-shadow: 0 6px 14px rgba(11, 43, 76, .08);
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .routeLink:hover {
+      background: #ffffff;
+      border-color: rgba(214, 162, 58, .50);
+      transform: translateY(-1px);
+    }
+
+    .routeLink:active {
+      transform: translateY(0px);
+    }
+
+    .routeSep {
+      color: rgba(71, 85, 105, .70);
+      font-weight: 950;
+    }
+
+    .calcGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 780px) {
+      .calcGrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    .hint {
+      font-weight: 700;
+      color: rgba(71, 85, 105, 0.95);
+      font-size: 12px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+      box-shadow: 0 0 0 0 transparent;
+      transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease;
+    }
+
+    input[type="number"]:focus {
+      border-color: rgba(37, 99, 235, 0.5);
+      box-shadow: 0 0 0 4px var(--focus);
+    }
+
+    .btnRow {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid rgba(0, 85, 165, 0.12);
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s ease;
+      white-space: nowrap;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand);
+      box-shadow: 0 4px 10px rgba(11, 43, 76, .05);
+      min-width: 140px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(11, 43, 76, .12);
+      border-color: rgba(0, 85, 165, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0px) scale(0.98);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 18px rgba(0, 85, 165, 0.25);
+    }
+
+    .btn.primary:hover {
+      box-shadow: 0 10px 28px rgba(0, 85, 165, 0.35);
+    }
+
+    .resultBlock {
+      margin-top: 18px;
+      text-align: center;
+      padding-top: 6px;
+    }
+
+    .resultBlock .rLabel {
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: .2px;
+      margin-bottom: 6px;
+    }
+
+    .resultBlock .rValue {
+      font-size: 52px;
+      line-height: 1;
+      font-weight: 1100;
+      color: rgba(30, 64, 175, 0.95);
+      letter-spacing: .5px;
+      margin: 0;
+    }
+
+    .statusPillRow {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(30, 41, 59, 0.95);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.9);
+    }
+
+    .dot.good {
+      background: rgba(22, 163, 74, 0.95);
+    }
+
+    .dot.warn {
+      background: rgba(245, 158, 11, 0.95);
+    }
+
+    .dot.bad {
+      background: rgba(239, 68, 68, 0.95);
+    }
+
+    /* Tablas (como la foto: 2 columnas GENERAL / SENIORS) */
+    .tablesWrap {
+      margin-top: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tablesWrap::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: linear-gradient(180deg, rgba(37, 99, 235, 1), rgba(16, 185, 129, 1));
+      opacity: 0.95;
+    }
+
+    .tablesGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      padding-left: 10px;
+    }
+
+    @media (max-width: 880px) {
+      .tablesGrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .tBoxTitle {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.10);
+    }
+
+    .tBoxTitle h3 {
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: .2px;
+      font-weight: 1100;
+      color: rgba(30, 64, 175, 0.95);
+    }
+
+    .tBoxTitle span {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .rangeList {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .rangeRow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      background: rgba(15, 23, 42, 0.02);
+      transition: box-shadow .15s ease, transform .08s ease, border-color .15s ease;
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(30, 41, 59, 0.95);
+    }
+
+    .rangeRow .left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 140px;
+    }
+
+    .rangeRow .left b {
+      font-size: 12px;
+      font-weight: 1100;
+      color: rgba(15, 23, 42, 0.85);
+    }
+
+    .rangeRow .left small {
+      font-size: 11px;
+      font-weight: 900;
+      color: rgba(71, 85, 105, 0.95);
+    }
+
+    .rangeRow .right {
+      text-align: right;
+      font-size: 12px;
+      font-weight: 1100;
+      letter-spacing: .2px;
+    }
+
+    .txt-good {
+      color: rgba(22, 163, 74, 1);
+    }
+
+    .txt-warn {
+      color: rgba(245, 158, 11, 1);
+    }
+
+    .txt-bad {
+      color: rgba(239, 68, 68, 1);
+    }
+
+    /* Highlight como la franja azul de la foto */
+    .rangeRow.active {
+      border-color: rgba(37, 99, 235, 0.22);
+      background: rgba(37, 99, 235, 0.10);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.10);
+      transform: translateY(-1px);
+    }
+
+    .footerHint {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(71, 85, 105, 0.9);
+    }
+
+    /* ==========================
+       BOTÓN VOLVER (verde) arriba izquierda
+       ========================== */
+    .btnBackGreen {
+      position: fixed;
+      top: calc(var(--safeTop) + 10px);
+      /* <-- ACTUALIZADO: respeta safe area */
+      left: 10px;
+      z-index: 999;
+
+      border: 1px solid rgba(255, 255, 255, .25);
+      background: linear-gradient(135deg, #10b981, #22c55e);
+      color: #ffffff;
+      font-weight: 1000;
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 12px 22px rgba(16, 185, 129, .28);
+      font-size: 14px;
+      white-space: nowrap;
+
+      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+    }
+
+    .btnBackGreen:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+      box-shadow: 0 16px 28px rgba(16, 185, 129, .32);
+    }
+
+    .btnBackGreen:active {
+      transform: translateY(0px);
+    }
+
+    /* ==========================
+       CHATBOT PANEL (IFRAME) - SIEMPRE POR DELANTE
+       ========================== */
+    .cbOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, .45);
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+      z-index: 20000;
+    }
+
+    .cbPanel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: min(520px, 92vw);
+      background: #ffffff;
+      border-left: 1px solid rgba(15, 23, 42, 0.12);
+      box-shadow: -18px 0 50px rgba(15, 23, 42, .18);
+      transform: translateX(105%);
+      transition: transform .22s ease;
+      z-index: 20001;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cbHeader {
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.10);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(255, 255, 255, 0));
+    }
+
+    .cbTitle {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .cbTitle b {
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+
+    .cbTitle small {
+      font-size: 12px;
+      color: rgba(71, 85, 105, 0.95);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cbClose {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: rgba(15, 23, 42, 0.03);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 900;
+      color: rgba(15, 23, 42, 0.85);
+    }
+
+    .cbClose:hover {
+      background: rgba(15, 23, 42, 0.06);
+    }
+
+    .cbBody {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .cbFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    body.cbOpen .cbOverlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    body.cbOpen .cbPanel {
+      transform: translateX(0%);
+    }
+
+    /* ==========================
+       HEADER CORPORATIVO (UNIFICADO)
+       ========================== */
+    header.main-header {
+      position: sticky;
+      top: 0;
+      z-index: 10000;
+      padding-top: var(--safeTop);
+      background: linear-gradient(180deg, var(--brand) 0%, var(--brand2) 100%);
+      box-shadow: 0 14px 34px rgba(11, 43, 76, .18);
+      border-bottom: 1px solid rgba(255, 255, 255, .14);
+    }
+
+    .header-wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      height: 72px;
+      box-sizing: border-box;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      flex: 1 1 0;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex: 1 1 0;
+    }
+
+    .btn-nav {
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 1000;
+      letter-spacing: .2px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .16);
+      color: #ffffff;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+      transition: all .2s ease;
+      background: rgba(255, 255, 255, .08);
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .btn-nav:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .22);
+      background: rgba(255, 255, 255, .15);
+    }
+
+    .btn-nav.active {
+      background: #ffffff !important;
+      color: var(--brand) !important;
+      border-color: #ffffff !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      text-shadow: none;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .btn-nav.cotizador:not(.active) {
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+    }
+
+    .btn-nav.patologias:not(.active) {
+      background: linear-gradient(135deg, #10b981, #22c55e);
+    }
+
+    .btn-nav.imc:not(.active) {
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+    }
+
+    .btn-nav.chatbot:not(.active) {
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+    }
+
+    .btn-nav.admin:not(.active) {
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .brand-logo {
+      height: 38px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .18));
+    }
+
+    .btn-nav.imc:not(.active) {
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+    }
+
+    .btn-nav.chatbot:not(.active) {
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+    }
+
+    .btn-nav.admin:not(.active) {
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .brand-logo {
+      height: 38px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .18));
+    }
+
+    .routeLinks {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ==========================
+       CHATBOT PANEL (IFRAME)
+       ========================== -->
+  <div id="chatbotOverlay" class="cbOverlay" aria-hidden="true"></div>
+
+  <aside id="chatbotPanel" class="cbPanel" aria-hidden="true" role="dialog" aria-label="Chatbot FAQ">
+    <div class="cbHeader">
+      <div class="cbTitle">
+        <b>Chatbot FAQ</b>
+        <small>Responde solo con el conocimiento cargado</small>
+      </div>
+      <button id="btnCloseChatbot" class="cbClose" type="button" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="cbBody">
+      <iframe id="chatbotFrame" class="cbFrame" src="fackbot.html" title="FAQ Bot" loading="lazy"
+        referrerpolicy="no-referrer"></iframe>
+    </div>
+  </aside>
+
+  <!-- ==========================
+       TOPBAR CORPORATIVA (UNIFICADA)
+       ========================== -->
+  <header class="main-header">
+    <div class="header-wrap">
+      <div class="brand-block"></div>
+
+      <nav class="header-nav" aria-label="Navegación superior">
+        <a class="btn-nav cotizador" href="#" id="btnOpenCotizador">Cotizador</a>
+        <a class="btn-nav patologias" href="#" id="btnOpenPatologias">Buscador Patologías</a>
+        <a class="btn-nav imc active" href="#" id="btnOpenIMC">Calculadora IMC</a>
+        <a class="btn-nav chatbot" href="#" id="btnOpenChatbot">Chatbot FAQ</a>
+        <a class="btn-nav admin" href="#" id="btnOpenAdmin">Admin</a>
+      </nav>
+
+      <div class="header-right">
+        <button id="btnLogout" class="btn-nav"
+          style="font-size:13px;padding:8px 14px;background:rgba(239,68,68,0.18);border-color:rgba(239,68,68,0.35);color:#fff;"
+          title="Cerrar sesión">⬤ Salir</button>
+        <img class="brand-logo" src="buscador patologias/logo-adeslas.png" alt="Adeslas">
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="topTitle">
+      <h1>Calculadora de IMC</h1>
+    </div>
+
+    <div class="panel" aria-label="Calculadora">
+      <!-- RUTA / ENLACES (se mantiene pero OCULTO por CSS para no duplicar) -->
+      <nav class="routeLinks" aria-label="Rutas">
+        <a class="routeLink" href="#" id="btnGoCotizadorTop">Cotizador</a>
+        <span class="routeSep">›</span>
+        <a class="routeLink" href="#" id="btnOpenPatologiasTop">Buscador Patologías</a>
+        <span class="routeSep">›</span>
+        <a class="routeLink" href="#" id="btnOpenChatbotTop">Chatbot FAQ</a>
+        <span class="routeSep">›</span>
+        <a class="routeLink" href="#" id="btnOpenAdminTop">Admin</a>
+      </nav>
+
+      <div class="calcGrid">
+        <div class="field">
+          <div class="label">
+            <span>Peso (kg)</span>
+            <span class="hint" id="pesoHint">Ej: 70</span>
+          </div>
+          <input id="peso" type="number" min="1" max="500" step="0.1" value="70" />
+        </div>
+
+        <div class="field">
+          <div class="label">
+            <span>Altura (cm)</span>
+            <span class="hint" id="alturaHint">Ej: 170</span>
+          </div>
+          <input id="altura" type="number" min="30" max="260" step="0.1" value="170" />
+        </div>
+      </div>
+
+      <div class="btnRow">
+        <button class="btn primary" id="btnCalcular" type="button">Calcular</button>
+        <button class="btn" id="btnLimpiar" type="button">Limpiar</button>
+      </div>
+
+      <div class="resultBlock">
+        <div class="rLabel">Resultado:</div>
+        <p class="rValue" id="imcValue">—</p>
+
+        <div class="statusPillRow" id="statusRow" style="display:none;">
+          <div class="badge" id="badgeGeneral">
+            <span class="dot" id="dotGeneral"></span>
+            <span id="txtGeneral">General: —</span>
+          </div>
+          <div class="badge" id="badgeSeniors">
+            <span class="dot" id="dotSeniors"></span>
+            <span id="txtSeniors">Seniors: —</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tablesWrap" aria-label="Reglas IMC">
+      <div class="tablesGrid">
+        <!-- GENERAL -->
+        <div>
+          <div class="tBoxTitle">
+            <h3>GENERAL</h3>
+            <span>Reglas por IMC</span>
+          </div>
+
+          <div class="rangeList" id="listGeneral">
+            <div class="rangeRow" data-min="-999" data-max="16.499">
+              <div class="left">
+                <b>- 16,5</b>
+                <small>IMC muy bajo</small>
+              </div>
+              <div class="right txt-bad">RECHAZO DIRECTO</div>
+            </div>
+
+            <div class="rangeRow" data-min="16.5" data-max="18.5">
+              <div class="left">
+                <b>16,5 - 18,5</b>
+                <small>Bajo peso</small>
+              </div>
+              <div class="right txt-warn">EXCLUSIÓN DE ANOREXIA</div>
+            </div>
+
+            <div class="rangeRow" data-min="18.5" data-max="29.9">
+              <div class="left">
+                <b>18,5 - 29,9</b>
+                <small>Normal / sobrepeso leve</small>
+              </div>
+              <div class="right txt-good">PASA LIMPIA</div>
+            </div>
+
+            <div class="rangeRow" data-min="30" data-max="33.9">
+              <div class="left">
+                <b>30 - 33,9</b>
+                <small>Obesidad I</small>
+              </div>
+              <div class="right txt-warn">EXCLUSIÓN DE OBESIDAD</div>
+            </div>
+
+            <div class="rangeRow" data-min="34" data-max="999">
+              <div class="left">
+                <b>+ 34</b>
+                <small>Obesidad alta</small>
+              </div>
+              <div class="right txt-bad">RECHAZO DIRECTO</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SENIORS -->
+        <div>
+          <div class="tBoxTitle">
+            <h3>SENIORS</h3>
+            <span>Reglas por IMC</span>
+          </div>
+
+          <div class="rangeList" id="listSeniors">
+            <div class="rangeRow" data-min="-999" data-max="16.499">
+              <div class="left">
+                <b>- 16,5</b>
+                <small>IMC muy bajo</small>
+              </div>
+              <div class="right txt-bad">RECHAZO DIRECTO</div>
+            </div>
+
+            <div class="rangeRow" data-min="16.5" data-max="18.5">
+              <div class="left">
+                <b>16,5 - 18,5</b>
+                <small>Bajo peso</small>
+              </div>
+              <div class="right txt-warn">LIMPIA O EXCLUSIÓN ANOREXIA</div>
+            </div>
+
+            <div class="rangeRow" data-min="18.5" data-max="29.9">
+              <div class="left">
+                <b>18,5 - 29,9</b>
+                <small>Normal / sobrepeso leve</small>
+              </div>
+              <div class="right txt-good">PASA LIMPIA</div>
+            </div>
+
+            <div class="rangeRow" data-min="30" data-max="33.9">
+              <div class="left">
+                <b>30 - 33,9</b>
+                <small>Obesidad I</small>
+              </div>
+              <div class="right txt-good">CASI SIEMPRE PASA LIMPIA</div>
+            </div>
+
+            <div class="rangeRow" data-min="34" data-max="39.9">
+              <div class="left">
+                <b>34 - 39,9</b>
+                <small>Obesidad II</small>
+              </div>
+              <div class="right txt-warn">EXCLUSIÓN DE OBESIDAD</div>
+            </div>
+
+            <div class="rangeRow" data-min="40" data-max="999">
+              <div class="left">
+                <b>+ 40</b>
+                <small>Obesidad alta</small>
+              </div>
+              <div class="right txt-bad">RECHAZO DIRECTO</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footerHint">
+        IMC = peso (kg) / (altura (m)²). El sistema marca automáticamente el rango en GENERAL y SENIORS.
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+
+    /* ==========================
+       CHATBOT PANEL (open/close) - ÚNICO Y ROBUSTO
+       - Abre: botón topbar
+       - Cierra: X, overlay, ESC
+       ========================== */
+    (function initChatbotPanel() {
+      const btnHeader = document.getElementById('btnOpenChatbot');
+      const btnTopOpen = document.getElementById('btnOpenChatbotTop');
+      const btnClose = document.getElementById('btnCloseChatbot');
+      const overlay = document.getElementById('chatbotOverlay');
+      const panel = document.getElementById('chatbotPanel');
+
+      if (!btnClose || !overlay || !panel) return;
+
+      function toggleChatbot(forceState) {
+        const isOpen = document.body.classList.contains('cbOpen');
+        const nextState = (typeof forceState === 'boolean') ? forceState : !isOpen;
+
+        document.body.classList.toggle('cbOpen', nextState);
+        overlay.setAttribute('aria-hidden', !nextState);
+        panel.setAttribute('aria-hidden', !nextState);
+
+        // Pasar rol al iframe cuando se abre
+        if (nextState) {
+          const iframe = document.getElementById('chatbotFrame');
+          const role = localStorage.getItem('adeslas_user_role') || 'user';
+          if (iframe) {
+            let baseSrc = iframe.getAttribute('src').split('?')[0];
+            iframe.setAttribute('src', baseSrc + '?role=' + role);
+          }
+        }
+      }
+
+      if (btnHeader) btnHeader.addEventListener('click', (e) => { e.preventDefault(); toggleChatbot(); });
+      if (btnTopOpen) btnTopOpen.addEventListener('click', (e) => { e.preventDefault(); toggleChatbot(); });
+
+      btnClose.addEventListener('click', function (e) {
+        e.preventDefault();
+        toggleChatbot(false);
+      });
+
+      overlay.addEventListener('click', function () {
+        toggleChatbot(false);
+      });
+
+      document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape') toggleChatbot(false);
+      });
+    })();
+
+    // ==========================
+    // CALCULADORA IMC (JS puro)
+    // ==========================
+    const elPeso = document.getElementById("peso");
+    const elAltura = document.getElementById("altura");
+    const elIMC = document.getElementById("imcValue");
+    const btnCalcular = document.getElementById("btnCalcular");
+    const btnLimpiar = document.getElementById("btnLimpiar");
+
+    const statusRow = document.getElementById("statusRow");
+    const dotGeneral = document.getElementById("dotGeneral");
+    const dotSeniors = document.getElementById("dotSeniors");
+    const txtGeneral = document.getElementById("txtGeneral");
+    const txtSeniors = document.getElementById("txtSeniors");
+
+    const listGeneral = document.getElementById("listGeneral");
+    const listSeniors = document.getElementById("listSeniors");
+
+    function _toNum(v) {
+      const n = parseFloat(String(v).replace(",", "."));
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function _round1(n) {
+      return Math.round(n * 10) / 10;
+    }
+
+    function _clearActive(listEl) {
+      const rows = listEl.querySelectorAll(".rangeRow.active");
+      rows.forEach(r => r.classList.remove("active"));
+    }
+
+    function _activateRange(listEl, imc) {
+      _clearActive(listEl);
+      const rows = listEl.querySelectorAll(".rangeRow");
+      for (const row of rows) {
+        const min = _toNum(row.getAttribute("data-min"));
+        const max = _toNum(row.getAttribute("data-max"));
+        if (min === null || max === null) continue;
+        if (imc >= min && imc <= max) {
+          row.classList.add("active");
+          return row;
+        }
+      }
+      return null;
+    }
+
+    function _textAndDotForGeneral(imc) {
+      if (imc < 16.5) return { text: "General: RECHAZO DIRECTO", kind: "bad" };
+      if (imc >= 16.5 && imc < 18.5) return { text: "General: EXCLUSIÓN DE ANOREXIA", kind: "warn" };
+      if (imc >= 18.5 && imc <= 29.9) return { text: "General: PASA LIMPIA", kind: "good" };
+      if (imc >= 30 && imc <= 33.9) return { text: "General: EXCLUSIÓN DE OBESIDAD", kind: "warn" };
+      return { text: "General: RECHAZO DIRECTO", kind: "bad" };
+    }
+
+    function _textAndDotForSeniors(imc) {
+      if (imc < 16.5) return { text: "Seniors: RECHAZO DIRECTO", kind: "bad" };
+      if (imc >= 16.5 && imc < 18.5) return { text: "Seniors: LIMPIA O EXCLUSIÓN ANOREXIA", kind: "warn" };
+      if (imc >= 18.5 && imc <= 29.9) return { text: "Seniors: PASA LIMPIA", kind: "good" };
+      if (imc >= 30 && imc <= 33.9) return { text: "Seniors: CASI SIEMPRE PASA LIMPIA", kind: "good" };
+      if (imc >= 34 && imc <= 39.9) return { text: "Seniors: EXCLUSIÓN DE OBESIDAD", kind: "warn" };
+      return { text: "Seniors: RECHAZO DIRECTO", kind: "bad" };
+    }
+
+    function _setDot(dotEl, kind) {
+      dotEl.classList.remove("good", "warn", "bad");
+      dotEl.classList.add(kind);
+    }
+
+    function calcularIMC() {
+      const peso = _toNum(elPeso.value);
+      const alturaCm = _toNum(elAltura.value);
+
+      if (peso === null || alturaCm === null || peso <= 0 || alturaCm <= 0) {
+        elIMC.textContent = "—";
+        statusRow.style.display = "none";
+        _clearActive(listGeneral);
+        _clearActive(listSeniors);
+        return;
+      }
+
+      const alturaM = alturaCm / 100;
+      const imc = peso / (alturaM * alturaM);
+
+      const imc1 = _round1(imc);
+      elIMC.textContent = String(imc1.toFixed(1));
+
+      _activateRange(listGeneral, imc1);
+      _activateRange(listSeniors, imc1);
+
+      const g = _textAndDotForGeneral(imc1);
+      const s = _textAndDotForSeniors(imc1);
+
+      txtGeneral.textContent = g.text;
+      txtSeniors.textContent = s.text;
+
+      _setDot(dotGeneral, g.kind);
+      _setDot(dotSeniors, s.kind);
+
+      statusRow.style.display = "flex";
+    }
+
+    function limpiar() {
+      elPeso.value = "";
+      elAltura.value = "";
+      elIMC.textContent = "—";
+      statusRow.style.display = "none";
+      _clearActive(listGeneral);
+      _clearActive(listSeniors);
+      elPeso.focus();
+    }
+
+    btnCalcular.addEventListener("click", calcularIMC);
+    btnLimpiar.addEventListener("click", limpiar);
+
+    elPeso.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); calcularIMC(); }
+    });
+    elAltura.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); calcularIMC(); }
+    });
+
+    elPeso.addEventListener("input", () => {
+      if (String(elIMC.textContent).trim() !== "—") calcularIMC();
+    });
+    elAltura.addEventListener("input", () => {
+      if (String(elIMC.textContent).trim() !== "—") calcularIMC();
+    });
+
+    // Demo inicial
+    calcularIMC();
+
+    // ==========================
+    // NAVEGACIÓN (TOPBAR + VOLVER)
+    // ==========================
+    const btnGoCotizador = document.getElementById("btnGoCotizador");
+    const btnGoCotizadorTop = document.getElementById("btnGoCotizadorTop");
+    const btnOpenPatologiasTop = document.getElementById("btnOpenPatologiasTop");
+    const btnOpenAdminTop = document.getElementById("btnOpenAdminTop");
+
+    function openToolPage(kind) {
+      let url = "";
+      if (kind === "imc") {
+        url = "calculadoraIMC.html";
+      } else if (kind === "patologias") {
+        url = "buscador patologias/buscador_patologias_base_interna_v2.html";
+      } else if (kind === "admin") {
+        url = "buscador patologias/buscador_patologias_base_interna_v2.html#admin";
+      } else if (kind === "cotizador") {
+        url = "cotizador_comercial_cp_edades_OK_reglas_sin_slider_DUPLICADOS_FIX.html";
+      } else {
+        return;
+      }
+      location.href = url;
+    }
+
+    const btnOpenCotizador = document.getElementById("btnOpenCotizador");
+    const btnOpenPatologias = document.getElementById("btnOpenPatologias");
+    const btnOpenAdmin = document.getElementById("btnOpenAdmin");
+
+    if (btnGoCotizador) btnGoCotizador.addEventListener("click", () => openToolPage("cotizador"));
+    if (btnOpenCotizador) btnOpenCotizador.addEventListener("click", (e) => { e.preventDefault(); openToolPage("cotizador"); });
+    if (btnOpenPatologias) btnOpenPatologias.addEventListener("click", (e) => { e.preventDefault(); openToolPage("patologias"); });
+    if (btnOpenAdmin) btnOpenAdmin.addEventListener("click", (e) => { e.preventDefault(); openToolPage("admin"); });
+    if (btnOpenIMC) btnOpenIMC.addEventListener("click", (e) => { e.preventDefault(); openToolPage("imc"); });
+
+
+    // ==========================
+    // AUTH CHECK & ROLE
+    // ==========================
+    (function checkAuth() {
+      let isLogged = false;
+      try {
+        const v = localStorage.getItem("diblafe_admin_logged_v4");
+        isLogged = (v === "true" || v === "1");
+      } catch (e) { }
+
+      if (!isLogged) {
+        location.replace("login.html");
+        return;
+      }
+
+      const role = localStorage.getItem("adeslas_user_role") || "user";
+      const btnAdmin = document.getElementById("btnOpenAdmin");
+      if (role !== "admin" && btnAdmin) {
+        btnAdmin.style.display = "none";
+      }
+
+      // Pasar rol al chatbot
+      const iframe = document.getElementById("chatbotFrame");
+      if (iframe) {
+        let baseSrc = iframe.getAttribute("src").split("?")[0];
+        iframe.setAttribute("src", baseSrc + "?role=" + role);
+      }
+    })();
+
+    // -- Botón Salir del header --
+    (function initHeaderLogout() {
+      const btn = document.getElementById("btnLogout");
+      if (btn) btn.addEventListener("click", function () {
+        try {
+          localStorage.setItem("diblafe_admin_logged_v4", "false");
+          localStorage.removeItem("adeslas_user_role");
+        } catch (e) { }
+        location.replace("login.html");
+      });
+    })();
+  </script>
+
+
+
+</body>
+
+</html>
