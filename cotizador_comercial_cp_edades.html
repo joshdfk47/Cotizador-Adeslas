@@ -847,7 +847,7 @@
             <option value="9">9%</option>
             <option value="10">10%</option>
           </select>
-          <div class="hint">Solo disponible en mensual. GO nunca admite descuento manual.</div>
+          <div class="hint"></div>
         </div>
 
         <div class="field">
@@ -861,7 +861,7 @@
             <option value="semestral">Semestral (-4%)</option>
             <option value="anual">Anual (-6%)</option>
           </select>
-          <div class="hint">El descuento por forma de pago se aplica siempre (base y con dental).</div>
+          <div class="hint"></div>
         </div>
       </div>
 
@@ -1205,15 +1205,15 @@
       if (z === "—") {
         elZoneText.textContent = "Zona: —";
         elZoneHint.textContent = "—";
-        elCPMsg.textContent = "Escribe un CP válido para detectar provincia y zona.";
+        elCPMsg.textContent = "";
         elDotZone.className = "dot warn";
       } else {
         const fb = (raw === 0) ? " (zona 0 → se tarifica como zona 1)" : "";
         elZoneText.textContent = `Zona: ${z}${prov}${fb}`;
         elZoneHint.textContent = `Zona ${z}`;
         elCPMsg.textContent = (raw === 0)
-          ? "Tu tabla CP devuelve zona 0 en esta provincia. Se aplica fallback a zona 1 para tarificar."
-          : "Zona detectada correctamente por provincia (2 primeras cifras del CP).";
+          ? ""
+          : "";
         elDotZone.className = (raw === 0) ? "dot warn" : "dot";
       }
 
