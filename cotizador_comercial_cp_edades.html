@@ -1,0 +1,1725 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Cotizador (CP + Edades) — Base y Dental</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: rgba(15, 23, 42, 0.10);
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow2: 0 6px 18px rgba(15, 23, 42, 0.07);
+      --radius: 16px;
+      --radius2: 12px;
+      --focus: rgba(37, 99, 235, 0.20);
+      --accent: #2563eb;
+      --good: #16a34a;
+      --bad: #ef4444;
+      --warn: #f59e0b;
+
+      /* ====== NUEVO (corporativo): top safe area ====== */
+      --safeTop: env(safe-area-inset-top, 0px);
+
+      /* ====== NUEVO (corporativo): colores marca ====== */
+      --brand: #0055A5;
+      /* Azul Adeslas */
+      --brand2: #0070C9;
+      /* Azul Adeslas (degradado) */
+
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      overflow-y: scroll;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.10), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(16, 185, 129, 0.10), transparent 55%),
+        var(--bg);
+      min-height: 100vh;
+      font-size: 16px;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 18px 34px;
+    }
+
+    /* ==========================
+      RUTA / ENLACES (encima de CP dentro del panel)
+      ========================== */
+    .routeLinks {
+      display: none !important;
+    }
+
+    .routeCurrent {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(15, 23, 42, 0.10);
+      background: rgba(15, 23, 42, 0.03);
+      color: rgba(15, 23, 42, 0.85);
+      user-select: none;
+    }
+
+    .routeLink {
+      color: var(--brand);
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(11, 43, 76, .16);
+      background: rgba(255, 255, 255, .92);
+      box-shadow: 0 6px 14px rgba(11, 43, 76, .08);
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .routeLink:hover {
+      background: #ffffff;
+      border-color: rgba(214, 162, 58, .50);
+      transform: translateY(-1px);
+    }
+
+    .routeLink:active {
+      transform: translateY(0px);
+    }
+
+    .routeSep {
+      color: rgba(71, 85, 105, .70);
+      font-weight: 950;
+    }
+
+
+    .title {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .title h1 {
+      font-size: 20px;
+      line-height: 1.2;
+      margin: 0;
+      letter-spacing: .2px;
+    }
+
+    .title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 14px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr 1fr 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+
+    .hint {
+      font-weight: 600;
+      color: rgba(71, 85, 105, 0.95);
+      font-size: 12px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 12px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+      box-shadow: 0 0 0 0 transparent;
+      transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      border-color: rgba(37, 99, 235, 0.5);
+      box-shadow: 0 0 0 4px var(--focus);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      border: 1px solid rgba(0, 85, 165, 0.12);
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s ease;
+      white-space: nowrap;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand);
+      box-shadow: 0 4px 10px rgba(11, 43, 76, .05);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(11, 43, 76, .12);
+      border-color: rgba(0, 85, 165, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0px) scale(0.98);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 18px rgba(0, 85, 165, 0.25);
+    }
+
+    .btn.danger {
+      background: #fff;
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #ef4444;
+    }
+
+    .btn.danger:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+      box-shadow: 0 8px 18px rgba(239, 68, 68, 0.15);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(37, 99, 235, 0.16);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .chip small {
+      font-weight: 800;
+      color: rgba(30, 64, 175, 0.95);
+    }
+
+    .chip .x {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      background: rgba(255, 255, 255, 0.85);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-weight: 1000;
+      line-height: 1;
+      color: rgba(30, 64, 175, 0.95);
+    }
+
+    .chip .x:hover {
+      background: #fff;
+    }
+
+    .meta {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.9);
+    }
+
+    .dot.warn {
+      background: rgba(245, 158, 11, 0.95);
+    }
+
+    .dot.bad {
+      background: rgba(239, 68, 68, 0.95);
+    }
+
+    .results {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .results {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 820px) {
+      .results {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .results {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 0;
+      overflow: hidden;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 15px;
+      letter-spacing: .2px;
+      background: var(--p-color, var(--brand));
+      color: #fff;
+      padding: 14px;
+      font-weight: 800;
+      text-align: center;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .card-content {
+      padding: 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .prices {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .priceLine {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      background: rgba(15, 23, 42, 0.02);
+    }
+
+    .priceLine b {
+      font-size: 13px;
+    }
+
+    .priceLine .val {
+      font-weight: 1000;
+      font-size: 16px;
+      letter-spacing: .2px;
+    }
+
+    .priceLine .val small {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--muted);
+    }
+
+    .priceLine.active {
+      border-color: rgba(22, 163, 74, 0.25);
+      background: rgba(22, 163, 74, 0.06);
+    }
+
+    .no {
+      color: var(--bad);
+      font-weight: 1000;
+      font-size: 14px;
+      padding: 10px 10px;
+      border-radius: 12px;
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.18);
+      margin-top: 10px;
+    }
+
+    details {
+      margin-top: 10px;
+      border-top: 1px dashed rgba(15, 23, 42, 0.12);
+      padding-top: 10px;
+    }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+      font-weight: 900;
+      color: rgba(30, 41, 59, 0.95);
+      font-size: 13px;
+    }
+
+    summary .sumRow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    summary .pm {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: rgba(15, 23, 42, 0.03);
+      font-weight: 1000;
+      line-height: 1;
+      color: rgba(30, 41, 59, 0.95);
+      flex: 0 0 auto;
+    }
+
+    details summary .pm::before {
+      content: "+";
+    }
+
+    details[open] summary .pm::before {
+      content: "−";
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .detailBox {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: rgba(51, 65, 85, 0.95);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .detailRow {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(2, 6, 23, 0.02);
+      border: 1px solid rgba(2, 6, 23, 0.06);
+    }
+
+    footer {
+      margin-top: 18px;
+      color: rgba(71, 85, 105, 0.9);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* ==========================
+      CHATBOT PANEL (IFRAME) - POR DELANTE DE TODO
+      ========================== */
+    .cbOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, .45);
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+      z-index: 20000;
+    }
+
+    .cbPanel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: min(520px, 92vw);
+      background: #ffffff;
+      border-left: 1px solid rgba(15, 23, 42, 0.12);
+      box-shadow: -18px 0 50px rgba(15, 23, 42, .18);
+      transform: translateX(105%);
+      transition: transform .22s ease;
+      z-index: 20001;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cbHeader {
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.10);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(255, 255, 255, 0));
+    }
+
+    .cbTitle {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .cbTitle b {
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+
+    .cbTitle small {
+      font-size: 12px;
+      color: rgba(71, 85, 105, 0.95);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cbClose {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: rgba(15, 23, 42, 0.03);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 900;
+      color: rgba(15, 23, 42, 0.85);
+    }
+
+    .cbClose:hover {
+      background: rgba(15, 23, 42, 0.06);
+    }
+
+    .cbBody {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .cbFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    /* Estados abierto/cerrado */
+    .cbOpen .cbOverlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .cbOpen .cbPanel {
+      transform: translateX(0%);
+    }
+
+    /* ==========================
+       DRAG & DROP (reordenar productos)
+       ========================== */
+    .card[draggable="true"] {
+      cursor: grab;
+    }
+
+    .card[draggable="true"]:active {
+      cursor: grabbing;
+    }
+
+    .card.dragging {
+      opacity: .55;
+      transform: scale(0.995);
+    }
+
+    .card.dropTarget {
+      outline: 3px solid rgba(37, 99, 235, 0.28);
+      box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.10);
+    }
+
+    /* ==========================
+       HEADER CORPORATIVO (UNIFICADO)
+       ========================== */
+    header.main-header {
+      position: sticky;
+      top: 0;
+      z-index: 10000;
+      padding-top: var(--safeTop);
+      background: linear-gradient(180deg, var(--brand) 0%, var(--brand2) 100%);
+      box-shadow: 0 14px 34px rgba(11, 43, 76, .18);
+      border-bottom: 1px solid rgba(255, 255, 255, .14);
+    }
+
+    .header-wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      height: 72px;
+      box-sizing: border-box;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      flex: 1 1 0;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex: 1 1 0;
+    }
+
+    .btn-nav {
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 1000;
+      letter-spacing: .2px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .16);
+      color: #ffffff;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+      transition: all .2s ease;
+      background: rgba(255, 255, 255, .08);
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .btn-nav:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .22);
+      background: rgba(255, 255, 255, .15);
+    }
+
+    .btn-nav.active {
+      background: #ffffff !important;
+      color: var(--brand) !important;
+      border-color: #ffffff !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      text-shadow: none;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .btn-nav.cotizador:not(.active) {
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+    }
+
+    .btn-nav.patologias:not(.active) {
+      background: linear-gradient(135deg, #10b981, #22c55e);
+    }
+
+    .btn-nav.imc:not(.active) {
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+    }
+
+    .btn-nav.chatbot:not(.active) {
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+    }
+
+    .btn-nav.admin:not(.active) {
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .brand-logo {
+      height: 38px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .18));
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 18px 34px;
+    }
+
+    .routeLinks {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="main-header">
+    <div class="header-wrap">
+      <div class="brand-block"></div>
+
+      <nav class="header-nav" aria-label="Navegación superior">
+        <a class="btn-nav cotizador active" href="#" id="btnOpenCotizador">Cotizador</a>
+        <a class="btn-nav patologias" href="#" id="btnOpenPatologias">Buscador Patologías</a>
+        <a class="btn-nav imc" href="#" id="btnOpenIMC">Calculadora IMC</a>
+        <a class="btn-nav chatbot" href="#" id="btnOpenChatbot">Chatbot FAQ</a>
+        <a class="btn-nav admin" href="#" id="btnOpenAdmin">Admin</a>
+      </nav>
+
+      <div class="header-right">
+        <button id="btnLogout" class="btn-nav"
+          style="font-size:13px;padding:8px 14px;background:rgba(239,68,68,0.18);border-color:rgba(239,68,68,0.35);color:#fff;"
+          title="Cerrar sesión">⬤ Salir</button>
+        <img class="brand-logo" src="buscador patologias/logo-adeslas.png" alt="Adeslas">
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <div class="title"></div>
+
+    <div class="panel">
+      <!-- RUTA / ENLACES (encima de CP) -->
+      <nav class="routeLinks" aria-label="Rutas">
+        <a class="routeLink" href="#" id="btnOpenPatologias">Buscador Patologías</a>
+        <span class="routeSep">›</span>
+        <a class="routeLink" href="#" id="btnOpenIMC">Calculadora IMC</a>
+        <span class="routeSep">›</span>
+        <a class="routeLink" href="#" id="btnOpenChatbot">Chatbot FAQ</a>
+        <span class="routeSep">›</span>
+        <a class="routeLink" href="#" id="btnOpenAdmin">Admin</a>
+      </nav>
+
+      <div class="controls">
+        <div class="field">
+          <div class="label">
+            <span>CP (5 dígitos)</span>
+            <span class="hint" id="zoneHint">—</span>
+          </div>
+          <input id="cpInput" type="text" inputmode="numeric" placeholder="Ej: 46019" maxlength="5" />
+          <div class="hint" id="cpMsg">Escribe un CP válido para detectar provincia y zona.</div>
+        </div>
+
+        <div class="field">
+          <div class="label">
+            <span>Edades (añadir varias)</span>
+            <span class="hint" id="livesCount">0 asegurados</span>
+          </div>
+          <div class="row">
+            <input id="ageInput" type="number" min="0" max="120" placeholder="Edad" />
+            <button class="btn primary" id="btnAddAge" type="button">+ Añadir</button>
+          </div>
+          <div class="chips" id="agesChips"></div>
+        </div>
+
+        <div class="field">
+          <div class="label">
+            <span>Descuento</span>
+            <span class="hint" id="discHint">—</span>
+          </div>
+          <select id="discountSelect">
+            <option value="0">0%</option>
+            <option value="1">1%</option>
+            <option value="2">2%</option>
+            <option value="3">3%</option>
+            <option value="4">4%</option>
+            <option value="5">5%</option>
+            <option value="6">6%</option>
+            <option value="7">7%</option>
+            <option value="8">8%</option>
+            <option value="9">9%</option>
+            <option value="10">10%</option>
+          </select>
+          <div class="hint">Solo disponible en mensual. GO nunca admite descuento manual.</div>
+        </div>
+
+        <div class="field">
+          <div class="label">
+            <span>Pago</span>
+            <span class="hint" id="payHint">—</span>
+          </div>
+          <select id="paySelect">
+            <option value="mensual">Mensual (0%)</option>
+            <option value="trimestral">Trimestral (-2%)</option>
+            <option value="semestral">Semestral (-4%)</option>
+            <option value="anual">Anual (-6%)</option>
+          </select>
+          <div class="hint">El descuento por forma de pago se aplica siempre (base y con dental).</div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="badge" id="badgeStatus">
+          <span class="dot warn" id="dotStatus"></span>
+          <span id="statusText">Pendiente: introduce CP y al menos 1 edad</span>
+        </div>
+        <div class="badge" id="badgeZone">
+          <span class="dot" id="dotZone"></span>
+          <span id="zoneText">Zona: —</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="results" id="results"></div>
+
+    <footer>
+      Datos cargados desde tus Excel (CP→Zona, Base por Edad/Zona/Producto, Dental por Nº Asegurados). Sin backend.
+    </footer>
+  </div>
+
+  <!-- ==========================
+       PANEL CHATBOT (IFRAME)
+       ========================== -->
+  <div id="chatbotOverlay" class="cbOverlay" aria-hidden="true"></div>
+
+  <aside id="chatbotPanel" class="cbPanel" aria-hidden="true" role="dialog" aria-label="Chatbot FAQ">
+    <div class="cbHeader">
+      <div class="cbTitle">
+        <b>Chatbot FAQ</b>
+        <small>Responde solo con el conocimiento cargado</small>
+      </div>
+      <button id="btnCloseChatbot" class="cbClose" type="button" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="cbBody">
+      <iframe id="chatbotFrame" class="cbFrame" src="fackbot.html" title="FAQ Bot" loading="lazy"
+        referrerpolicy="no-referrer"></iframe>
+    </div>
+  </aside>
+
+  <script>
+
+    // ====== DATOS (embebidos desde Excel) ======
+    const DATA = { "products": ["Go", "Plena Vital", "Plena Total Vital", "Plena", "Plena Plus", "Plena Total", "Plena Extra 150", "Seniors", "Seniors total", "NIF", "Pymes Total"], "price_table": { "Go": { "1": [{ "min": 0, "max": 54, "price": 21.0 }, { "min": 55, "max": 69, "price": 37.5 }, { "min": 70, "max": 120, "price": 50.0 }], "2": [{ "min": 0, "max": 54, "price": 21.5 }, { "min": 55, "max": 69, "price": 39.0 }, { "min": 70, "max": 120, "price": 52.0 }], "3": [{ "min": 0, "max": 54, "price": 22.0 }, { "min": 55, "max": 69, "price": 39.5 }, { "min": 70, "max": 120, "price": 53.0 }], "4": [{ "min": 0, "max": 54, "price": 22.5 }, { "min": 55, "max": 69, "price": 40.0 }, { "min": 70, "max": 120, "price": 53.5 }], "5": [{ "min": 0, "max": 54, "price": 23.0 }, { "min": 55, "max": 69, "price": 41.0 }, { "min": 70, "max": 120, "price": 54.0 }], "6": [{ "min": 0, "max": 54, "price": 23.5 }, { "min": 55, "max": 69, "price": 41.5 }, { "min": 70, "max": 120, "price": 45.0 }] }, "Plena Vital": { "1": [{ "min": 0, "max": 24, "price": 38.0 }, { "min": 25, "max": 44, "price": 50.0 }, { "min": 45, "max": 54, "price": 61.5 }, { "min": 55, "max": 59, "price": 94.0 }, { "min": 60, "max": 64, "price": 117.0 }, { "min": 65, "max": 69, "price": 156.0 }, { "min": 70, "max": 120, "price": 168.0 }], "2": [{ "min": 0, "max": 24, "price": 39.0 }, { "min": 25, "max": 44, "price": 50.5 }, { "min": 45, "max": 54, "price": 62.0 }, { "min": 55, "max": 59, "price": 95.0 }, { "min": 60, "max": 64, "price": 121.0 }, { "min": 65, "max": 69, "price": 163.0 }, { "min": 70, "max": 120, "price": 176.0 }], "3": [{ "min": 0, "max": 24, "price": 39.5 }, { "min": 25, "max": 44, "price": 51.0 }, { "min": 45, "max": 54, "price": 63.0 }, { "min": 55, "max": 59, "price": 96.5 }, { "min": 60, "max": 64, "price": 124.0 }, { "min": 65, "max": 69, "price": 167.0 }, { "min": 70, "max": 120, "price": 179.0 }], "4": [{ "min": 0, "max": 24, "price": 40.0 }, { "min": 25, "max": 44, "price": 52.0 }, { "min": 45, "max": 54, "price": 64.0 }, { "min": 55, "max": 59, "price": 99.0 }, { "min": 60, "max": 64, "price": 125.5 }, { "min": 65, "max": 69, "price": 167.5 }, { "min": 70, "max": 120, "price": 180.0 }], "5": [{ "min": 0, "max": 24, "price": 41.0 }, { "min": 25, "max": 44, "price": 53.5 }, { "min": 45, "max": 54, "price": 66.0 }, { "min": 55, "max": 59, "price": 101.0 }, { "min": 60, "max": 64, "price": 126.0 }, { "min": 65, "max": 69, "price": 168.0 }, { "min": 70, "max": 120, "price": 181.0 }], "6": [{ "min": 0, "max": 24, "price": 42.5 }, { "min": 25, "max": 44, "price": 54.0 }, { "min": 45, "max": 54, "price": 66.5 }, { "min": 55, "max": 59, "price": 103.0 }, { "min": 60, "max": 64, "price": 127.0 }, { "min": 65, "max": 69, "price": 169.0 }, { "min": 70, "max": 120, "price": 182.0 }] }, "Plena Total Vital": { "1": [{ "min": 0, "max": 24, "price": 48.5 }, { "min": 25, "max": 44, "price": 59.5 }, { "min": 45, "max": 54, "price": 72.5 }, { "min": 55, "max": 59, "price": 110.0 }, { "min": 60, "max": 62, "price": 132.0 }, { "min": 63, "max": 120, "price": 196.0 }], "2": [{ "min": 0, "max": 24, "price": 49.0 }, { "min": 25, "max": 44, "price": 61.0 }, { "min": 45, "max": 54, "price": 73.5 }, { "min": 55, "max": 59, "price": 112.0 }, { "min": 60, "max": 62, "price": 133.0 }, { "min": 63, "max": 120, "price": 201.0 }], "3": [{ "min": 0, "max": 24, "price": 50.0 }, { "min": 25, "max": 44, "price": 62.0 }, { "min": 45, "max": 54, "price": 75.0 }, { "min": 55, "max": 59, "price": 114.0 }, { "min": 60, "max": 62, "price": 137.0 }, { "min": 63, "max": 120, "price": 210.0 }], "4": [{ "min": 0, "max": 24, "price": 50.5 }, { "min": 25, "max": 44, "price": 62.5 }, { "min": 45, "max": 54, "price": 75.5 }, { "min": 55, "max": 59, "price": 114.5 }, { "min": 60, "max": 62, "price": 137.5 }, { "min": 63, "max": 120, "price": 210.5 }], "5": [{ "min": 0, "max": 24, "price": 52.0 }, { "min": 25, "max": 44, "price": 63.0 }, { "min": 45, "max": 54, "price": 77.0 }, { "min": 55, "max": 59, "price": 115.0 }, { "min": 60, "max": 62, "price": 140.0 }, { "min": 63, "max": 120, "price": 230.0 }], "6": [{ "min": 0, "max": 24, "price": 53.0 }, { "min": 25, "max": 44, "price": 65.0 }, { "min": 45, "max": 54, "price": 78.5 }, { "min": 55, "max": 59, "price": 118.0 }, { "min": 60, "max": 62, "price": 142.0 }, { "min": 63, "max": 120, "price": 235.0 }] }, "Plena": { "1": [{ "min": 0, "max": 24, "price": 50.0 }, { "min": 25, "max": 44, "price": 60.0 }, { "min": 45, "max": 54, "price": 72.0 }, { "min": 55, "max": 59, "price": 105.0 }, { "min": 60, "max": 64, "price": 128.0 }, { "min": 65, "max": 69, "price": 166.0 }, { "min": 70, "max": 120, "price": 225.0 }], "2": [{ "min": 0, "max": 24, "price": 51.0 }, { "min": 25, "max": 44, "price": 62.0 }, { "min": 45, "max": 54, "price": 73.0 }, { "min": 55, "max": 59, "price": 107.0 }, { "min": 60, "max": 64, "price": 130.0 }, { "min": 65, "max": 69, "price": 167.0 }, { "min": 70, "max": 120, "price": 227.0 }], "3": [{ "min": 0, "max": 24, "price": 52.0 }, { "min": 25, "max": 44, "price": 63.0 }, { "min": 45, "max": 54, "price": 74.0 }, { "min": 55, "max": 59, "price": 109.0 }, { "min": 60, "max": 64, "price": 131.0 }, { "min": 65, "max": 69, "price": 169.0 }, { "min": 70, "max": 120, "price": 229.0 }], "4": [{ "min": 0, "max": 24, "price": 53.0 }, { "min": 25, "max": 44, "price": 64.0 }, { "min": 45, "max": 54, "price": 75.0 }, { "min": 55, "max": 59, "price": 110.0 }, { "min": 60, "max": 64, "price": 135.0 }, { "min": 65, "max": 69, "price": 172.0 }, { "min": 70, "max": 120, "price": 235.0 }], "5": [{ "min": 0, "max": 24, "price": 54.0 }, { "min": 25, "max": 44, "price": 65.0 }, { "min": 45, "max": 54, "price": 78.0 }, { "min": 55, "max": 59, "price": 112.0 }, { "min": 60, "max": 64, "price": 139.0 }, { "min": 65, "max": 69, "price": 175.0 }, { "min": 70, "max": 120, "price": 239.0 }], "6": [{ "min": 0, "max": 24, "price": 55.0 }, { "min": 25, "max": 44, "price": 66.0 }, { "min": 45, "max": 54, "price": 79.0 }, { "min": 55, "max": 59, "price": 114.0 }, { "min": 60, "max": 64, "price": 140.0 }, { "min": 65, "max": 69, "price": 179.0 }, { "min": 70, "max": 120, "price": 240.0 }] }, "Plena Plus": { "1": [{ "min": 0, "max": 24, "price": 62.0 }, { "min": 25, "max": 44, "price": 72.0 }, { "min": 45, "max": 54, "price": 92.0 }, { "min": 55, "max": 59, "price": 149.0 }, { "min": 60, "max": 64, "price": 175.0 }, { "min": 65, "max": 69, "price": 239.0 }, { "min": 70, "max": 120, "price": 255.0 }], "2": [{ "min": 0, "max": 24, "price": 64.0 }, { "min": 25, "max": 44, "price": 75.0 }, { "min": 45, "max": 54, "price": 94.0 }, { "min": 55, "max": 59, "price": 155.0 }, { "min": 60, "max": 64, "price": 181.0 }, { "min": 65, "max": 69, "price": 255.0 }, { "min": 70, "max": 120, "price": 259.0 }], "3": [{ "min": 0, "max": 24, "price": 64.0 }, { "min": 25, "max": 44, "price": 76.0 }, { "min": 45, "max": 54, "price": 96.0 }, { "min": 55, "max": 59, "price": 159.0 }, { "min": 60, "max": 64, "price": 185.0 }, { "min": 65, "max": 69, "price": 259.0 }, { "min": 70, "max": 120, "price": 265.0 }], "4": [{ "min": 0, "max": 24, "price": 66.0 }, { "min": 25, "max": 44, "price": 77.0 }, { "min": 45, "max": 54, "price": 99.0 }, { "min": 55, "max": 59, "price": 164.0 }, { "min": 60, "max": 64, "price": 196.0 }, { "min": 65, "max": 69, "price": 275.0 }, { "min": 70, "max": 120, "price": 279.0 }], "5": [{ "min": 0, "max": 24, "price": 67.0 }, { "min": 25, "max": 44, "price": 79.0 }, { "min": 45, "max": 54, "price": 100.0 }, { "min": 55, "max": 59, "price": 166.0 }, { "min": 60, "max": 64, "price": 205.0 }, { "min": 65, "max": 69, "price": 289.0 }, { "min": 70, "max": 120, "price": 295.0 }], "6": [{ "min": 0, "max": 24, "price": 69.0 }, { "min": 25, "max": 44, "price": 79.0 }, { "min": 45, "max": 54, "price": 105.0 }, { "min": 55, "max": 59, "price": 167.0 }, { "min": 60, "max": 64, "price": 207.0 }, { "min": 65, "max": 69, "price": 291.0 }, { "min": 70, "max": 120, "price": 297.0 }] }, "Plena Total": { "1": [{ "min": 0, "max": 24, "price": 83.0 }, { "min": 25, "max": 44, "price": 99.0 }, { "min": 45, "max": 54, "price": 121.0 }, { "min": 55, "max": 59, "price": 169.0 }, { "min": 60, "max": 62, "price": 207.0 }, { "min": 63, "max": 120, "price": 273.0 }], "2": [{ "min": 0, "max": 24, "price": 82.0 }, { "min": 25, "max": 44, "price": 103.0 }, { "min": 45, "max": 54, "price": 124.0 }, { "min": 55, "max": 59, "price": 176.0 }, { "min": 60, "max": 62, "price": 217.0 }, { "min": 63, "max": 120, "price": 284.0 }], "3": [{ "min": 0, "max": 24, "price": 86.0 }, { "min": 25, "max": 44, "price": 104.0 }, { "min": 45, "max": 54, "price": 126.5 }, { "min": 55, "max": 59, "price": 179.0 }, { "min": 60, "max": 62, "price": 223.0 }, { "min": 63, "max": 120, "price": 288.0 }], "4": [{ "min": 0, "max": 24, "price": 87.0 }, { "min": 25, "max": 44, "price": 105.5 }, { "min": 45, "max": 54, "price": 131.0 }, { "min": 55, "max": 59, "price": 181.0 }, { "min": 60, "max": 62, "price": 227.0 }, { "min": 63, "max": 120, "price": 294.0 }], "5": [{ "min": 0, "max": 24, "price": 88.5 }, { "min": 25, "max": 44, "price": 108.5 }, { "min": 45, "max": 54, "price": 135.5 }, { "min": 55, "max": 59, "price": 189.0 }, { "min": 60, "max": 62, "price": 243.0 }, { "min": 63, "max": 120, "price": 315.0 }], "6": [{ "min": 0, "max": 24, "price": 89.5 }, { "min": 25, "max": 44, "price": 111.0 }, { "min": 45, "max": 54, "price": 137.0 }, { "min": 55, "max": 59, "price": 192.0 }, { "min": 60, "max": 62, "price": 247.0 }, { "min": 63, "max": 120, "price": 318.0 }] }, "Plena Extra 150": { "1": [{ "min": 0, "max": 24, "price": 90.0 }, { "min": 25, "max": 44, "price": 106.0 }, { "min": 45, "max": 54, "price": 112.0 }, { "min": 55, "max": 59, "price": 174.0 }, { "min": 60, "max": 64, "price": 206.0 }, { "min": 65, "max": 69, "price": 293.0 }, { "min": 70, "max": 120, "price": 304.0 }], "2": [{ "min": 0, "max": 24, "price": 93.0 }, { "min": 25, "max": 44, "price": 110.0 }, { "min": 45, "max": 54, "price": 118.0 }, { "min": 55, "max": 59, "price": 180.0 }, { "min": 60, "max": 64, "price": 210.0 }, { "min": 65, "max": 69, "price": 301.0 }, { "min": 70, "max": 120, "price": 309.0 }], "3": [{ "min": 0, "max": 24, "price": 94.0 }, { "min": 25, "max": 44, "price": 111.0 }, { "min": 45, "max": 54, "price": 119.0 }, { "min": 55, "max": 59, "price": 185.0 }, { "min": 60, "max": 64, "price": 215.0 }, { "min": 65, "max": 69, "price": 308.0 }, { "min": 70, "max": 120, "price": 319.0 }], "4": [{ "min": 0, "max": 24, "price": 102.0 }, { "min": 25, "max": 44, "price": 120.0 }, { "min": 45, "max": 54, "price": 129.0 }, { "min": 55, "max": 59, "price": 198.0 }, { "min": 60, "max": 64, "price": 228.0 }, { "min": 65, "max": 69, "price": 320.0 }, { "min": 70, "max": 120, "price": 329.0 }], "5": [{ "min": 0, "max": 24, "price": 102.5 }, { "min": 25, "max": 44, "price": 120.5 }, { "min": 45, "max": 54, "price": 130.0 }, { "min": 55, "max": 59, "price": 198.5 }, { "min": 60, "max": 64, "price": 228.5 }, { "min": 65, "max": 69, "price": 321.0 }, { "min": 70, "max": 120, "price": 330.0 }], "6": [{ "min": 0, "max": 24, "price": 104.0 }, { "min": 25, "max": 44, "price": 122.0 }, { "min": 45, "max": 54, "price": 132.0 }, { "min": 55, "max": 59, "price": 203.0 }, { "min": 60, "max": 64, "price": 233.0 }, { "min": 65, "max": 69, "price": 330.0 }, { "min": 70, "max": 120, "price": 340.0 }] }, "Seniors": { "1": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 67.5 }, { "min": 55, "max": 59, "price": 67.5 }, { "min": 60, "max": 64, "price": 86.0 }, { "min": 65, "max": 69, "price": 103.0 }, { "min": 70, "max": 74, "price": 133.0 }, { "min": 75, "max": 79, "price": 162.0 }, { "min": 80, "max": 120, "price": 170.0 }], "2": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 70.0 }, { "min": 55, "max": 59, "price": 70.0 }, { "min": 60, "max": 64, "price": 88.0 }, { "min": 65, "max": 69, "price": 105.0 }, { "min": 70, "max": 74, "price": 138.0 }, { "min": 75, "max": 79, "price": 167.0 }, { "min": 80, "max": 120, "price": 175.0 }], "3": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 71.0 }, { "min": 55, "max": 59, "price": 71.0 }, { "min": 60, "max": 64, "price": 89.5 }, { "min": 65, "max": 69, "price": 106.0 }, { "min": 70, "max": 74, "price": 140.0 }, { "min": 75, "max": 79, "price": 170.0 }, { "min": 80, "max": 120, "price": 177.0 }], "4": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 72.0 }, { "min": 55, "max": 59, "price": 72.0 }, { "min": 60, "max": 64, "price": 92.0 }, { "min": 65, "max": 69, "price": 111.0 }, { "min": 70, "max": 74, "price": 145.0 }, { "min": 75, "max": 79, "price": 175.0 }, { "min": 80, "max": 120, "price": 182.0 }], "5": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 73.0 }, { "min": 55, "max": 59, "price": 73.0 }, { "min": 60, "max": 64, "price": 93.0 }, { "min": 65, "max": 69, "price": 113.0 }, { "min": 70, "max": 74, "price": 149.0 }, { "min": 75, "max": 79, "price": 179.0 }, { "min": 80, "max": 120, "price": 188.0 }], "6": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 74.0 }, { "min": 55, "max": 59, "price": 74.0 }, { "min": 60, "max": 64, "price": 94.0 }, { "min": 65, "max": 69, "price": 115.0 }, { "min": 70, "max": 74, "price": 150.0 }, { "min": 75, "max": 79, "price": 183.0 }, { "min": 80, "max": 120, "price": 190.0 }] }, "Seniors total": { "1": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 101.0 }, { "min": 63, "max": 64, "price": 101.0 }, { "min": 65, "max": 69, "price": 138.0 }, { "min": 70, "max": 74, "price": 172.0 }, { "min": 75, "max": 84, "price": 231.0 }], "2": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 104.0 }, { "min": 63, "max": 64, "price": 104.0 }, { "min": 65, "max": 69, "price": 142.0 }, { "min": 70, "max": 74, "price": 176.0 }, { "min": 75, "max": 84, "price": 239.0 }], "3": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 105.0 }, { "min": 63, "max": 64, "price": 105.0 }, { "min": 65, "max": 69, "price": 144.0 }, { "min": 70, "max": 74, "price": 180.0 }, { "min": 75, "max": 84, "price": 245.0 }], "4": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 110.0 }, { "min": 63, "max": 64, "price": 110.0 }, { "min": 65, "max": 69, "price": 145.0 }, { "min": 70, "max": 74, "price": 184.0 }, { "min": 75, "max": 84, "price": 252.0 }], "5": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 113.0 }, { "min": 63, "max": 64, "price": 113.0 }, { "min": 65, "max": 69, "price": 151.5 }, { "min": 70, "max": 74, "price": 190.0 }, { "min": 75, "max": 84, "price": 254.0 }], "6": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 116.0 }, { "min": 63, "max": 64, "price": 116.0 }, { "min": 65, "max": 69, "price": 155.0 }, { "min": 70, "max": 74, "price": 195.0 }, { "min": 75, "max": 84, "price": 259.0 }] }, "NIF": { "1": [{ "min": 0, "max": 24, "price": 55.5 }, { "min": 25, "max": 44, "price": 61.0 }, { "min": 45, "max": 54, "price": 79.0 }, { "min": 55, "max": 59, "price": 123.0 }, { "min": 60, "max": 64, "price": 153.0 }, { "min": 65, "max": 69, "price": 235.0 }, { "min": 70, "max": 120, "price": 239.0 }], "2": [{ "min": 0, "max": 24, "price": 56.5 }, { "min": 25, "max": 44, "price": 63.5 }, { "min": 45, "max": 54, "price": 83.0 }, { "min": 55, "max": 59, "price": 127.0 }, { "min": 60, "max": 64, "price": 159.0 }, { "min": 65, "max": 69, "price": 238.0 }, { "min": 70, "max": 120, "price": 246.0 }], "3": [{ "min": 0, "max": 24, "price": 57.0 }, { "min": 25, "max": 44, "price": 64.5 }, { "min": 45, "max": 54, "price": 84.0 }, { "min": 55, "max": 59, "price": 129.0 }, { "min": 60, "max": 64, "price": 160.0 }, { "min": 65, "max": 69, "price": 240.0 }, { "min": 70, "max": 120, "price": 249.0 }], "4": [{ "min": 0, "max": 24, "price": 59.0 }, { "min": 25, "max": 44, "price": 65.5 }, { "min": 45, "max": 54, "price": 86.5 }, { "min": 55, "max": 59, "price": 134.0 }, { "min": 60, "max": 64, "price": 170.0 }, { "min": 65, "max": 69, "price": 249.0 }, { "min": 70, "max": 120, "price": 261.0 }], "5": [{ "min": 0, "max": 24, "price": 61.0 }, { "min": 25, "max": 44, "price": 66.5 }, { "min": 45, "max": 54, "price": 88.5 }, { "min": 55, "max": 59, "price": 139.0 }, { "min": 60, "max": 64, "price": 175.0 }, { "min": 65, "max": 69, "price": 269.0 }, { "min": 70, "max": 120, "price": 265.0 }], "6": [{ "min": 0, "max": 24, "price": 61.5 }, { "min": 25, "max": 44, "price": 68.0 }, { "min": 45, "max": 54, "price": 89.5 }, { "min": 55, "max": 59, "price": 139.5 }, { "min": 60, "max": 64, "price": 176.0 }, { "min": 65, "max": 69, "price": 264.0 }, { "min": 70, "max": 120, "price": 275.0 }] }, "Pymes Total": { "1": [{ "min": 0, "max": 44, "price": 60.0 }, { "min": 45, "max": 54, "price": 72.0 }, { "min": 55, "max": 59, "price": 89.0 }, { "min": 60, "max": 67, "price": 125.0 }, { "min": 68, "max": 120, "price": 189.0 }], "2": [{ "min": 0, "max": 44, "price": 62.0 }, { "min": 45, "max": 54, "price": 73.0 }, { "min": 55, "max": 59, "price": 95.0 }, { "min": 60, "max": 67, "price": 129.0 }, { "min": 68, "max": 120, "price": 199.0 }], "3": [{ "min": 0, "max": 44, "price": 63.0 }, { "min": 45, "max": 54, "price": 75.0 }, { "min": 55, "max": 59, "price": 98.0 }, { "min": 60, "max": 67, "price": 135.0 }, { "min": 68, "max": 120, "price": 205.0 }], "4": [{ "min": 0, "max": 44, "price": 65.0 }, { "min": 45, "max": 54, "price": 76.0 }, { "min": 55, "max": 59, "price": 99.0 }, { "min": 60, "max": 67, "price": 139.0 }, { "min": 68, "max": 120, "price": 209.0 }], "5": [{ "min": 0, "max": 44, "price": 66.0 }, { "min": 45, "max": 54, "price": 79.0 }, { "min": 55, "max": 59, "price": 105.0 }, { "min": 60, "max": 67, "price": 139.0 }, { "min": 68, "max": 120, "price": 219.0 }], "6": [{ "min": 0, "max": 44, "price": 67.0 }, { "min": 45, "max": 54, "price": 80.0 }, { "min": 55, "max": 59, "price": 110.0 }, { "min": 60, "max": 67, "price": 145.0 }, { "min": 68, "max": 120, "price": 225.0 }] } }, "cp_map": { "01": { "provincia": "Alava", "zona": 0 }, "02": { "provincia": "Albacete", "zona": 4 }, "03": { "provincia": "Alicante", "zona": 2 }, "04": { "provincia": "Almeria", "zona": 2 }, "05": { "provincia": "Avila", "zona": 3 }, "06": { "provincia": "Badajoz", "zona": 1 }, "07": { "provincia": "Palma", "zona": 6 }, "08": { "provincia": "Barcelona", "zona": 5 }, "09": { "provincia": "Burgos", "zona": 3 }, "10": { "provincia": "Caceres", "zona": 1 }, "11": { "provincia": "Cadiz", "zona": 2 }, "12": { "provincia": "Castellón", "zona": 2 }, "13": { "provincia": "Ciudad Real", "zona": 4 }, "14": { "provincia": "Cordoba", "zona": 2 }, "15": { "provincia": "A Coruña", "zona": 1 }, "16": { "provincia": "Cuenca", "zona": 4 }, "17": { "provincia": "Girona", "zona": 4 }, "18": { "provincia": "Granada", "zona": 2 }, "19": { "provincia": "Guadalajara", "zona": 4 }, "20": { "provincia": "Donostia / San Sebastián", "zona": 0 }, "21": { "provincia": "Huelva", "zona": 2 }, "22": { "provincia": "Huesca", "zona": 4 }, "23": { "provincia": "Jaen", "zona": 2 }, "24": { "provincia": "Leon", "zona": 3 }, "25": { "provincia": "Lleida", "zona": 4 }, "26": { "provincia": "La Rioja", "zona": 2 }, "27": { "provincia": "Lugo", "zona": 1 }, "28": { "provincia": "Madrid", "zona": 4 }, "29": { "provincia": "Malaga", "zona": 2 }, "30": { "provincia": "Murcia", "zona": 1 }, "31": { "provincia": "Navarra", "zona": 0 }, "32": { "provincia": "Ourense", "zona": 1 }, "33": { "provincia": "Oviedo", "zona": 0 }, "34": { "provincia": "Palencia", "zona": 3 }, "35": { "provincia": "Palmas de Gran Canaria", "zona": 1 }, "36": { "provincia": "Pontevedra", "zona": 1 }, "37": { "provincia": "Salamanca", "zona": 3 }, "38": { "provincia": "Santa Cruz de Tenerife", "zona": 1 }, "39": { "provincia": "Santander", "zona": 2 }, "40": { "provincia": "Segovia", "zona": 3 }, "41": { "provincia": "Sevilla", "zona": 2 }, "42": { "provincia": "Soria", "zona": 3 }, "43": { "provincia": "Tarragona", "zona": 4 }, "44": { "provincia": "Teruel", "zona": 4 }, "45": { "provincia": "Toledo", "zona": 4 }, "46": { "provincia": "Valencia", "zona": 2 }, "47": { "provincia": "Valladolid", "zona": 3 }, "48": { "provincia": "Bilbao", "zona": 0 }, "49": { "provincia": "Zamora", "zona": 3 }, "50": { "provincia": "Zaragoza", "zona": 4 }, "51": { "provincia": "Ceuta", "zona": 1 }, "52": { "provincia": "Melilla", "zona": 1 } }, "dental_map": { "1": 8.93, "2": 6.37, "3": 5.95, "4": 4.46, "5": 4.25, "6": 3.54, "7": 3.54, "8": 3.54 } };
+  </script>
+
+  <script>
+    // ====== ESTADO ======
+    const state = {
+      cp: "",
+      provCode: "",
+      provincia: "",
+      zona: null,
+      zonaRaw: null,
+      ages: [],
+      discount: 0,
+      pay: "mensual",
+      filter: "",
+      productOrder: []
+    };
+
+    // ==========================
+    // CHATBOT PANEL (open/close) - ÚNICO
+    // ==========================
+    (function initChatbotPanel() {
+      const btnOpen = document.getElementById("btnOpenChatbot");
+      const btnClose = document.getElementById("btnCloseChatbot");
+      const overlay = document.getElementById("chatbotOverlay");
+      const panel = document.getElementById("chatbotPanel");
+
+      function toggleChatbot(forceState) {
+        const isOpen = document.documentElement.classList.contains("cbOpen");
+        const nextState = (typeof forceState === "boolean") ? forceState : !isOpen;
+
+        document.documentElement.classList.toggle("cbOpen", nextState);
+        if (overlay) overlay.setAttribute("aria-hidden", !nextState);
+        if (panel) panel.setAttribute("aria-hidden", !nextState);
+
+        // Pasar rol al iframe cuando se abre
+        if (nextState) {
+          const iframe = document.getElementById("chatbotFrame");
+          const role = localStorage.getItem("adeslas_user_role") || "user";
+          if (iframe) {
+            let baseSrc = iframe.getAttribute("src").split("?")[0];
+            iframe.setAttribute("src", baseSrc + "?role=" + role);
+          }
+        }
+      }
+
+      if (btnOpen) btnOpen.addEventListener("click", (e) => { e.preventDefault(); toggleChatbot(); });
+      if (btnClose) btnClose.addEventListener("click", (e) => { e.preventDefault(); toggleChatbot(false); });
+      if (overlay) overlay.addEventListener("click", () => toggleChatbot(false));
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") toggleChatbot(false); });
+    })();
+
+    // ==========================
+    // NAVEGACIÓN A OTRAS PÁGINAS (Patologías / IMC) - BLINDADO
+    // ==========================
+    (function initToolNav() {
+      const btnOpenPatologias = document.getElementById("btnOpenPatologias");
+      const btnOpenIMC = document.getElementById("btnOpenIMC");
+      const btnOpenAdmin = document.getElementById("btnOpenAdmin");
+
+      function openToolPage(kind) {
+        let url = "";
+
+        if (kind === "imc") {
+          url = "calculadoraIMC.html";
+        } else if (kind === "patologias") {
+          url = "buscador patologias/buscador_patologias_base_interna_v2.html";
+        } else if (kind === "admin") {
+          url = "buscador patologias/buscador_patologias_base_interna_v2.html#admin";
+        } else if (kind === "cotizador") {
+          url = "cotizador_comercial_cp_edades.html";
+        } else {
+          return;
+        }
+
+        location.href = url;
+      }
+
+      if (btnOpenPatologias) btnOpenPatologias.addEventListener("click", (e) => { e.preventDefault(); openToolPage("patologias"); });
+      if (btnOpenIMC) btnOpenIMC.addEventListener("click", (e) => { e.preventDefault(); openToolPage("imc"); });
+      if (btnOpenAdmin) btnOpenAdmin.addEventListener("click", (e) => { e.preventDefault(); openToolPage("admin"); });
+    })();
+
+
+    // ====== REGLAS COMERCIALES ======
+    const PAY_DISCOUNT = { mensual: 0, trimestral: 2, semestral: 4, anual: 6 };
+
+    // ==========================
+    // ORDEN MANUAL (Drag & Drop) - persistente
+    // ==========================
+
+
+    function defaultProductOrder() {
+      const ORDER_MAIN = [
+        "Go",
+        "Plena",
+        "Plena Vital",
+        "Plena Plus",
+        "Seniors",
+        "Seniors total",
+        "Plena Total Vital",
+        "Plena Total",
+        "Pymes Total"
+      ];
+      const EXTRA_LAST = "Plena Extra 150";
+      const allowed = new Set([...ORDER_MAIN, EXTRA_LAST]);
+
+      const extras = (DATA.products || []).filter(p => allowed.has(p) && !ORDER_MAIN.includes(p) && p !== EXTRA_LAST);
+      const out = [...ORDER_MAIN, ...extras];
+      if (!out.includes(EXTRA_LAST)) out.push(EXTRA_LAST);
+      return out;
+    }
+
+    function ensureProductOrderState() {
+      // NO PERSISTENTE:
+      // - si no hay orden en state, usa el orden por defecto
+      // - si ya hay orden (porque el usuario ha arrastrado), lo respeta hasta que recargues
+      if (Array.isArray(state.productOrder) && state.productOrder.length) return;
+      state.productOrder = defaultProductOrder();
+    }
+
+
+    function isGOProduct(productName) {
+      const s = String(productName || "").trim().toLowerCase();
+      return s === "go" || s.startsWith("go ");
+    }
+
+    // ====== HELPERS ======
+    function fmtEUR(n) {
+      if (n === null || n === undefined || Number.isNaN(n)) return "—";
+      return n.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+    }
+
+    function clampInt(v, min, max) {
+      const x = parseInt(v, 10);
+      if (Number.isNaN(x)) return null;
+      return Math.max(min, Math.min(max, x));
+    }
+
+    function normalizeAgesKeepDuplicates(arr) {
+      const out = [];
+      for (const a of arr) {
+        const x = clampInt(a, 0, 120);
+        if (x === null) continue;
+        out.push(x);
+      }
+      return out;
+    }
+
+    function getProvCodeFromCP(cp5) {
+      if (!/^[0-9]{5}$/.test(cp5)) return "";
+      return cp5.slice(0, 2);
+    }
+
+    function resolveZone(cp5) {
+      const provCode = getProvCodeFromCP(cp5);
+      if (!provCode) return null;
+
+      const rec = DATA.cp_map[provCode];
+      if (!rec) return null;
+
+      return {
+        provCode,
+        provincia: rec.provincia,
+        zonaRaw: rec.zona,
+        zona: (rec.zona === 0 ? 1 : rec.zona),
+        fallback: (rec.zona === 0)
+      };
+    }
+
+    function priceForAge(product, zona, age) {
+      const zKey = String(zona);
+      const rows = (DATA.price_table[product] && DATA.price_table[product][zKey]) ? DATA.price_table[product][zKey] : null;
+      if (!rows) return null;
+
+      for (const r of rows) {
+        if (age >= r.min && age <= r.max) return r.price;
+      }
+      return null;
+    }
+
+    function dentalPerInsured(n) {
+      const key = String(n);
+      if (DATA.dental_map[key] !== undefined) return DATA.dental_map[key];
+
+      const keys = Object.keys(DATA.dental_map).map(k => parseInt(k, 10)).filter(x => !Number.isNaN(x)).sort((a, b) => a - b);
+      if (!keys.length) return null;
+      const last = keys[keys.length - 1];
+      return DATA.dental_map[String(last)];
+    }
+
+    function applyDiscount(value, discountPct) {
+      const d = (discountPct || 0) / 100;
+      return value * (1 - d);
+    }
+
+    function equivMensualIfAnual(valueMensual, payMode) {
+      return valueMensual;
+    }
+
+    function getProductColor(name) {
+      const n = (name || "").toLowerCase();
+      if (n.includes("go")) return "#f2952c";
+      if (n.includes("senior")) return "#589031";
+      if (n.includes("pyme")) return "#c49a00";
+      if (n.includes("empresa")) return "#8d5d2c";
+      if (n.includes("extra nif")) return "#c49a00";
+      // Los "Total" y "Extra 150" van en azul
+      if (n.includes("total") || n.includes("extra 150")) return "#4ab4e2";
+      // El resto (Plena, Vital, NIF, CIF) van en púrpura
+      if (n.includes("plena") || n.includes("nif") || n.includes("cif") || n.includes("vital")) return "#a33e85";
+      return "#0055A5"; // Azul Adeslas genérico
+    }
+
+    function getPromotionMonths(name, n_insured, withDental) {
+      const n = (name || "").toLowerCase();
+      // Go nunca tiene promoción de meses gratis
+      if (n.includes("go")) return 0;
+
+      // Lógica 2026: 1 aseg -> 1 mes (sin dental) / 2 meses (con dental)
+      // 2+ aseg -> 2 meses (sin dental) / 3 meses (con dental)
+      let months = (n_insured === 1) ? 1 : 2;
+      if (withDental) months += 1;
+
+      return months;
+    }
+
+    // ====== UI REFS ======
+    const elCP = document.getElementById("cpInput");
+    const elAge = document.getElementById("ageInput");
+    const elAddAge = document.getElementById("btnAddAge");
+    const elChips = document.getElementById("agesChips");
+    const elLives = document.getElementById("livesCount");
+    const elZoneHint = document.getElementById("zoneHint");
+    const elCPMsg = document.getElementById("cpMsg");
+
+    const elDiscount = document.getElementById("discountSelect");
+    const elDiscHint = document.getElementById("discHint");
+
+    const elPay = document.getElementById("paySelect");
+    const elPayHint = document.getElementById("payHint");
+
+    const elResults = document.getElementById("results");
+
+    // OJO: en tu HTML pegado NO existe filterProduct. Lo dejamos blindado (si lo añades, funciona).
+    const elFilter = document.getElementById("filterProduct");
+
+    // OJO: en tu HTML pegado NO existe botón reset. Lo dejamos blindado (si lo añades, funciona).
+    const elReset = document.getElementById("btnReset") || document.getElementById("btnResetAll") || null;
+
+    const elStatusText = document.getElementById("statusText");
+    const elDotStatus = document.getElementById("dotStatus");
+    const elZoneText = document.getElementById("zoneText");
+    const elDotZone = document.getElementById("dotZone");
+
+    // ====== RENDER ======
+    function renderAges() {
+      elChips.innerHTML = "";
+
+      for (let idx = 0; idx < state.ages.length; idx++) {
+        const a = state.ages[idx];
+
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        chip.innerHTML = `<span>${a}</span><small>años</small>`;
+
+        const x = document.createElement("button");
+        x.className = "x";
+        x.type = "button";
+        x.textContent = "×";
+        x.title = "Quitar";
+        x.onclick = () => {
+          state.ages.splice(idx, 1);
+          renderAll();
+        };
+
+        chip.appendChild(x);
+        elChips.appendChild(chip);
+      }
+
+      elLives.textContent = `${state.ages.length} asegurados`;
+    }
+
+    function setStatus(msg, kind) {
+      elStatusText.textContent = msg;
+      elDotStatus.classList.remove("warn", "bad");
+      if (kind === "bad") elDotStatus.classList.add("bad");
+      else elDotStatus.classList.add("warn");
+    }
+
+    function renderMeta() {
+      const z = (state.zona !== null && state.zona !== undefined) ? state.zona : "—";
+      const prov = state.provincia ? ` — ${state.provincia}` : "";
+      const raw = (state.zonaRaw !== null && state.zonaRaw !== undefined) ? state.zonaRaw : null;
+
+      if (z === "—") {
+        elZoneText.textContent = "Zona: —";
+        elZoneHint.textContent = "—";
+        elCPMsg.textContent = "Escribe un CP válido para detectar provincia y zona.";
+        elDotZone.className = "dot warn";
+      } else {
+        const fb = (raw === 0) ? " (zona 0 → se tarifica como zona 1)" : "";
+        elZoneText.textContent = `Zona: ${z}${prov}${fb}`;
+        elZoneHint.textContent = `Zona ${z}`;
+        elCPMsg.textContent = (raw === 0)
+          ? "Tu tabla CP devuelve zona 0 en esta provincia. Se aplica fallback a zona 1 para tarificar."
+          : "Zona detectada correctamente por provincia (2 primeras cifras del CP).";
+        elDotZone.className = (raw === 0) ? "dot warn" : "dot";
+      }
+
+      if (state.pay !== "mensual") {
+        state.discount = 0;
+        elDiscount.value = "0";
+        elDiscount.disabled = true;
+        elDiscHint.textContent = "0% (bloq.)";
+      } else {
+        elDiscount.disabled = false;
+        elDiscHint.textContent = `-${state.discount}%`;
+      }
+
+      const payDisc = (PAY_DISCOUNT[state.pay] || 0);
+      elPayHint.textContent = `-${payDisc}%`;
+    }
+
+    function computeProduct(product) {
+      if (!state.zona || !state.ages.length) {
+        return { ok: false, reason: "Faltan datos", product };
+      }
+
+      let baseTotal = 0;
+      const breakdown = [];
+      for (const age of state.ages) {
+        const p = priceForAge(product, state.zona, age);
+        if (p === null) return { ok: false, reason: "No asegurable", product };
+        breakdown.push({ age, base: p });
+        baseTotal += p;
+      }
+
+      baseTotal = equivMensualIfAnual(baseTotal, state.pay);
+
+      const n = state.ages.length;
+      const per = dentalPerInsured(n);
+      let dentalTotal = 0;
+      if (per !== null) dentalTotal = per * n;
+
+      const payDisc = (PAY_DISCOUNT[state.pay] || 0);
+      const isGO = isGOProduct(product);
+      const manualDisc = (state.pay === "mensual" && !isGO) ? (state.discount || 0) : 0;
+
+      const baseAfterPay = applyDiscount(baseTotal, payDisc);
+      const withDentalAfterPay = applyDiscount(baseTotal + dentalTotal, payDisc);
+
+      const baseDisc = applyDiscount(baseAfterPay, manualDisc);
+      const withDentalDisc = applyDiscount(withDentalAfterPay, manualDisc);
+
+      // --- NUEVOS CÁLCULOS (Excel 2026) ---
+
+      // Promo meses gratis
+      const promoBase = getPromotionMonths(product, n, false);
+      const promoWithDental = getPromotionMonths(product, n, true);
+
+      // Primas Anuales (Sin meses gratis, base 12 meses)
+      const annualBase = baseDisc * 12;
+      const annualWithDental = withDentalDisc * 12;
+
+      // Precio Medio Año 1 (Prorrata: lo que pagas dividido entre 12)
+      // SalesValue = Monthly * (12 - MesesGratis)
+      const salesValueBase = baseDisc * (12 - promoBase);
+      const salesValueWithDental = withDentalDisc * (12 - promoWithDental);
+
+      const mediumBase = salesValueBase / 12;
+      const mediumWithDental = salesValueWithDental / 12;
+
+      return {
+        ok: true,
+        product,
+        baseTotal,
+        baseDisc,
+        dentalTotal,
+        withDentalTotal: baseTotal + dentalTotal,
+        withDentalDisc,
+        breakdown,
+        dentalPer: per,
+        isGO,
+        payDisc,
+        manualDiscApplied: manualDisc,
+        // Nuevos campos
+        promoBase,
+        promoWithDental,
+        annualBase,
+        annualWithDental,
+        mediumBase,
+        mediumWithDental,
+        salesValueBase,
+        salesValueWithDental
+      };
+    }
+
+    function renderResults() {
+      elResults.innerHTML = "";
+      ensureProductOrderState();
+
+      const ready = (state.zona !== null && state.ages.length > 0 && /^[0-9]{5}$/.test(state.cp));
+      if (!ready) {
+        setStatus("Pendiente: introduce CP y al menos 1 edad", "warn");
+        return;
+      }
+
+      let computed = DATA.products.map(p => computeProduct(p));
+
+      const f = (state.filter || "").trim().toLowerCase();
+      if (f) computed = computed.filter(x => x.product.toLowerCase().includes(f));
+
+      const allowed = new Set(defaultProductOrder());
+      computed = computed.filter(x => allowed.has(x.product));
+
+      computed = computed.filter(x => {
+        if (!x.ok) return false;
+        if (!Number.isFinite(x.baseDisc)) return false;
+        if (x.baseDisc <= 0) return false;
+        return true;
+      });
+
+      const byName = new Map(computed.map(x => [x.product, x]));
+      for (const r of computed) {
+        if (!state.productOrder.includes(r.product)) state.productOrder.push(r.product);
+      }
+
+
+      const ordered = [];
+      for (const name of state.productOrder) {
+        const item = byName.get(name);
+        if (item) ordered.push(item);
+      }
+      computed = ordered;
+
+      setStatus(`Tarificación lista: ${computed.length}/${computed.length} productos con precio`, "warn");
+
+      for (const r of computed) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.setAttribute("draggable", "true");
+        card.dataset.product = r.product;
+
+        // Color corporativo
+        const pColor = getProductColor(r.product);
+        card.style.setProperty("--p-color", pColor);
+        card.style.borderColor = pColor + "33"; // 20% opacity border
+
+        const title = document.createElement("h3");
+        title.textContent = r.product;
+        card.appendChild(title);
+
+        const content = document.createElement("div");
+        content.className = "card-content";
+
+        const prices = document.createElement("div");
+        prices.className = "prices";
+
+        const lineBase = document.createElement("div");
+        lineBase.className = "priceLine";
+        lineBase.innerHTML = `
+          <div>
+            <b>Mensual (sin dental)</b>
+            <div style="font-size:11px; opacity:0.8;">Precio Medio Año 1: ${fmtEUR(r.mediumBase)}</div>
+            ${r.promoBase > 0 ? `<div style="font-size:10px; color:var(--good); font-weight:800;">Promoción: ${r.promoBase} meses gratis</div>` : ""}
+          </div>
+          <span class="val" style="text-align:right;">${fmtEUR(r.baseDisc)} <small>/mes</small><br><small style="font-size:10px; color:var(--muted);">Anual: ${fmtEUR(r.annualBase)}</small></span>
+        `;
+        prices.appendChild(lineBase);
+
+        const lineDental = document.createElement("div");
+        lineDental.className = "priceLine";
+        lineDental.innerHTML = `
+          <div>
+            <b>Mensual (con dental)</b>
+            <div style="font-size:11px; opacity:0.8;">Precio Medio Año 1: ${fmtEUR(r.mediumWithDental)}</div>
+            ${r.promoWithDental > 0 ? `<div style="font-size:10px; color:var(--good); font-weight:800;">Promoción: ${r.promoWithDental} meses gratis</div>` : ""}
+          </div>
+          <span class="val" style="text-align:right;">${fmtEUR(r.withDentalDisc)} <small>/mes</small><br><small style="font-size:10px; color:var(--muted);">Anual: ${fmtEUR(r.annualWithDental)}</small></span>
+        `;
+        prices.appendChild(lineDental);
+
+        content.appendChild(prices);
+
+        const det = document.createElement("details");
+        det.innerHTML = `
+          <summary>
+            <span class="sumRow">
+              <span>Ver desglose por edad</span>
+              <span class="pm" aria-hidden="true"></span>
+            </span>
+          </summary>
+        `;
+
+        const box = document.createElement("div");
+        box.className = "detailBox";
+
+        for (const b of r.breakdown) {
+          const rowA = document.createElement("div");
+          rowA.className = "detailRow";
+          rowA.innerHTML = `<span>Edad ${b.age}</span><span>${fmtEUR(b.base)} /mes</span>`;
+          box.appendChild(rowA);
+        }
+
+        const nAseg = state.ages.length;
+        const per = r.dentalPer;
+        const drow = document.createElement("div");
+        drow.className = "detailRow";
+        drow.innerHTML = `<span>Dental (n=${nAseg})</span><span>${(per === null) ? "—" : (fmtEUR(per) + " /asegurado")}</span>`;
+        box.appendChild(drow);
+
+        const prow1 = document.createElement("div");
+        prow1.className = "detailRow";
+        prow1.innerHTML = `<span>Pago (desc. auto)</span><span>${state.pay} (-${(r.payDisc || 0)}%)</span>`;
+        box.appendChild(prow1);
+
+        const prow2 = document.createElement("div");
+        prow2.className = "detailRow";
+        const mdisc = (r.manualDiscApplied || 0);
+        const mtxt = (r.isGO) ? "0% (GO bloqueado)" : (state.pay !== "mensual" ? "0% (bloq. por pago)" : `-${mdisc}%`);
+        prow2.innerHTML = `<span>Descuento manual</span><span>${mtxt}</span>`;
+        box.appendChild(prow2);
+
+        const drowRef = document.createElement("div");
+        drowRef.className = "detailRow";
+        drowRef.innerHTML = `<span><b>PRIMA ANUAL (12m)</b></span><span style="font-size:10px;">Base: ${fmtEUR(r.annualBase)} | Dental: ${fmtEUR(r.annualWithDental)}</span>`;
+        box.appendChild(drowRef);
+
+        const drowPromo = document.createElement("div");
+        drowPromo.className = "detailRow";
+        drowPromo.innerHTML = `<span><b>VALOR VENTA (1er Año)</b></span><span style="font-size:10px;">Base: ${fmtEUR(r.salesValueBase)} | Dental: ${fmtEUR(r.salesValueWithDental)}</span>`;
+        box.appendChild(drowPromo);
+
+        const drowMed = document.createElement("div");
+        drowMed.className = "detailRow";
+        drowMed.innerHTML = `<span><b>PRECIO MEDIO / MES</b></span><span style="font-size:10px;">Base: ${fmtEUR(r.mediumBase)} | Dental: ${fmtEUR(r.mediumWithDental)}</span>`;
+        box.appendChild(drowMed);
+
+
+        det.appendChild(box);
+        content.appendChild(det);
+        card.appendChild(content);
+
+        elResults.appendChild(card);
+      }
+    }
+
+    function renderAll() {
+      renderAges();
+      renderMeta();
+      renderResults();
+    }
+
+    // ====== EVENTS ======
+    function onCPChange() {
+      const v = (elCP.value || "").trim();
+      state.cp = v;
+
+      const z = resolveZone(v);
+      if (!z) {
+        state.provCode = "";
+        state.provincia = "";
+        state.zona = null;
+        state.zonaRaw = null;
+      } else {
+        state.provCode = z.provCode;
+        state.provincia = z.provincia;
+        state.zona = z.zona;
+        state.zonaRaw = z.zonaRaw;
+      }
+      renderAll();
+    }
+
+    function addAgeFromInput() {
+      const v = clampInt(elAge.value, 0, 120);
+      if (v === null) return;
+      state.ages = normalizeAgesKeepDuplicates([...state.ages, v]);
+      elAge.value = "";
+      renderAll();
+    }
+
+    function resetAll() {
+      state.cp = "";
+      state.provCode = "";
+      state.provincia = "";
+      state.zona = null;
+      state.zonaRaw = null;
+      state.ages = [];
+      state.discount = 0;
+      state.pay = "mensual";
+      state.filter = "";
+
+      elCP.value = "";
+      elAge.value = "";
+      if (elFilter) elFilter.value = "";
+      elDiscount.value = "0";
+      elPay.value = "mensual";
+      state.productOrder = [];
+
+      renderAll();
+    }
+
+    function parseAndAddManyAges(text) {
+      const nums = (text || "")
+        .replace(/\n/g, " ")
+        .split(/[^0-9]+/)
+        .filter(Boolean)
+        .map(x => clampInt(x, 0, 120))
+        .filter(x => x !== null);
+
+      if (!nums.length) return;
+      state.ages = normalizeAgesKeepDuplicates([...state.ages, ...nums]);
+      renderAll();
+    }
+
+    // ====== WIRE ======
+    elCP.addEventListener("input", () => {
+      elCP.value = (elCP.value || "").replace(/[^0-9]/g, "").slice(0, 5);
+      onCPChange();
+    });
+
+    elAddAge.addEventListener("click", addAgeFromInput);
+
+    elAge.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addAgeFromInput();
+      }
+    });
+
+    elAge.addEventListener("paste", (e) => {
+      const txt = (e.clipboardData || window.clipboardData).getData("text");
+      if (!txt) return;
+      e.preventDefault();
+      parseAndAddManyAges(txt);
+    });
+
+    elDiscount.addEventListener("change", () => {
+      state.discount = parseInt(elDiscount.value, 10) || 0;
+      renderAll();
+    });
+
+    elPay.addEventListener("change", () => {
+      state.pay = elPay.value || "mensual";
+      renderAll();
+    });
+
+    if (elReset) elReset.addEventListener("click", resetAll);
+
+    if (elFilter) {
+      elFilter.addEventListener("input", () => {
+        state.filter = elFilter.value || "";
+        renderAll();
+      });
+    }
+
+    // ==========================
+    // DRAG & DROP: ÚNICO (arreglado)
+    // - Permite soltar entre tarjetas y al final
+    // - NO renderiza en drop (evita reset visual)
+    // - Persiste orden en localStorage
+    // ==========================
+    let __dragProduct = null;
+
+    function clearDropTargets() {
+      const els = elResults.querySelectorAll(".card.dropTarget");
+      els.forEach(x => x.classList.remove("dropTarget"));
+    }
+
+    function cssEscapeSafe(v) {
+      const s = String(v ?? "");
+      if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(s);
+      return s.replace(/["\\#.;:[\],=<>~+*^$(){}|/?]/g, "\\$&");
+    }
+
+    function syncProductOrderFromDOM() {
+      const cards = Array.from(elResults.querySelectorAll(".card[draggable='true'][data-product]"));
+      const visibleOrder = cards.map(c => (c.dataset.product || "").trim()).filter(Boolean);
+      if (!visibleOrder.length) return;
+
+      ensureProductOrderState();
+      const rest = state.productOrder.filter(p => !visibleOrder.includes(p));
+      state.productOrder = [...visibleOrder, ...rest];
+
+    }
+
+    elResults.addEventListener("dragstart", (e) => {
+      const card = e.target && e.target.closest ? e.target.closest(".card[draggable='true']") : null;
+      if (!card) return;
+
+      __dragProduct = card.dataset.product || null;
+      card.classList.add("dragging");
+
+      try {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", __dragProduct || "");
+      } catch (err) { }
+    });
+
+    elResults.addEventListener("dragend", (e) => {
+      const card = e.target && e.target.closest ? e.target.closest(".card") : null;
+      if (card) card.classList.remove("dragging");
+      __dragProduct = null;
+      clearDropTargets();
+    });
+
+    elResults.addEventListener("dragover", (e) => {
+      e.preventDefault();
+
+      const overCard = e.target && e.target.closest ? e.target.closest(".card[draggable='true']") : null;
+      clearDropTargets();
+      if (overCard) overCard.classList.add("dropTarget");
+
+      try { e.dataTransfer.dropEffect = "move"; } catch (err) { }
+    });
+
+    elResults.addEventListener("dragleave", (e) => {
+      const overCard = e.target && e.target.closest ? e.target.closest(".card[draggable='true']") : null;
+      if (!overCard) return;
+      overCard.classList.remove("dropTarget");
+    });
+
+    elResults.addEventListener("drop", (e) => {
+      e.preventDefault();
+
+      let fromProduct = __dragProduct;
+      if (!fromProduct) {
+        try { fromProduct = e.dataTransfer.getData("text/plain") || null; } catch (err) { }
+      }
+      if (!fromProduct) return;
+
+      ensureProductOrderState();
+
+      const fromSel = `.card[draggable='true'][data-product="${cssEscapeSafe(fromProduct)}"]`;
+      const dragEl = elResults.querySelector(fromSel);
+      if (!dragEl) return;
+
+      const directDropCard = (e.target && e.target.closest)
+        ? e.target.closest(".card[draggable='true']")
+        : null;
+
+      let insertBeforeEl = null;
+
+      if (directDropCard && directDropCard !== dragEl) {
+        insertBeforeEl = directDropCard;
+      } else {
+        const cards = Array.from(elResults.querySelectorAll(".card[draggable='true'][data-product]"))
+          .filter(c => c !== dragEl);
+
+        const y = e.clientY;
+
+        for (const c of cards) {
+          const r = c.getBoundingClientRect();
+          const mid = r.top + (r.height / 2);
+          if (y < mid) { insertBeforeEl = c; break; }
+        }
+      }
+
+      if (insertBeforeEl) elResults.insertBefore(dragEl, insertBeforeEl);
+      else elResults.appendChild(dragEl);
+
+      syncProductOrderFromDOM();
+      clearDropTargets();
+    });
+
+    // ====== INIT ======
+
+    resetAll();
+
+    // ==========================
+    // LOGOUT
+    // ==========================
+    (function initLogout() {
+      const btn = document.getElementById("btnLogout");
+      if (btn) btn.addEventListener("click", function () {
+        try {
+          localStorage.setItem("diblafe_admin_logged_v4", "false");
+          localStorage.removeItem("adeslas_user_role");
+        } catch (e) { }
+        location.replace("login.html");
+      });
+    })();
+
+    // ==========================
+    // AUTH CHECK & ROLE
+    // ==========================
+    (function checkAuth() {
+      let isLogged = false;
+      try {
+        const v = localStorage.getItem("diblafe_admin_logged_v4");
+        isLogged = (v === "true" || v === "1");
+      } catch (e) { }
+
+      if (!isLogged) {
+        location.replace("login.html");
+        return;
+      }
+
+      const role = localStorage.getItem("adeslas_user_role") || "user";
+      const btnAdmin = document.getElementById("btnOpenAdmin");
+      if (role !== "admin" && btnAdmin) {
+        btnAdmin.style.display = "none";
+      }
+
+      // Pasar rol al chatbot
+      const iframe = document.getElementById("chatbotFrame");
+      if (iframe) {
+        let baseSrc = iframe.getAttribute("src").split("?")[0];
+        iframe.setAttribute("src", baseSrc + "?role=" + role);
+      }
+    })();
+  </script>
+</body>
+
+</html>
