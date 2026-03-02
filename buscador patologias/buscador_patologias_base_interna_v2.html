@@ -1,0 +1,3428 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Buscador de Patologías (DIBLAFE)</title>
+
+  <style>
+    /* ==========================
+       ESTILOS CORPORATIVOS UNIFICADOS (MODO COMPACTO)
+       ========================== */
+    header.main-header {
+      position: sticky;
+      top: 0;
+      z-index: 10000;
+      padding-top: var(--safeTop);
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+      border-bottom: 1px solid rgba(0, 0, 0, .05);
+    }
+
+    .header-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      height: 80px;
+      box-sizing: border-box;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1 1 0;
+    }
+
+    .brand-logo {
+      height: 44px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .10));
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      flex: 0 0 auto;
+      height: 100%;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex: 1 1 0;
+    }
+
+    .btn-nav {
+      border: 1px solid var(--brand2);
+      border-radius: 999px;
+      padding: 10px 20px;
+      font-weight: 1000;
+      letter-spacing: .2px;
+      box-shadow: 0 4px 10px rgba(0, 85, 165, .12);
+      color: #ffffff;
+      text-shadow: none;
+      transition: all .2s ease;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15.5px;
+      font-family: inherit;
+      box-sizing: border-box;
+      line-height: 1.1;
+    }
+
+    .btn-nav:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 15px rgba(0, 85, 165, .20);
+      background: linear-gradient(135deg, var(--brand2), var(--brand));
+    }
+
+    .btn-nav.active {
+      background: #ffffff !important;
+      color: var(--brand) !important;
+      border-color: rgba(0, 85, 165, 0.25) !important;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      text-shadow: none;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.10), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(16, 185, 129, 0.10), transparent 55%),
+        var(--bg);
+      min-height: 100vh;
+      font-size: 17px;
+    }
+
+    /* ==========================
+       ESTILOS UNIFICADOS (HEADER Y WRAP)
+       ========================== */
+    
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      flex: 0 0 auto;
+      height: 100%;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      flex: 1 1 0;
+    }
+
+    
+
+    
+
+    :root {
+      /* Paleta estilo Diblafe (azul marino + dorado) */
+      --bg: #ffffff;
+      --panel: #ffffff;
+      --text: #0b1220;
+      --muted: #475569;
+      --line: #e6e8ee;
+
+      --brand: #007bc4;
+      /* Azul Adeslas */
+      --brand2: #00A1E0;
+      /* Azul Adeslas (degradado) */
+
+      --gold: #d6a23a;
+      /* dorado */
+      --gold2: #b8862b;
+      /* dorado + */
+
+      --soft: #f6f8fb;
+
+      --shadow: 0 10px 30px rgba(11, 43, 76, .10);
+      --shadow2: 0 6px 18px rgba(11, 43, 76, .08);
+      --radius: 16px;
+
+      --ok: #16a34a;
+      /* verde */
+      --warn: #f59e0b;
+      /* amarillo/ámbar */
+      --bad: #ef4444;
+      /* rojo */
+      --orange: #f97316;
+      /* naranja */
+      --na: #94a3b8;
+      /* gris */
+
+      /* Tamaño base (subido) */
+      --baseFont: 18px;
+
+      /* Safe areas iOS */
+      --safeTop: env(safe-area-inset-top, 0px);
+      --safeBottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      overflow-y: scroll;
+    }
+
+    
+
+    
+
+    /* ==========================
+       HEADER CORPORATIVO (UNIFICADO)
+       ========================== */
+    
+
+    .routeLinks {
+      display: none !important;
+    }
+
+    .routeLink {
+      color: var(--brand);
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(11, 43, 76, .16);
+      background: rgba(255, 255, 255, .85);
+      box-shadow: 0 6px 14px rgba(11, 43, 76, .08);
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .routeLink:hover {
+      background: #ffffff;
+      border-color: rgba(214, 162, 58, .50);
+      transform: translateY(-1px);
+    }
+
+    .routeLink:active {
+      transform: translateY(0px);
+    }
+
+    .routeSep {
+      color: rgba(71, 85, 105, .70);
+      font-weight: 950;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-h {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, var(--soft) 100%);
+    }
+
+    .card-b {
+      padding: 14px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    @media (max-width: 760px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    label {
+      font-size: 12.5px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 900;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      outline: none;
+      color: var(--text);
+      box-shadow: 0 1px 0 rgba(11, 43, 76, .05);
+      font-size: 15px;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+      border-color: rgba(214, 162, 58, .60);
+      box-shadow: 0 0 0 4px rgba(214, 162, 58, .18);
+    }
+
+    .btn {
+      border: 1px solid rgba(0, 85, 165, 0.12);
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color: #fff;
+      font-weight: 800;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .2s ease;
+      font-size: 14px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(0, 85, 165, 0.25);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0, 85, 165, 0.35);
+    }
+
+    .btn:active {
+      transform: translateY(0px) scale(0.98);
+    }
+
+    .btn2 {
+      border: 1px solid rgba(0, 85, 165, 0.12);
+      background: #ffffff;
+      color: var(--brand);
+      font-weight: 800;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .2s ease;
+      font-size: 14px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(11, 43, 76, .05);
+    }
+
+    .btn2:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(11, 43, 76, .12);
+      border-color: rgba(0, 85, 165, 0.3);
+    }
+
+    .btn2:active {
+      transform: translateY(0px) scale(0.98);
+    }
+
+    .hint {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 1px dashed rgba(148, 163, 184, .9);
+      border-radius: 14px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .legend {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .legend .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #fff;
+      font-size: 12.5px;
+      font-weight: 950;
+      color: var(--text);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .dot.ok {
+      background: var(--ok);
+    }
+
+    .dot.warn {
+      background: var(--warn);
+    }
+
+    .dot.bad {
+      background: var(--bad);
+    }
+
+    .dot.warn-red {
+      background: var(--orange);
+    }
+
+    .dot.na {
+      background: var(--na);
+    }
+
+    /* Resultados */
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .patCard {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 12px;
+      box-shadow: 0 6px 16px rgba(11, 43, 76, .06);
+      overflow: hidden;
+    }
+
+    .patTitle {
+      margin: 0;
+      font-weight: 950;
+      font-size: 15.5px;
+      line-height: 1.25;
+      color: var(--brand);
+    }
+
+    /* RESPONSIVE FIX RESULTADOS */
+    .grid {
+      margin-top: 10px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr;
+    }
+
+    .mini {
+      border: 2px solid #E6ECF5;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 0;
+      overflow: hidden;
+      flex-wrap: wrap;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+    .mini:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(10, 20, 40, .10);
+    }
+
+    .mini .c {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      min-width: 0;
+      line-height: 1.4;
+      letter-spacing: .01em;
+      flex: 1 1 auto;
+    }
+
+    .fecha-tag {
+      font-size: 10px;
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: .01em;
+      text-transform: uppercase;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 2px solid var(--line);
+      background: #fff;
+      font-weight: 950;
+      font-size: 12.5px;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: .02em;
+      flex: 0 0 auto;
+    }
+
+    .pill.ok {
+      background: rgba(18, 140, 76, .16);
+      border-color: rgba(18, 140, 76, .55);
+      color: #0B5B2F;
+    }
+
+    .pill.warn {
+      background: rgba(245, 158, 11, .18);
+      border-color: rgba(245, 158, 11, .65);
+      color: #7A4A00;
+    }
+
+    .pill.bad {
+      background: rgba(239, 68, 68, .16);
+      border-color: rgba(239, 68, 68, .55);
+      color: #7A0B0B;
+    }
+
+    .pill.warn-red {
+      background: rgba(249, 115, 22, .16);
+      border-color: rgba(249, 115, 22, .55);
+      color: #944111;
+    }
+
+    .pill.na {
+      background: rgba(148, 163, 184, .22);
+      border-color: rgba(148, 163, 184, .65);
+      color: #334155;
+    }
+
+    /* Fondo por estado */
+    .mini.bg-ok {
+      background: rgba(16, 185, 129, .20);
+      border-color: rgba(16, 185, 129, .60);
+    }
+
+    .mini.bg-warn {
+      background: rgba(245, 158, 11, .22);
+      border-color: rgba(245, 158, 11, .60);
+    }
+
+    .mini.bg-warn-red {
+      background: rgba(249, 115, 22, .20);
+      border-color: rgba(249, 115, 22, .60);
+    }
+
+    .mini.bg-bad {
+      background: rgba(239, 68, 68, .20);
+      border-color: rgba(239, 68, 68, .60);
+    }
+
+    .mini.bg-na {
+      background: rgba(148, 163, 184, .18);
+      border-color: rgba(148, 163, 184, .60);
+    }
+
+    .pill.product {
+      background: rgba(30, 64, 175, .1);
+      border-color: rgba(30, 64, 175, .4);
+      color: #1e40af;
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+
+    .empty {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+      display: none;
+    }
+
+    /* RESPONSIVE TOPBAR */
+    @media (max-width: 760px) {
+      .topbar 
+
+      .brandTitle {
+        flex: 1 1 100%;
+        padding-right: 0;
+      }
+
+      .topbarRight {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .brandLogo {
+        height: 34px;
+      }
+    }
+
+    /* =========================
+       MODAL ADMIN
+       ========================= */
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 9999;
+      padding-bottom: var(--safeBottom);
+    }
+
+    .modal.open {
+      display: block;
+    }
+
+    .modalBackdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(2, 6, 23, .55);
+      backdrop-filter: blur(2px);
+    }
+
+    .modalDialog {
+      position: relative;
+      max-width: 980px;
+      width: calc(100% - 18px);
+      margin: 12px auto;
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid rgba(226, 232, 240, .9);
+      box-shadow: 0 24px 70px rgba(2, 6, 23, .35);
+      overflow: hidden;
+      max-height: calc(100dvh - 24px - var(--safeTop) - var(--safeBottom));
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modalHeader {
+      padding: 14px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, var(--soft) 100%);
+      flex: 0 0 auto;
+    }
+
+    .modalTitle {
+      font-weight: 950;
+      color: var(--brand);
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .modalSub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12.5px;
+    }
+
+    .iconBtn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-weight: 950;
+      color: var(--brand);
+      box-shadow: var(--shadow2);
+      flex: 0 0 auto;
+    }
+
+    .modalBody {
+      padding: 14px;
+      overflow: auto;
+      flex: 1 1 auto;
+    }
+
+    .adminGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    @media (max-width: 900px) {
+      .adminGrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .adminHint {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .adminHint.ok {
+      border-color: rgba(16, 185, 129, .35);
+      background: rgba(16, 185, 129, .10);
+      color: #0B5B2F;
+      font-weight: 900;
+    }
+
+    .adminHint.bad {
+      border-color: rgba(239, 68, 68, .35);
+      background: rgba(239, 68, 68, .10);
+      color: #7f1d1d;
+      font-weight: 900;
+    }
+
+    .adminListWrap {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .adminListHeader {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, var(--soft) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .adminListTitle {
+      font-weight: 950;
+      color: var(--brand);
+      font-size: 14px;
+    }
+
+    .adminListTools {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      min-width: min(420px, 100%);
+      flex: 1 1 auto;
+    }
+
+    .adminList {
+      max-height: 52vh;
+      overflow: auto;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(226, 232, 240, .8);
+      align-items: center;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .rowName {
+      font-weight: 900;
+      color: var(--text);
+      font-size: 13.5px;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .rowRight {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .pill.adminFull {
+      max-width: none;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
+    .tinyBtn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--brand);
+      font-weight: 950;
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(11, 43, 76, .08);
+      font-size: 12.5px;
+      white-space: nowrap;
+    }
+
+    .tinyBtn.danger {
+      border-color: rgba(239, 68, 68, .35);
+      color: #7f1d1d;
+      background: rgba(239, 68, 68, .07);
+    }
+
+    .adminActionsRow {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 520px) {
+      .adminActionsRow {
+        justify-content: flex-start;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .rowRight {
+        justify-content: flex-start;
+      }
+    }
+
+    /* ==========================
+   HEADER TOOLBAR (3 botones) - UNIFICADO POSICIÓN
+   ========================== */
+    .topbarTools {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      /* <-- ACTUALIZADO: pegados a la derecha */
+      margin-left: auto;
+      /* <-- ACTUALIZADO: empuja la botonera a la zona Admin */
+      flex: 0 0 auto;
+    }
+
+    /* ==========================
+   TOPBAR - UNIFICADO POSICIÓN
+   ========================== */
+
+    .brandTitle {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      flex: 1 1 0;
+      /* <-- ACTUALIZADO: ocupa 1/3 (equilibrio) */
+      padding-right: 18px;
+    }
+
+    .topbarRight {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-left: 12px;
+      /* <-- ACTUALIZADO: ya NO es auto, queda pegado a la botonera */
+      flex: 0 0 auto;
+      flex-shrink: 0;
+    }
+
+    .btnTool {
+      border: 1px solid rgba(15, 23, 42, 0.10);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 1000;
+      letter-spacing: .2px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      color: #ffffff;
+      text-shadow: none;
+      transition: transform .08s ease, box-shadow .15s ease, filter .15s ease;
+      white-space: nowrap;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .btnTool:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+      filter: brightness(1.03);
+    }
+
+    .btnTool:active {
+      transform: translateY(0px) scale(0.99);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.10);
+    }
+
+    .btnTool.patologias {
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+      border-color: rgba(245, 158, 11, 0.30);
+    }
+
+    .btnTool.imc {
+      background: linear-gradient(135deg, #10b981, #22c55e);
+      border-color: rgba(16, 185, 129, 0.30);
+    }
+
+    .btnTool.chatbot {
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      border-color: rgba(37, 99, 235, .30);
+    }
+
+    .btnTool.active {
+      opacity: .78;
+      filter: saturate(.85);
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ==========================
+   CHATBOT PANEL (IFRAME)
+   ========================== */
+    .cbOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, .45);
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+      z-index: 9998;
+    }
+
+    .cbPanel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: min(520px, 92vw);
+      background: #ffffff;
+      border-left: 1px solid rgba(15, 23, 42, 0.12);
+      box-shadow: -18px 0 50px rgba(15, 23, 42, .18);
+      transform: translateX(105%);
+      transition: transform .22s ease;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cbHeader {
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.10);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(255, 255, 255, 0));
+    }
+
+    .cbTitle {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .cbTitle b {
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+
+    .cbTitle small {
+      font-size: 12px;
+      color: rgba(71, 85, 105, 0.95);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cbClose {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: rgba(15, 23, 42, 0.03);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 900;
+      color: rgba(15, 23, 42, 0.85);
+    }
+
+    .cbClose:hover {
+      background: rgba(15, 23, 42, 0.06);
+    }
+
+    .cbBody {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .cbFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    .cbOpen .cbOverlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .cbOpen .cbPanel {
+      transform: translateX(0%);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- TOPBAR -->
+  <header class="main-header">
+    <div class="header-wrap">
+      <div class="brand-block">
+        <img class="brand-logo" src="logo-adeslas.png" alt="Adeslas">
+      </div>
+
+      <nav class="header-nav" aria-label="Navegación superior">
+        <a class="btn-nav cotizador" href="#" id="btnOpenCotizador">Cotizador</a>
+        <a class="btn-nav patologias active" href="#" id="btnOpenPatologias">Buscador Patologías</a>
+        <a class="btn-nav imc" href="#" id="btnOpenIMC">Calculadora IMC</a>
+        <a class="btn-nav chatbot" href="#" id="btnOpenChatbot">Chatbot FAQ</a>
+        <a class="btn-nav admin" href="#" id="btnOpenAdmin">Admin</a>
+      </nav>
+
+      <div class="header-right">
+        <button id="btnLogout" class="btn-nav"
+          style="background:#000000;border-color:#000000;color:#ffffff;"
+          title="Cerrar sesión">⬤ Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO -->
+  <div class="wrap">
+    <section class="card">
+      <div class="card-h">
+        <div class="controls">
+          <div>
+            <label for="q">Enfermedad / Patología</label>
+            <input id="q" type="text" placeholder="Escribe para buscar... (ej: hipertensión, cáncer, epoc)"
+              autocomplete="off" />
+          </div>
+
+          <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
+            <button class="btn" id="btnBuscar" type="button">Buscar</button>
+            <button class="btn2" id="btnLimpiar" type="button">Limpiar</button>
+          </div>
+        </div>
+
+        <div class="hint" id="hintBar">
+          <span>Escribe y pulsa <strong>Buscar</strong>. No se muestra ninguna lista hasta que busques.</span>
+          <span class="legend">
+            <span class="tag"><span class="dot ok"></span> ACEPTADO</span>
+            <span class="tag"><span class="dot bad"></span> RECHAZO</span>
+            <span class="tag"><span class="dot warn-red"></span> EXCLUSION</span>
+            <span class="tag"><span class="dot warn"></span> INFORME</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="card-b">
+        <div id="results" class="results"></div>
+        <div id="noResults" class="empty">
+          <strong>Sin resultados.</strong><br>
+          Prueba con menos texto o una palabra más general.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- =========================
+       MODAL ADMIN (LOGIN + CRUD + COMPAÑÍAS)
+       ========================= -->
+  <div class="modal" id="adminModal" aria-hidden="true">
+    <div class="modalBackdrop" id="adminBackdrop"></div>
+
+    <div class="modalDialog" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+      <div class="modalHeader">
+        <div>
+          <div class="modalTitle" id="adminTitle">Administración</div>
+          <div class="modalSub">Añadir / editar / eliminar patologías y productos (persistente).</div>
+        </div>
+        <button class="iconBtn" id="btnCloseAdmin" type="button" aria-label="Cerrar">✕</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="modalBody" id="adminLoginBox">
+        <div class="adminGrid" style="grid-template-columns: 1fr;">
+          <div>
+            <label for="loginUser">Usuario</label>
+            <input id="loginUser" type="text" placeholder="Tu usuario" autocomplete="off"
+              style="margin-bottom: 12px;" />
+            <label for="adminPass">Contraseña</label>
+            <input id="adminPass" type="password" placeholder="Tu contraseña" autocomplete="off" />
+          </div>
+
+          <div class="adminActionsRow">
+            <button class="btn" id="btnAdminLogin" type="button">Entrar</button>
+            <button class="btn2" id="btnAdminCancel" type="button" style="display:none;">Cancelar</button>
+          </div>
+
+          <div class="adminHint bad" id="adminLoginHint" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- PANEL -->
+      <div class="modalBody" id="adminPanelBox" style="display:none;">
+        <div class="adminGrid">
+          <!-- GESTIÓN DE PRODUCTOS -->
+          <div style="grid-column: 1 / -1;">
+            <label>Gestión de Productos</label>
+            <div
+              style="display: flex; gap: 8px; margin-bottom: 12px; background: rgba(241,245,249,0.5); padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <select id="adminProductAction" style="width: 140px; margin-bottom: 0;">
+                <option value="add">Añadir Nuevo</option>
+                <option value="delete">Eliminar Existente</option>
+              </select>
+
+              <div id="boxAddProduct" style="display: flex; gap: 8px; flex: 1;">
+                <input id="adminNewProduct" type="text" placeholder="Nombre del nuevo producto..."
+                  style="margin-bottom: 0;" autocomplete="off" />
+                <button class="btn" id="btnAddProduct" type="button" style="padding: 0 20px;">Añadir</button>
+              </div>
+
+              <div id="boxDeleteProduct" style="display: none; gap: 8px; flex: 1;">
+                <select id="adminProductToDelete" style="margin-bottom: 0;"></select>
+                <button class="btn2 danger" id="btnDeleteProduct" type="button"
+                  style="padding: 0 20px;">Eliminar</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="grid-column: 1 / -1; height: 1px; background: rgba(226,232,240,.9); margin: 4px 0 12px;"></div>
+
+          <!-- SELECT PRODUCTO ACTUAL -->
+          <div style="grid-column: 1 / -1;">
+            <label for="adminProduct">Producto Actual para editar patologías</label>
+            <select id="adminProduct"></select>
+          </div>
+
+          <!-- CRUD PATOLOGÍAS -->
+          <div>
+            <label for="adminPatologia">Patología</label>
+            <input id="adminPatologia" type="text" placeholder="Ej: Cáncer tratado hace menos de 5 años"
+              autocomplete="off" />
+          </div>
+
+          <div>
+            <label for="adminContratable">Resultado / Estado</label>
+            <select id="adminContratable">
+              <option value="ACEPTADO">ACEPTADO</option>
+              <option value="RECHAZO">RECHAZO</option>
+              <option value="EXCLUSION">EXCLUSION</option>
+              <option value="INFORME">INFORME</option>
+            </select>
+          </div>
+
+          <div class="adminActionsRow">
+            <button class="btn" id="btnAdminSave" type="button">Guardar</button>
+            <button class="btn2" id="btnAdminClearForm" type="button">Limpiar</button>
+            <button class="btn2" id="btnAdminLogout" type="button">Salir</button>
+          </div>
+
+          <div style="display: none; grid-column: 1 / -1;">
+            <label for="adminTipo">Tipo / Categoría</label>
+            <select id="adminTipo">
+              <option value="">(Sin tipo)</option>
+              <option value="Autoinmunes, reumatológicas, de la sangre, infecciosas o dermatológicas">Autoinmunes,
+                reumatológicas, sangre, infecciosas o dermatológicas</option>
+              <option value="Cardíaca">Cardíaca</option>
+              <option value="Digestiva, hernias, hepatitis y páncreas">Digestiva, hernias, hepatitis y páncreas</option>
+              <option value="Neurología">Neurología</option>
+              <option value="Obesidad">Obesidad</option>
+              <option value="Oftalmología">Oftalmología</option>
+              <option value="Oncológica y transplantes">Oncológica y transplantes</option>
+              <option value="Patología de oído, nariz, laringe y gargante">Patología de oído, nariz, laringe y gargante
+              </option>
+              <option value="Psiquiátrica">Psiquiátrica</option>
+              <option value="Renal, Urológia o Ginecológica">Renal, Urológica o Ginecológica</option>
+              <option value="Respiratoria">Respiratoria</option>
+              <option value="Sistema Endocrino y Metabólico">Sistema Endocrino y Metabólico</option>
+              <option value="Traumatología">Traumatología</option>
+            </select>
+          </div>
+
+          <div style="grid-column: 1 / -1;">
+            <label for="adminComentario">Comentario / Acción</label>
+            <input id="adminComentario" type="text" placeholder="Comentario o acción a tomar..." autocomplete="off" />
+          </div>
+
+          <div class="adminHint" id="adminCrudHint" style="display:none; grid-column: 1 / -1;"></div>
+
+          <div class="adminListWrap" style="grid-column: 1 / -1;">
+            <div class="adminListHeader">
+              <div class="adminListTitle">Patologías del producto seleccionado</div>
+              <div class="adminListTools">
+                <input id="adminFilter" type="text" placeholder="Filtrar dentro del producto..." autocomplete="off" />
+              </div>
+            </div>
+            <div class="adminList" id="adminList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // =========================================================
+    // 1) PEGA AQUÍ TU DICCIONARIO COMPLETO (BASE)
+    // =========================================================
+    // FORMATO:
+    // const PATHOLOGIES_BASE = {
+    //   "HELVETIA": [{ "patologia":"...", "contratable":"SI|INFORME MEDICO" }, ...],
+    //   "EUROPEA":  [...],
+    //   ...
+    const PATHOLOGIES_BASE = {
+      "ADESLAS": [
+        {
+          "patologia": "Glomerulo esclerosis renal con HTA y proteinuria Hace 1 año",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Sertralina antidepresivo + secuelas de hernia discal",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Autismo, Síndrome de Asperger",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "Necesario informe médico para valorar."
+        },
+        {
+          "patologia": "Artritis Reumatoide",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "90% de casos son Rechazo directo. Necesario informe médico para valorar."
+        },
+        {
+          "patologia": "Stent. Endoprótesis vasculares (endoprotesis, stem, sten, marcapasos, stent, estent, esten, wallstent)",
+          "contratable": "RECHAZO",
+          "comentario": "Rechazo directo."
+        },
+        {
+          "patologia": "Altura 170 cm, Peso 93 Kg, Resultado Índice de masa corporal (IMC) = 32,2",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "Excluidos los ingresos, y procedimientos para el estudio diagnóstico y/o tratamiento médico, endoscópicoo quirúrgico de la obesidad. Si en el futuro baja peso se puede solicitar una nueva selección de riesgo aportando nuevo cuestionario e informes sobre la exclusión.\n\nNo hay un tiempo específico, lo puede solicitar incluso el año que viene. Dicho esto, no significa que una vez que lo aporte se le quite la exclusión dependerá de la valoración del departamento médico."
+        },
+        {
+          "patologia": "Diabetes tipo 1 (se pincha insulina, diabético, diabética, diabete)",
+          "contratable": "RECHAZO",
+          "comentario": "Rechazo directo."
+        },
+        {
+          "patologia": "Parkinson",
+          "contratable": "RECHAZO",
+          "comentario": "Enfermedad degenerativa. Rechazo directo."
+        },
+        {
+          "patologia": "Hiperuricemia (gota), anemia ferropénica. deficit B12, diabetes,...",
+          "contratable": "RECHAZO",
+          "comentario": "Necesario informe médico para valorar. Rechazada."
+        },
+        {
+          "patologia": "Hígado grasiento diagnosticado hace más de 20 años (higado, hígado graso)",
+          "contratable": "RECHAZO",
+          "comentario": "Rechazo directo."
+        },
+        {
+          "patologia": "Operación de femur hace más de 40 años (fémur) (pierna, rodilla, cadera).",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "2-EXCLUSIÓN RETIRADA, SUSTITUCIÓN Y/O RECAMBIO DEL MATERIAL DE OSTEOSÍNTESIS FEMUR INTERVENIDO (MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS), ASÍ COMO POR SUS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS. Necesario firmar la exclusión para poder asegurar. Tardarán varios días en enviarte la carta de exclusión, paciencia."
+        },
+        {
+          "patologia": "Desprendimiento de retina.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE\nDESPRENDIMIENTO DE RETINA"
+        },
+        {
+          "patologia": "Altura 165 cm, Peso 100 Kg. Resultado Índice de masa corporal (IMC) = 36,7",
+          "contratable": "RECHAZO",
+          "comentario": "No asegurable por peso"
+        },
+        {
+          "patologia": "3 hernias discales 2017 sin operar. No aporta informe actualizado.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "Necesario informe médico para valorar. Si no aporta informe será necesario una carta jurada. En este caso queda excluída de todo lo relacionado con las hernias. Si no aporta informe se le aplica la máxima exclusión."
+        },
+        {
+          "patologia": "Migrañas, tratamiento con bótox (botox, dolor de cabeza)",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN DE CEFALEA/MIGRAÑA: MEDIOS DIAGNÓSTICOS, TRATAMIENTO E INGRESOS ASÍ COMO POR SUS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "Hernia de hiato intervenida.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE\nHERNIA DE HIATO INTERVENIDA"
+        },
+        {
+          "patologia": "Hipotiroidismo, tiroides, hipertiroidismo, hipotiroides, hipertiroides, sin operar toma pastillas Eutirox",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION AFECCIONES DE TIROIDES: MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS , ASI COMO POR SUS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "Le han quitado miomas, (mioma)",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O\nSECUELAS DE TUMORES BENIGNOS DE UTERO (1) , METRORRAGIAS (2)"
+        },
+        {
+          "patologia": "Hace 10 años corte de ligamentos y menisco de la rodilla izquierda, ingresada y operada, sin secuelas en la actualidad, lleva una grapa.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN DE MEDIOS DIAGNÓSTICOS, TRATAMIENTO E INGRESOS RELACIONADOS CON LAS RECIDIVAS, COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS DE RODILLA IZQUIERDA INTERVENIDA."
+        },
+        {
+          "patologia": "Prótesis en las dos rodillas hace 12 años",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "HISTORIAL MÉDICO COMPLETO Y ACTUALIZADO QUE INCLUYA DIAGNÓSTICOS EN VIGOR,ANTECEDENTES MÉDICO.QUIRÚRGICOS, TRATAMIENTOS, SITUACIÓN ACTUAL"
+        },
+        {
+          "patologia": "La causa de rechazo es IMC de la asegurada Rocío Hidalgo. Edad 13 años, estatura 159,5 y peso 86,5. Obesidad. IMC = 34",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Operada de tiroides, toma Eutirox. Debe aportar informe médico, si no puede conseguirlo hay que hacerle una carta jurada para que declare la enfermedad que tiene y que confirme que acepta la máxima exclusíon posible. Si en un futuro aporta informe se puede mandar a Adeslas para valorarlo nuevamente.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "SE PRECISA INFORMACIÓN MÉDICA ACTUALIZADA SOBRE TIROIDECTOMÍA: DIAGNÓSTICO/CAUSA/MOTIVO, LOCALIZACIÓN, FECHAS, TRATAMIENTO, PRONÓSTICO Y SITUACIÓN ACTUAL"
+        },
+        {
+          "patologia": "Extirpación de vesícula, le quitaron la vesícula",
+          "contratable": "EXCLUSIÓN",
+          "comentario": ""
+        },
+        {
+          "patologia": "Tea leve, sin mediación, autismo, recién diagnosticado, sin tratamiento.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN DE LOS MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS RELACIONADOS CON  LAS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS DE TRASTORNO DEL ESPECTRO AUTISTA (TEA)"
+        },
+        {
+          "patologia": "Lleva una placa con tornillos en el radio hace 25 años",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION RETIRADA , SUSTITUCION Y/O RECAMBIO DEL MATERIAL DE\nOSTEOSINTESIS (MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS) , ASI\nCOMO POR SUS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "Meningioma pequeño",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Reducción de estómago en el 2018, hace 6 años.",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "Tiene un lado de cadera operada y el otro sin operar",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "NECESARIO INFORME MÉDICO DE LAS DOS CADERAS PARA CONTINUAR CON LA VALORACIÓN"
+        },
+        {
+          "patologia": "Operación de cataratas en los dos ojos",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN DE CATARATAS"
+        },
+        {
+          "patologia": "Operación apendicitis de niño",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "Vasectomia para operar en seguridad social",
+          "contratable": "ACEPTADO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Asma y Fuma medio paquete al día",
+          "contratable": "RECHAZO",
+          "comentario": "ASMA Y FUMA RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "Hiperuricemia",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "Cirugía mayor reciente sea cual sea la edad y el estado del paciente",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "Artrosis",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "NECESARIO INFORME MÉDICO PARA VALORAR, COMO MÍNIMO EXCLUSIÓN DE ARTROSIS. Y ES POSIBLE QUE NO SEA ASEGURABLE."
+        },
+        {
+          "patologia": "Diabetes tipo 2 (no insulinodependiente), EPOC, Hipertensión (HTA) e Obesidad (IMC ≥ 16,5 y ≤ 40).",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "DEPENDIENDO DEL INFORME Y DE LA SITUACIÓN DEL CLIENTE PUEDE SER ASEGURABLE AUNQUE HAY MUCHA PROBABILIDAD DE QUE SEA RECHAZO DIRECTO POR PLURIPATOLOGÍA."
+        },
+        {
+          "patologia": "Enfermedades graves en tratamiento",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Enfermedades del riñón, como insuficiencia renal...",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Enfermedades cardiovasculares, como por ejemplo, infarto, angina de pecho...",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Enfermedades psiquiátricas, como depresión, trastornos bipolares, esquizofrenia, trastornos alimentarios...",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Enfermedades del sistema nervioso, como esclerosis múltiple, ictus, párkinson...",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Enfermedades reumatológicas, como artritis, lupus, fibromialgia...",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Enfermedades del aparato digestivo, como cirrosis, colitis ulcerosa, Crohn...",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Trasplantes",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Enfermedades del sistema respiratorio, como apneas del sueño...",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Diabetes tipo 1 / insulinodependiente",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Cáncer hace menos de 5 años del tratamiento y sin recaída posterior (valoración conforme a la Ley del Olvido Oncológico)",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "FRACTURA HUMERO IZDO INTERVENIDA",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE FRACTURA HUMERO IZDO INTERVENIDA"
+        },
+        {
+          "patologia": "Toma medicación para la tensión",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "Toma antidepresivo, para ansiedad, estés, medicación: Escitalopram.",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO, HABLA CON EL CLIENTE SOBRE ESTO Y HAZ TODO LO POSIBLE PARA QUE NO LO DECLARE O SE VA LA PÓLIZA A LA MIERDA."
+        },
+        {
+          "patologia": "37% INVALIDEZ POR TRASPLANTE HÍGADO AÑO 2015, ADJUNTO INFORME ALTA MÉDICA AÑO 2015. TOMA CERCET ADVAGRAF INMUNOSUPRESORES TRAS LA OPERACIÓN.",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Operado de las lumbares para quitar una hernia de lumbar hace 7 años",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "INFORME MÉDICO ACTUAL  HERNIAS INTERVENIDAS : DIAGNÓSTICO, ANATOMIA PATOLÓGICA, LOCALIZACIÓN,  FECHAS, TRATAMIENTO, SITUACIÓN ACTUAL, PRONÓSTICO"
+        },
+        {
+          "patologia": "Operación hernia discal hace 30 años sin secuelas ni tratamiento ni mediación, tiene 33% de invalidez.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "TE PIDEN INFORME, Y EN SU DEFECTO TENDRÁS QUE HACER CARTA JURADA ACEPTANDO EXCLUSIÓN."
+        },
+        {
+          "patologia": "30 años. Hernia Lumbar L4 y L5 va a ser operado en breve por la seguridad social",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA SIN EXCLUSIÓN"
+        },
+        {
+          "patologia": "25 años. hace 3 años se rompió el cubito del brazo izquierdo y lleva una placa con tornillos y se la van a retirar en breve por la seguridad social.",
+          "contratable": "ACEPTADO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Operación hace 1 año le sacaraon líquido del ojo y además tenía tiroides y tratamiento para la tensión.",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO POR PLURIPATOLOGÍA"
+        },
+        {
+          "patologia": "70 año le extirparon hace 40 años la tiroides",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA, PERO OTROS CLIENTES IGUAL SI QUE HAN PUESTO EXCLUSIÓN"
+        },
+        {
+          "patologia": "La próstata se le ha hecho muy grande, toma medicación",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION AFECCIONES DE PROSTATA (MEDIOS DE DIAGNOSTICO , TRATAMIENTOS\nE INGRESOS) , ASI COMO POR SUS COMPLICACIONES , CONSECUENCIAS Y/O\nSECUELAS"
+        },
+        {
+          "patologia": "Accidente de moto hace 20 años, fractura vertebras y lleva placas.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O\nSECUELAS DE FRACTURAS VERTEBRALES"
+        },
+        {
+          "patologia": "Desde el COVID lleva audífonos Sorda, sordera, audífono.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION SORDERA/HIPOACUSIA Y SUS CAUSAS (MEDIOS DE DIAGNOSTICO ,\nTRATAMIENTOS E INGRESOS) , ASI COMO POR SUS COMPLICACIONES ,\nCONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "Hernia inguinal hace 12 años",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "VIH. Tiene el sida desde los 18 tiene 52. Únicamente toma medicación (retrovirales).",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "SE PRECISA INFORMACIÓN MÉDICA ACTUALIZADA SOBRE HISTORIAL MÉDICO COMPLETO Y ACTUALIZADO QUE INCLUYA DIAGNÓSTICOS EN VIGOR,ANTECEDENTES MÉDICO-QUIRÚRGICOS, TRATAMIENTOS, SITUACIÓN ACTUAL"
+        },
+        {
+          "patologia": "Operación menisco hace 5 años y el otro hace 2 años.",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "SE PRECISA INFORME PARA PODER VALORAR."
+        },
+        {
+          "patologia": "Antidepresivos.",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO."
+        },
+        {
+          "patologia": "Cirrosis Biliar",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO."
+        },
+        {
+          "patologia": "Adiro, medicamento antiagregante, acido acetilsalicilico, adiro",
+          "contratable": "RECHAZO",
+          "comentario": "SI TOMA UNA MEDICACIÓN ANTIAGREGANTE NO ES ASEGURABLE, GO."
+        },
+        {
+          "patologia": "Tornillo en la rodilla derecha para centrar el desvió de la rotula, hace 45 años.",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA."
+        },
+        {
+          "patologia": "Osteoporosis, osteporosis.",
+          "contratable": "RECHAZO",
+          "comentario": "PIDEN INFORME. DEPENDIENDO DEL GRADO ES POSIBLE ASEGURAR, PERO EN LA MAYORÍA DE CASOS ES RECHAZO."
+        },
+        {
+          "patologia": "Operación suelo pélvico hace menos de 1 año.",
+          "contratable": "RECHAZO",
+          "comentario": "CUALQUIER OPERACIÓN DE MENOS DE 1 AÑO ADESLAS NO LO VALORA SEA LO QUE SEA"
+        },
+        {
+          "patologia": "Uveitis anteior recidivante HLA-B51+ desde enero 2015, tratamiento con metotraxate retirado en 2020. Además intervención de cataratas y sinequiolisis, tratamiento con adalimumab en julio 2024.",
+          "contratable": "RECHAZO",
+          "comentario": "TRATAMIENTO E INTEVENCIÓN MUY RECIENTE."
+        },
+        {
+          "patologia": "De baja desde hace 1 mes por una queratitis que le impide realizar su trabajo correctamente, se echa unas gotitas en el ojo, le darán el alta en los próximos días, perfecto estado de salud.",
+          "contratable": "RECHAZO",
+          "comentario": "UNA BAJA EN CURSO SIN ALTA, ES RECHAZO DIRECTO. CUIDADO."
+        },
+        {
+          "patologia": "Niña celiaca de 10 años de edad (con altura y peso normal).",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN enfermedad celiaca: medios de diagnóstico, tratamientos e ingresos, así como por sus complicaciones, consecuencias y/o secuelas."
+        },
+        {
+          "patologia": "Apnea del sueño, CPAP (Presión Positiva Continua en la Vía Aérea)",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Celiaco. Para valorar la enfermedad celíaca, CONFIRMANDO que el resto de respuestas son negativas, y que los parámetros de peso y talla están dentro de la normalidad, se aceptaría con EXCLUSIÓN.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN enfermedad celiaca: medios de diagnóstico, tratamientos e ingresos, así como por sus complicaciones, consecuencias y/o secuelas."
+        },
+        {
+          "patologia": "Síndrome de Down, NECESARIO INFORME PARA VALORAR.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "Solicitan informe médico actual sobre: cardiopatía, patología ocular, apnea del sueño o malformaciones intestinales conocidas (diagnóstico/causa/motivo, localización, fechas, tratamiento, pronóstico y situación actual)."
+        },
+        {
+          "patologia": "Prótesis en las dos caderas año 2011. Cadera intervenida.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "- 1.-EXCLUSIÓN DE LOS MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS RECIDIVAS, COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS DE PATOLOGIA DE LAS CADERAS INTERVENIDAS"
+        },
+        {
+          "patologia": "Úlcera corneal, queratitis, herida abierta en la córnea.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "AMEOTROPIA: MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS , ASI COMO POR SUS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "Pastillas para el colesterol y tensión por prevención. 69 años viene de otra compañía.",
+          "contratable": "ACEPTADO",
+          "comentario": "ACEPTAR (si resto de respuestas son negativas y peso y talla están dentro de parámetros)"
+        },
+        {
+          "patologia": "le falta hierro, principio de osteopenia",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "LLEVARÁ SEGURAMENTE EXCLUSIÓN, Y PUEDE QUE PIDAN INFORME."
+        },
+        {
+          "patologia": "Tenosinovitis de De Quervain, tendinitis de quervain,",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN INFORME"
+        },
+        {
+          "patologia": "Leucemia desde 2021",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "TENSION Y DIABETES TIPO 2 Y 2022 OPERADO VESICULA BILIAR",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO POR PLURIPATOLOGÍA, PRINCIPALMENTE POR LA VESICULA BILIAR"
+        },
+        {
+          "patologia": "HEPATITIS C",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "PIDEN INFORME"
+        },
+        {
+          "patologia": "hiperplasia benigna de próstata",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "PIDEN INFORME"
+        },
+        {
+          "patologia": "Estenosis de la válvula aórtica. Paciente 78 años que tiene un estrechamiento de la vena aortica y le tienen que intervenir.",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "Un quiste, o masa, renal es una bolsa de líquido que se forma sobre o dentro del riñón",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO PATOLOGÍA NO ASEGURABLE"
+        },
+        {
+          "patologia": "operación de próstata con LASER DE HOLEP",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN INFORME Y ES RECHAZO"
+        },
+        {
+          "patologia": "Una colecistectomía es una cirugía que se utiliza para extirpar la vesícula.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": ""
+        },
+        {
+          "patologia": "Poliquistosis renal.",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "Se precisaría información médica actualizada de poliquistosis renal (1), funcionalismo renal (2): Diagnóstico/Motivo/Causa, localización, fechas, tratamiento, situación actual y pronóstico."
+        },
+        {
+          "patologia": "Operado de HOMBRO MANGUITO ROTADOR HACE 4 AÑOS intervenido CON ADESLAS",
+          "contratable": "ACEPTADO",
+          "comentario": "ES RARO PERO HA PASADO LIMPIA"
+        },
+        {
+          "patologia": "ENERO 2023 OPERACIÓN DE PRÓSTATA, LE QUITARON PARTE DE LA PRÓSTATA, DESDE ENTONCES SIN MEDICACIÓN, SIN TRATAMIENTO Y SIN RECAÍDA.",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN INFORME PARA PODER VALORAR."
+        },
+        {
+          "patologia": "Se le reconoció un 35% de discapacidad por la operación de la rodilla hace 19 años.",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN HISTORIAL MÉDICO"
+        },
+        {
+          "patologia": "Extracción de una piedra en la vesícula (cálculos biliares) de manera no intrusiva mediante colonoscopia, hace 2 años. Sin complicaciones, tratamientos posteriores  ni secuelas.",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN HISTORIAL MÉDICO"
+        },
+        {
+          "patologia": "Operación de la rodilla derecha hace 19 años debido a una caída para la introducción de una prótesis, dicha operación no ha generado complicaciones, tratamientos posteriores y actualmente no tiene secuelas, debido a esta operación se me reconoció un 35% de discapacidad",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN HISTORIAL MÉDICO"
+        },
+        {
+          "patologia": "Pastillas para la tension alta indapamida, amblodipino\noperada vesicula biliar en el año 2000",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN HISTORIAL MÉDICO"
+        },
+        {
+          "patologia": "ARTROSIS HACE 17 AÑOS INFORME EXCLUSIÓN.\nINVALIDEZ DE 33% TOTAL PERMANENTE CONTRIBUTIVA",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "PIDEN INFORME Y LLEVARÁ EXCLUSIÓN"
+        },
+        {
+          "patologia": "Prótesis de cadera izquierda en el año 2022. Aporta informe.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "NOS PIDEN INFORME DE LA CADERA DERECHA O DE LO CONTRARIO NO SE PUEDE HACER LA PÓLIZA. NO VALE CON CARTA JURADA."
+        },
+        {
+          "patologia": "síndrome de Sjögren",
+          "contratable": "RECHAZO",
+          "comentario": "La valoración del caso  con los datos proporcionados es DENEGAR por riesgo no asegurable (Sd Sjögren)"
+        },
+        {
+          "patologia": "apendicitis año 1977. 2023 extirpar ovarios y trompas por un quiste y por prevencion",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA."
+        },
+        {
+          "patologia": "Fibrosis retroperitoneal, diagnosticado hace 15 AÑOS, sin consecuencias, tratamiento: toma corticoides de 2,5 y anticoagulante savelto",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO."
+        },
+        {
+          "patologia": "EPOC leve 80% y diabetes tipo 2. Para poder valorar es necesario que aporte informe del EPOC.",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN INFORME MÉDICO ACTUAL   EPOC: DIAGNÓSTICO, CLASIFICACIÓN GOLD, FECHAS, TRATAMIENTO, SITUACIÓN ACTUAL, PRONÓSTICO"
+        },
+        {
+          "patologia": "160, 85 KG, IMC 32,2 OBESIDAD.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUIDOS LOS INGRESOS Y PROCEDIMIENTOS PARA ESTUDIO DIAGNOSTICO Y/O TRATAMIENTO MEDICO , ENDOSCOPICO O QUIRURGICO DE LA OBESIDAD"
+        },
+        {
+          "patologia": "OPERADA DE LA ESPALDA EN 2023. APORTA INFORME DE LA OPERACIÓN.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE CIRUGIA DE COLUMNA LUMBO-SACRA Y SUS CAUSAS"
+        },
+        {
+          "patologia": "Tiene artrosis leve, toma una pastilla al día de Condrosan de 400mg. Y se hace infiltraciones 1 vez al año en la rodilla y cadera.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "HISTORIAL MÉDICO ACTUALIZADO COMPLETO CON ANTECEDENTES PERSONALES"
+        },
+        {
+          "patologia": "Apnea del sueño. Lleva mascarilla por las noches porque ronca, únicamente para respirar mejor, no tiene nada más, lo hizo principalmente por que su mujer no podía dormir, pero no tiene patologías añadidas ni nada más-",
+          "contratable": "RECHAZO",
+          "comentario": "La valoración del caso  con los datos proporcionados es DENEGAR por riesgo no asegurable. (SAOS con CPAP)"
+        },
+        {
+          "patologia": "operación vesícula biliar en póliza plena",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA."
+        },
+        {
+          "patologia": "Discapacidad reconocida del 81% por miopía hace 15 años. Sin embargo el paciente indica que puede ver con casi total normalidad y que puede tener una vida autónoma sin problema. APORTA INFORME",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN DE CIN/SIL-VHP"
+        },
+        {
+          "patologia": "operacion cuello de utero en 2020",
+          "contratable": "EXCLUSIÓN",
+          "comentario": ""
+        },
+        {
+          "patologia": "OPERADA DE LAS DOS PIERNAS EN NOVIEMBRE 2024. (menos de 1 año) LIPEDEMA",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "ENDOMETRIOSIS",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN : ENDOMETRIOSIS  medios de diagnóstico, tratamientos e ingresos, así como por sus complicaciones, consecuencias y/o secuelas."
+        },
+        {
+          "patologia": "La trombocitemia esencial",
+          "contratable": "RECHAZO",
+          "comentario": "DENEGAR por riesgo no asegurable"
+        },
+        {
+          "patologia": "Arritmia, arritmias",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Operación de la rodilla derecha para una prótesis hace 3 años aproximadamente por artrosis, no tiene secuelas, ni tratamientos posteriores a la operación.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION ARTROSIS (1), RODILLA DERECHA (2): MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS, ASÍ COMO POR SUS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "Con 14 años se le diagnostico con un lipoma en la médula anclada, tiene una falta de control de micción como secuela.",
+          "contratable": "RECHAZO",
+          "comentario": "Lipoma en la médula anclada causante de una falta de control de micción como secuela. - DENEGAR por riesgo no asegurable"
+        },
+        {
+          "patologia": "Insuficiencia Venosa Crónica diagnoticada hace 10 años, sin tratamiento en curos o secuelas - ACEPTAR con la siguiente EXCLUSIÓN.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN Insuficiencia Venosa de Extremidades Inferiores: medios de diagnóstico, tratamientos e ingresos, así como por sus complicaciones, consecuencias y/o secuelas."
+        },
+        {
+          "patologia": "Lumbalgia en tratamiento",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "Rechazo por tratamiento en curso."
+        },
+        {
+          "patologia": "Se drogó cuando era joven.",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "Van a pedir historial médico para poder valorar."
+        },
+        {
+          "patologia": "OPERACIÓN DE L4 L5",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "SIN INFORME NO SE PUEDE HACER NADA."
+        },
+        {
+          "patologia": "Demencia leve diagnosticada hace 1 año, sin tratamiento en curso, Diabetes tipo 2 e hipertensión.",
+          "contratable": "RECHAZO",
+          "comentario": "DENEGAR por riesgo no asegurable"
+        },
+        {
+          "patologia": "Ácido úrico toma una pastilla desde hace 10 años",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "NECESARIO INFORME MÉDICO PARA PODER VALORAR. NO VALE CON UNA ANALÍTICA, SI NO ENTREGA INFORME NO SE PUEDE CONTINUAR."
+        },
+        {
+          "patologia": "DIU",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "1.INFORME MÉDICO ACTUALIZADO GINECOLOGÍA : DIAGNOSTICO/CAUSA/MOTIVO, LOCALIZACIÓN, FECHAS, TRATAMIENTO, PRONOSTICO Y SITUACIÓN ACTUAL. RECOMENDARLE QUE NO LO DECLARE."
+        },
+        {
+          "patologia": "PRÓTESIS EN RODILLA DERECHA INTERVENIDA HACE 10 MESES.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": ""
+        },
+        {
+          "patologia": "Prótesis en las dos rodillas",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION (1) AFEFECCIONES RODILLA IZD (2) RETIRADA /RECAMBIO PROTESIS RODILLA DCHA (2) AFECCIONES RODILLA DCHA (MEDIOS DIAGNOSTICO , TRATAMIENTOS E INGRESOS) ASI COMO POR SUS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "Colon irritable. Síndrome del intestino irritable. El síndrome del intestino irritable (SII) es un trastorno que lleva a dolor en el abdomen y cambios en los movimientos intestinales. Este síndrome no es lo mismo que enfermedad intestinal inflamatoria (EII).",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "NECESARIO INFORME MÉDICO PARA PODER VALORAR. NO VALE CON UNA ANALÍTICA, SI NO ENTREGA INFORME NO SE PUEDE CONTINUAR."
+        },
+        {
+          "patologia": "Hernia discal intervenida hace 18 años. Artrosis en la rodilla.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "NO ES NECESARIO INFORME."
+        },
+        {
+          "patologia": "69 años Hepatitis autoinmune sin tratamiento en la actualidad y Diabetes tipo 2 pastillas.",
+          "contratable": "RECHAZO",
+          "comentario": "DENEGAR por riesgo no asegurable"
+        },
+        {
+          "patologia": "Esclerodermia",
+          "contratable": "RECHAZO",
+          "comentario": "DENEGAR por riesgo no asegurable"
+        },
+        {
+          "patologia": "Operada de una cadera. Aporta informe año 2022 (hace 4 años).",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "SIN INFORME ACTUALIZADO NO SE PUEDE CONTINUAR."
+        },
+        {
+          "patologia": "Operada de una cadera. Aporta informe año 2024 de la cadera intervenida. (hace 1 año)",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "ES NECESARIO EL INFORME DE LAS DOS CADERAS, LA OPERADA Y LA QUE NO ESTÁ OPERADA, DE LO CONTRARIO NO SE PUEDE CONTINUAR CON LA VALORACIÓN MÉDICA."
+        },
+        {
+          "patologia": "Fibrilación auricular, toma xarelto 20 miligramos, es como las arritmias",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "El señor se toma unas pastillas para prevenir la horgura de la próstata desde hace 3 años.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "NO HA SIDO NECESARIO INFORME."
+        },
+        {
+          "patologia": "Polineuritis",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Operada de cadera hace menos de 1 año. Aporta informe donde pone que se recomienda fisioterapia para patología muscular y lumbar. Y donde se recomienda visita a cirugía vascular si perssiste edema en ambos tobillos. No está recuperada al 100%.",
+          "contratable": "RECHAZO",
+          "comentario": "TRAS VER EL INFORME PROCEDEN AL RECHAZO."
+        },
+        {
+          "patologia": "Operación de rodilla para una prótesis hace más de 4 años.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "ACEPTAN SI EL INFORME ES FAVORABLE."
+        },
+        {
+          "patologia": "Epilepsia, epiléptica",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "Se precisaría información médica actualizada de la patología declarada EPILEPSIA: Diagnóstico/Motivo/Causa, localización, fechas, tratamiento, situación actual y pronóstico."
+        },
+        {
+          "patologia": "El síndrome de Asperger, ​ también llamado simplemente aspérger o ásperger, ​dificultad para afrontar situaciones sociales.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "2.⁠ ⁠EXCLUSIÓN DE LOS MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS RELACIONADOS CON  LAS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS DE TRASTORNO DEL ESPECTRO AUTISTA (TEA)"
+        },
+        {
+          "patologia": "Granuloma eosinófilo: 13 de Marzo del 2009, fue operado con éxito y le dieron el alta en los días siguientes. Las revisiones posteriores mostraron que NO QUEDÓ SECUELA alguna hasta el punto de que no se ve siguiera la cicatriz en el hueso.",
+          "contratable": "ACEPTADO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Absceso: No lo recuerdo pero pudiera ser en Noviembre del 2007 a consecuencia de la varicela o en mayo del 2020 cuando tenía acné. En todo caso está totalmente curado y NO HAY SECUELAS",
+          "contratable": "ACEPTADO",
+          "comentario": ""
+        },
+        {
+          "patologia": "A los 10 años ( Noviembre 2013) Por MIOPÍA y ESTIGMATISMO. EN LA ACTUALIDAD SIGUE LLEVANDO GAFAS",
+          "contratable": "ACEPTADO",
+          "comentario": ""
+        },
+        {
+          "patologia": "UVEITIS OJO IZQUIERDO",
+          "contratable": "EXCLUSIÓN",
+          "comentario": ""
+        },
+        {
+          "patologia": "Mujer de 70 años con ácido úrico causado por la menopausa desde los 50 años. Toma mediación Alopurinol de 300 mg.",
+          "contratable": "ACEPTADO",
+          "comentario": "Aceptado sin exclusión. Aunque otros ácidos úricos si ha habido exclusión."
+        },
+        {
+          "patologia": "ICTUS hace 5 años.",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO."
+        },
+        {
+          "patologia": "Colesterol: Simvastatina 10mg, 1 al día. Controlado por debajo de 220 mg/dL.\nAcido úrico: Alopurinol 100mg, 1 al día. Diagnosticado a raíz de la menopausia.\nHipotiroidismo, Eutirox 100mg, 1 al día.\nHipertensión: Telmisartan 80mg, 1 al día. 13/7 y 13/8",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION AFECCIONES BENIGNAS DE TIROIDES y EXCLUSION HIPERURICEMIA- GOTA."
+        },
+        {
+          "patologia": "Operación de rodilla de hace 3 meses aporta informe de alta.",
+          "contratable": "RECHAZO",
+          "comentario": "Rechazo directo por operación muy reciente."
+        },
+        {
+          "patologia": "VPH. Virus del papiloma humano.",
+          "contratable": "RECHAZO",
+          "comentario": "RECHZADO DIRECTO"
+        },
+        {
+          "patologia": "Escoliosis leve, desviación de la columna.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION"
+        },
+        {
+          "patologia": "Gonalgia (dolor en la rodilla)",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "INFORME MÉDICO ACTUAL   GONALGIA: DIAGNÓSTICO/MOTIVO/CAUSA, LOCALIZACIÓN,  FECHAS, TRATAMIENTO, SITUACIÓN ACTUAL, PRONÓSTICO"
+        },
+        {
+          "patologia": "REUMATITIS",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "Cornetas nasales, dificultad para respirar por la nariz",
+          "contratable": "ACEPTADO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Epilepsia toma DEPAKINE",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "INFORME MÉDICO ACTUAL   TTO.DEPAKINE: DIAGNÓSTICO/MOTIVO/CAUSA,  FECHA ÚLTIMA CRISIS, TRATAMIENTO, SITUACIÓN ACTUAL, PRONÓSTICO"
+        },
+        {
+          "patologia": "Operada Vegetaciones y amígdalas",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "Operada de cervicales en 2022",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "Estenosis Uretral",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": ""
+        },
+        {
+          "patologia": "Un paciente de 68 con una operación para solucionar el síndrome de Wolff Parkinson White hace 22 años, quemando la parte sobrante que provoca este síndrome, sin complicaciones ni tratamiento desde entonces.",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "MASTOCITOSIS SISTÉMICA toma CLOMOGLICATO 200 MG 4 VECES AL DIA",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "trastorno obsesivo-compulsivo (TOC)",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "Prediabético, prediabetes",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "HISTORIAL MÉDICO"
+        },
+        {
+          "patologia": "Prótesis de 1 cadera.",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN INFORME DE LAS 2 CADERAS, LA BUENA Y LA MALA.\nEXCLUSION (1) AFECCIONES CADERA DCHA (2) RETIRADA/RECAMBIO PROTESIS\nCADERA DCHA (MEDIOS DIAGNOSTICO , TRATAMIENTOS E INGRESOS) ASI COMO\nPOR SUS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "hesterosis de ureter",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN INFORME."
+        },
+        {
+          "patologia": "Operación de tobillo hace 2 años",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN INFORME. PUEDEN APLICAR EXCLUSIÓN O RECHAZO SEGÚN ESTÉ."
+        },
+        {
+          "patologia": "ARTROSCOPIA RODILLA IZDA. Y SUS CAUSAS (MENISCOPATIA)",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "NECESARIO INFORME Y APLICAN EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "Litotricia",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "INFORME MÉDICO LITOTRICIA : DIAGNOSTICO/CAUSA/MOTIVO, LOCALIZACIÓN, FECHAS, TRATAMIENTO, PRONOSTICO Y SITUACIÓN ACTUAL. TRAS VER INFORME ADESLAS LO RECHAZA."
+        },
+        {
+          "patologia": "SIDA, VIH, cero positivo, sida desde 2011 aporta informe",
+          "contratable": "ACEPTADO",
+          "comentario": "TRAS VER INFORME LO ACEPTAN SIN EXCLUSIÓN"
+        },
+        {
+          "patologia": "Operación para la extracción de la vesícula hace 2 años. Sin tratamientos ni complicaciones desde entonces.",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "ANEURISMA",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "Intervenida de cadera derecha, nos piden informe de la izquierda, aportamos carta jurada.",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "TUMOR OVARIO, quiste ovario.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O\nSECUELAS DE TUMORES BENIGNOS DE OVARIO Y SU CIRUGIA"
+        },
+        {
+          "patologia": "21/09/2023 CIRUGÍA AMBULATORIA PARA HACERLE UNA ECOGRAFÍA Y POSTERIORMENTE DIAGNOSTICARLE OBSTRUCCIÓN INTESTINAL. SIN TRATAMIENTO, SIN SECUELAS.",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "Reducción de estómago",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO POR CIRUGÍA BARIÁTRICA"
+        },
+        {
+          "patologia": "DIABETES TIPO 2, RYBELSUS 5MG Y Xigduo, HTA y OBESIDAD. TODO JUNTO.",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN INFORME Y TRAS VERLO LO RECHAZAN."
+        },
+        {
+          "patologia": "BIOPSIA MAMA IZQUIERDA",
+          "contratable": "ACEPTADO",
+          "comentario": "PIDEN INFORME, LA CLIENTA LO ADJUNTA Y PASA LIMPIA."
+        },
+        {
+          "patologia": "Vejiga hiperactiva",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO POR CUESTIONARIO SALUD"
+        },
+        {
+          "patologia": "a los 51 años sufrí un accidente con un producto químico desatascador que al explotar en el fregadero me realizó quemaduras en el nervio óptico del ojo de ambos ojos",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "1.-EXCLUSIÓN DE LOS MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS RECIDIVAS, COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS DE QUEMADURAS TÓXICAS EN AMBOS N.OPTICOS"
+        },
+        {
+          "patologia": "Siringomielia desde hace 7 años, sin tratamiento, ni operaciones.",
+          "contratable": "RECHAZO",
+          "comentario": "La valoración del caso  con los datos proporcionados es DENEGAR por riesgo no asegurable. (Siringomielia)"
+        },
+        {
+          "patologia": "túnel carpiano mano derecha operado hace 10 años ha pasado limpio sin exclusion.",
+          "contratable": "ACEPTADO",
+          "comentario": ""
+        },
+        {
+          "patologia": "82 años operado hace 42 años del estomago y quedo genial solo va una vez al año a revision, tambien fue operado hace 25 años de hernia y le dieron el alta no va ni a revision, operado de la prostata en el año 2008 y solo va a revision una vez al año y operado en 2017 de diverticulis tambien revision una vez al año",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO POR PLURIPATOLOGÍA"
+        },
+        {
+          "patologia": "CONDROMALACIA ROTULIANA",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION"
+        },
+        {
+          "patologia": "Paciente de 59 años con Hipoplasia medular diagnosticada 7 años atrás sin tratamientos en curso ni en historial médico, ni complicaciones ni secuelas adversas. Sin otras patologias e IMC de 24",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO POR MedExpert"
+        },
+        {
+          "patologia": "espondilitis anquilosante. Sin tratamientos en ningún momento referentes a esta operación, complicaciones o secuelas adversas.",
+          "contratable": "RECHAZO",
+          "comentario": "MedExpert: con los datos proporcionados es DENEGAR por ESPONDILITIS ANQUILOSANTE"
+        },
+        {
+          "patologia": "Extracción de vesícula en el 17/02/2021",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "1. ESÓFAGO BARRET. PROCESO EN CURSO PENDIENTE DE RESOLUCIÓN",
+          "contratable": "RECHAZO",
+          "comentario": "Rechazo"
+        },
+        {
+          "patologia": "POLIOMIELITIS",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE POLIOMIELITIS"
+        },
+        {
+          "patologia": "Le quitaron un polipo de 3mm el 06/06/2025 y finalizo tratamiento el dia 09/12/2025 por lo tanto es rechazo directo (sigmoidectomía laparoscópica )",
+          "contratable": "RECHAZO",
+          "comentario": "NO ASEGURABLE POR OPERACION RECIENTE HACE MENOS DE 1 AÑO"
+        },
+        {
+          "patologia": "ARTRODESIS, FIJACION L5-S1 Y PROTESIS L5-L4. HACE 4 AÑOS",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE LAS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE\nAFECCIONES COLUMNA LUMBOSACRE L5-S1 Y SU CIRUGIA: MEDIOS DE\nDIAGNOSTICO , TRATAMIENTOS E INGRESOS"
+        }
+      ],
+      "SENIORS": [
+        {
+          "patologia": "Diabetes Tipo 1 (se pincha insulina diabético, diabética, diabete)",
+          "contratable": "RECHAZO",
+          "comentario": "Necesario informe médico para valorar."
+        },
+        {
+          "patologia": "Diabetes Tipo 2 (tratamiento con pastillas)",
+          "contratable": "ACEPTADO",
+          "comentario": "No es necesario aportar informe, pasa limpia."
+        },
+        {
+          "patologia": "Próstata operada hace 15 años (no es tumor no cáncer). Cataratas operadas hace 2 años. (prostata)",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION (1) AFECCIONES DE PRÓSTATA Y (2) CATARATAS  (MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS), ASÍ COMO POR SUS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "operada en los dos ojos de miopia",
+          "contratable": "ACEPTADO",
+          "comentario": "Aceptado sin carencias y sin exclusiones, PASA LIMPIA."
+        },
+        {
+          "patologia": "diabético tipo 2 toma 2 pastillas distintas por la diabetes",
+          "contratable": "ACEPTADO",
+          "comentario": "Aceptado sin carencias y sin exclusiones, PASA LIMPIA."
+        },
+        {
+          "patologia": "hipertensión",
+          "contratable": "ACEPTADO",
+          "comentario": "Aceptado sin carencias y sin exclusiones, PASA LIMPIA."
+        },
+        {
+          "patologia": "80 años de edad que hace 12 años le pusieron un STENT. Pesa 68kg y mide 167cm. No tiene ningún tipo de recaída y secuela durante todos estos años.",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "diabetes tipo 2 + hipertensión + operación de cadera menos de 1 año",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "tensión alta azúcar y una hernia inguinal que se la han quitado hace años",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA"
+        },
+        {
+          "patologia": "Cirugía mayor reciente sea cual sea la edad y el estado del paciente",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "Operación de uretra",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O\nSECUELAS DE TTO DE PROSTATA DECLARADO Y SUS CAUSAS"
+        },
+        {
+          "patologia": "Prostatitis en tratamiento.",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZO DIRECTO"
+        },
+        {
+          "patologia": "Próstata operada no indica fecha de la operación",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "LO IDEAL ES INDICAR LA FECHA DE LA OPERACIÓN Y EL ALTA"
+        },
+        {
+          "patologia": "EPOC LEVE estadio 1, GRADO 1 (enfermedad pulmonar obstructiva crónica)",
+          "contratable": "ACEPTADO",
+          "comentario": "PASAN LIMPIAS, EXCEPTO AQUELLAS QUE PRESENTANDO INFORME NO SEA FAVORABLE, POR LO GENERAL, PASAN CASI TODAS."
+        },
+        {
+          "patologia": "Hipertensión (HTA)",
+          "contratable": "ACEPTADO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Obesidad (IMC ≥ 16 5 y ≤ 40).",
+          "contratable": "ACEPTADO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Hace 3 años le quitaron la próstata por error médico y tiene Flebitis que es inflamación de las venas sobre todo la orta que pasa por la ingle",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "Altura 182 cm Peso 129 kg IMC 39. Fuma medio paquete al día.",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA SIN EXCLUSIÓN"
+        },
+        {
+          "patologia": "póliza 3.000€ los dos tenían colesterol y tensión. Operación en ambas manos por tendinitis 36% discapacidad.",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA, SIN EXCLUSIÓN."
+        },
+        {
+          "patologia": "Artrosis en las dos rodillas aporta informe.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "SE PRECISA INFORME PARA PODER VALORAR."
+        },
+        {
+          "patologia": "Extirpación de vesícula y apéndice",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA."
+        },
+        {
+          "patologia": "Hipertensión alta medicación Atenolol 50mg",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA."
+        },
+        {
+          "patologia": "operación de cataratas hace 1 año.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN CATARATAS"
+        },
+        {
+          "patologia": "OPERADO DE CATARATAS HACE 7 Y 10 AÑOS SIN SECUELAS EN PERFECTO ESTADO",
+          "contratable": "EXCLUSIÓN",
+          "comentario": ""
+        },
+        {
+          "patologia": "Esguince de tercer grado el ligamento roto por todas partes. Persona de 55 años altura 160 cm peso 54kg.",
+          "contratable": "ACEPTADO",
+          "comentario": "NO ENTENDEMOS POR QUÉ HA PASADO LIMPIA. OTROS CASOS IGUALES NO NOS LO HAN ACEPTADO NI DE BROMA."
+        },
+        {
+          "patologia": "Operación de cervicales con placa de titanio hace más de xx años.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION DE MEDIOS DIAGNOSTICOS , TRATAMIENTO E INGRESOS RELACIONADOS CON LAS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE AFECCION COLUMNA CERVICAL Y SU CIRUGIA"
+        },
+        {
+          "patologia": "Asmatica que le inyectan una vez al mes Nucala y ventolín.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": ""
+        },
+        {
+          "patologia": "Pastillas para el colesterol y vitamina d por prevención para los huesos. Toma Simvastatina 10 mg para el colesterol.",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA."
+        },
+        {
+          "patologia": "ARTRODESIS TOBILLO CURADA Y SIN NINGUN TIPO DE SECUELA NI TRATAMIENTO. ¡¡NECESARIO INFORME PARA PODER VALORAR!!",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "INFORME MÉDICO ACTUAL   CIRUGÍA DE TOBILLO DECLARADA: DIAGNÓSTICO/MOTIVO/CAUSA, LOCALIZACIÓN,  FECHAS, TRATAMIENTO, SITUACIÓN ACTUAL, PRONÓSTICO"
+        },
+        {
+          "patologia": "Operado de menisco hace 5 años sin secuelas sin tratamiento, sin recaída",
+          "contratable": "ACEPTADO",
+          "comentario": "SORPRENDENTEMENTE PASA LIMPIA."
+        },
+        {
+          "patologia": "1 pastilla por la mañana enalapril y otra por la noche de atenolol. Operación hace más de 15 años de un quiste en la nuez y una fistula hace 20 años. Operacion de cataratas hace más de 4 años en sanitas.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "SOLO HAN APLICADO EXCLUSIÓN DE CATARATAS, EL RESTO PASA LIMPIO."
+        },
+        {
+          "patologia": "con reducción de estómago y con altura de 167 y 105 kilos (IMC 37.6)",
+          "contratable": "RECHAZO",
+          "comentario": "RECHAZAR por riesgo no asegurable (Cirugía Bariátrica, IMC>34)"
+        },
+        {
+          "patologia": "TOTAL firma digital, el cielnte puso en la declaración textualmente \"traumatología codo derecho hace 5 años sin secuelas\"",
+          "contratable": "ACEPTADO",
+          "comentario": "PASA LIMPIA."
+        },
+        {
+          "patologia": "Extracción de una piedra en la vesícula (cálculos biliares) de manera no intrusiva mediante colonoscopia hace 2 años. MUY GORDA IMC 36.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSIÓN DE LA VESÍCULA Y LA OBESIDAD."
+        },
+        {
+          "patologia": "OPERACION DE VESÍCULA EN SEPTIEMBRE DEL 2023 SIN SECUELAS, SIN RECAÍDA Y SIN TRATAMIENTO POSTERIOR.",
+          "contratable": "ACEPTADO",
+          "comentario": ""
+        },
+        {
+          "patologia": "un oído perfecto, el otro con el 65% de périda de audición, operado a los 4 años y desde entonces le pusieron un audífono. Desde entonces realiza controles con otorrino.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION HIPOACUSIA/SORDERA : MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS, ASÍ COMO POR SUS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "TOTAL. Osteoporosis no tiene ningún tratamiento, solo toma calcio y sale a caminar.",
+          "contratable": "EXCLUSIÓN",
+          "comentario": "EXCLUSION OSTEOPENIA (1) , OSTEOPOROSIS (2): MEDIOS DE DIAGNOSTICO ,\nTRATAMIENTOS E INGRESOS , ASI COMO POR SUS COMPLICACIONES ,\nCONSECUENCIAS Y/O SECUELAS"
+        },
+        {
+          "patologia": "Mujer de 68 años con Amilodiosis desde hace 8 años.",
+          "contratable": "RECHAZO",
+          "comentario": ""
+        },
+        {
+          "patologia": "OSTEOPOROSIS.",
+          "contratable": "EN VALORACIÓN MÉDICA",
+          "comentario": "PIDEN INFORME, DE LO CONTRARIO NO SE PUEDE CONTINUAR. SI EL INFORME ES FAVORABLE SE PUEDE ASEGURAR CON EXCLUSIÓN. EN ESTE CASO TRAS VALORAR INFORME FUE RECHAZO."
+        }
+      ]
+    };
+
+    // 2) STORAGE (Persistencia admin)
+    // =========================================================
+    // ACTUALIZADO: v5 — reset para cargar nuevos datos base (200 patologías Excel)
+    const STORAGE_KEY_DATA_V3 = "diblafe_pathologies_overrides_v3";
+    const STORAGE_KEY_DATA_V4 = "diblafe_pathologies_overrides_v4";
+    const STORAGE_KEY_DATA_V5 = "diblafe_pathologies_overrides_v6";
+    const STORAGE_KEY_ADMIN = "diblafe_admin_logged_v4";
+    const STORAGE_KEY_USER_ROLE = "adeslas_user_role";
+
+    const USERS = {
+      "admin": { pass: "1234", role: "admin" },
+      "user": { pass: "1234", role: "user" }
+    };
+
+    // Trabajamos con una copia "viva" que mezcla BASE + OVERRIDES - ELIMINADAS
+    let PATHOLOGIES = {};
+
+    // =========================================================
+    // Utilidades
+    // =========================================================
+    function normalizeText(s) {
+      if (s === null || s === undefined) return "";
+      return String(s)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+    }
+
+    function safeVal(v) {
+      if (v === null || v === undefined) return "";
+      return String(v).trim();
+    }
+
+    function normalizeCompanyKey(k) {
+      const nk = normalizeText(k).toUpperCase();
+      return nk;
+    }
+
+    function badgeClassByContratable(v) {
+      const nv = normalizeText(v);
+      if (nv === "aceptado") return "ok";
+      if (nv === "rechazo") return "bad";
+      if (nv === "exclusion") return "warn-red";
+      if (nv === "informe") return "warn";
+      return "warn";
+    }
+
+    function debounce(fn, wait) {
+      let t;
+      return function () {
+        const args = arguments;
+        clearTimeout(t);
+        t = setTimeout(function () { fn.apply(null, args); }, wait);
+      }
+    }
+
+    function deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj || {}));
+    }
+
+    // =========================================================
+    // OVERRIDES v5: { data: {COMPANY:[...]}, deleted: [COMPANY,...] }
+    // Migración desde v4/v3
+    // =========================================================
+    function loadOverridesV5() {
+      // 1) intenta v5
+      try {
+        const raw5 = localStorage.getItem(STORAGE_KEY_DATA_V5);
+        if (raw5) {
+          const parsed5 = JSON.parse(raw5);
+          if (parsed5 && typeof parsed5 === "object") {
+            const data = (parsed5.data && typeof parsed5.data === "object") ? parsed5.data : {};
+            const deleted = Array.isArray(parsed5.deleted) ? parsed5.deleted : [];
+            return { data: data, deleted: deleted };
+          }
+        }
+      } catch (e) { }
+
+      // migrations removed to guarantee cleanly loading PATHOLOGIES_BASE
+      return { data: {}, deleted: [] };
+    }
+
+    function saveOverridesV5(overrides) {
+      try {
+        const clean = overrides && typeof overrides === "object" ? overrides : { data: {}, deleted: [] };
+        if (!clean.data || typeof clean.data !== "object") clean.data = {};
+        if (!Array.isArray(clean.deleted)) clean.deleted = [];
+        localStorage.setItem(STORAGE_KEY_DATA_V5, JSON.stringify(clean));
+      } catch (e) {
+        // sin acciones extra
+      }
+    }
+
+    function canonicalizeProducts(obj) {
+      const out = {};
+      Object.keys(obj || {}).forEach(function (k) {
+        const ck = normalizeCompanyKey(k);
+        if (!ck) return;
+        const arr = Array.isArray(obj[k]) ? obj[k] : [];
+        if (!out[ck]) out[ck] = [];
+        out[ck] = out[ck].concat(deepClone(arr));
+      });
+
+      Object.keys(out).forEach(function (k) {
+        if (!Array.isArray(out[k])) out[k] = [];
+      });
+
+      return out;
+    }
+
+    function dedupeProductList(list) {
+      const seen = new Set();
+      const out = [];
+      (list || []).forEach(function (r) {
+        const name = safeVal(r && r.patologia);
+        const key = normalizeText(name);
+        if (!key) return;
+        if (seen.has(key)) return;
+        seen.add(key);
+        out.push({
+          patologia: name,
+          contratable: safeVal(r && r.contratable),
+          productor: safeVal(r && r.productor),
+          tipo: safeVal(r && r.tipo),
+          comentario: safeVal(r && r.comentario)
+        });
+      });
+      return out;
+    }
+
+    function mergeBaseAndOverrides() {
+      const baseRaw = canonicalizeProducts(PATHOLOGIES_BASE);
+
+      const ov = loadOverridesV5();
+      const ovData = canonicalizeProducts(ov.data || {});
+      const deleted = (ov.deleted || []).map(function (x) { return normalizeCompanyKey(x); });
+
+      const out = deepClone(baseRaw);
+
+      // aplica overrides: FUSIONA (no reemplaza) base + overrides
+      Object.keys(ovData).forEach(function (product) {
+        if (!Array.isArray(ovData[product])) return;
+        if (!out[product]) out[product] = [];
+        // Añade overrides al final y dedupe se encarga de eliminar duplicados
+        out[product] = out[product].concat(deepClone(ovData[product]));
+      });
+
+      // dedupe final
+      Object.keys(out).forEach(function (product) {
+        out[product] = dedupeProductList(out[product]);
+      });
+
+      // aplica eliminadas
+      deleted.forEach(function (c) {
+        if (out[c]) delete out[c];
+      });
+
+      PATHOLOGIES = out;
+    }
+
+    // =========================================================
+    // BUSCADOR
+    // =========================================================
+    const PREFERRED_PRODUCT_ORDER = ["ADESLAS", "SENIORS"];
+    let PRODUCTS = [];
+    const INDEX = {};
+
+    const elQ = document.getElementById("q");
+    const elBtnBuscar = document.getElementById("btnBuscar");
+    const elBtnLimpiar = document.getElementById("btnLimpiar");
+    const elResults = document.getElementById("results");
+    const elNoResults = document.getElementById("noResults");
+
+    function buildProducts() {
+      const keys = Object.keys(PATHOLOGIES || {});
+      // Si no hay productos, forzamos ADESLAS por defecto
+      if (keys.length === 0) {
+        PATHOLOGIES["ADESLAS"] = [];
+        keys.push("ADESLAS");
+      }
+      const set = new Set(keys.map(function (k) { return normalizeCompanyKey(k); }));
+
+      const ordered = [];
+      PREFERRED_PRODUCT_ORDER.forEach(function (k) {
+        const ck = normalizeCompanyKey(k);
+        if (set.has(ck)) ordered.push(ck);
+      });
+
+      const rest = keys
+        .map(function (k) { return normalizeCompanyKey(k); })
+        .filter(function (k) { return ordered.indexOf(k) === -1; });
+
+      const restUnique = Array.from(new Set(rest)).sort();
+      PRODUCTS = ordered.concat(restUnique);
+    }
+
+    function buildIndex() {
+      buildProducts();
+      // limpia index previo
+      Object.keys(INDEX).forEach(function (k) { delete INDEX[k]; });
+
+      PRODUCTS.forEach(function (c) {
+        const map = {};
+        (PATHOLOGIES[c] || []).forEach(function (r) {
+          const key = normalizeText(r.patologia);
+          if (!key) return;
+          if (map[key] === undefined) map[key] = safeVal(r.contratable);
+        });
+        INDEX[c] = map;
+      });
+    }
+
+    function clearResults() {
+      elResults.innerHTML = "";
+      elNoResults.style.display = "none";
+    }
+
+    function findBestRowInProduct(product, nq, preferredKey) {
+      const rows = (PATHOLOGIES[product] || []);
+      if (!rows.length) return null;
+
+      if (preferredKey) {
+        for (let i = 0; i < rows.length; i++) {
+          const k = normalizeText(rows[i].patologia);
+          if (k && k === preferredKey) return rows[i];
+        }
+      }
+
+      for (let i = 0; i < rows.length; i++) {
+        const k = normalizeText(rows[i].patologia);
+        if (k && k.includes(nq)) return rows[i];
+      }
+
+      return null;
+    }
+
+    function search() {
+      const q = (elQ.value || "").trim();
+      clearResults();
+      if (!q) return;
+
+      const nq = normalizeText(q);
+      let foundAny = false;
+
+      PRODUCTS.forEach(function (pName) {
+        const productMatches = (PATHOLOGIES[pName] || []).filter(function (r) {
+          return normalizeText(r.patologia).includes(nq) ||
+            normalizeText(r.tipo).includes(nq) ||
+            normalizeText(r.comentario).includes(nq);
+        });
+
+        if (productMatches.length === 0) return;
+        foundAny = true;
+
+        const card = document.createElement("div");
+        card.className = "patCard";
+
+        const title = document.createElement("p");
+        title.className = "patTitle";
+        title.style.textTransform = "uppercase";
+        title.style.fontSize = "16px";
+        title.textContent = pName;
+
+        const isSeniors = pName.toUpperCase() === "SENIORS";
+        const isAdeslas = pName.toUpperCase() === "ADESLAS";
+
+        if (isSeniors) {
+          card.style.borderColor = "#16a34a";
+          card.style.borderWidth = "2px";
+          title.style.color = "#16a34a";
+        } else if (isAdeslas) {
+          card.style.borderColor = "var(--brand)";
+          card.style.borderWidth = "2px";
+          title.style.color = "var(--brand)";
+        } else {
+          title.style.color = "var(--primary)";
+        }
+
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        productMatches.forEach(function (m) {
+          const mini = document.createElement("div");
+          mini.className = "mini";
+          mini.style.flexDirection = "column";
+          mini.style.alignItems = "stretch";
+
+          // -- Top row: patología + badge --
+          const topRow = document.createElement("div");
+          topRow.style.display = "flex";
+          topRow.style.alignItems = "flex-start";
+          topRow.style.justifyContent = "space-between";
+          topRow.style.gap = "10px";
+
+          const cc = document.createElement("div");
+          cc.className = "c";
+          cc.style.flex = "1";
+          cc.textContent = m.patologia;
+
+          const rightSide = document.createElement("div");
+          rightSide.style.display = "flex";
+          rightSide.style.flexDirection = "column";
+          rightSide.style.alignItems = "flex-end";
+          rightSide.style.gap = "4px";
+          rightSide.style.flexShrink = "0";
+
+          const val = safeVal(m.contratable);
+          const cls = badgeClassByContratable(val);
+
+          const pill = document.createElement("span");
+          pill.className = "pill " + cls;
+          pill.textContent = val || "SIN DATO";
+
+          if (cls === "ok") mini.classList.add("bg-ok");
+          else if (cls === "bad") mini.classList.add("bg-bad");
+          else if (cls === "warn-red") mini.classList.add("bg-warn-red");
+          else mini.classList.add("bg-warn");
+
+          rightSide.appendChild(pill);
+
+          // -- Tipo tag --
+          if (m.tipo) {
+            const tipoTag = document.createElement("span");
+            tipoTag.className = "pill product";
+            tipoTag.textContent = m.tipo;
+            rightSide.appendChild(tipoTag);
+          }
+
+          topRow.appendChild(cc);
+          topRow.appendChild(rightSide);
+          mini.appendChild(topRow);
+
+          // -- Comentario --
+          if (m.comentario) {
+            const comDiv = document.createElement("div");
+            comDiv.style.marginTop = "8px";
+            comDiv.style.padding = "8px 10px";
+            comDiv.style.borderRadius = "10px";
+            comDiv.style.background = "rgba(15,23,42,0.04)";
+            comDiv.style.border = "1px solid rgba(15,23,42,0.08)";
+            comDiv.style.fontSize = "12.5px";
+            comDiv.style.fontWeight = "700";
+            comDiv.style.color = "rgba(51,65,85,0.95)";
+            comDiv.style.lineHeight = "1.45";
+            comDiv.textContent = m.comentario;
+            mini.appendChild(comDiv);
+          }
+
+          grid.appendChild(mini);
+        });
+
+        card.appendChild(title);
+        card.appendChild(grid);
+        elResults.appendChild(card);
+      });
+
+      if (!foundAny) {
+        elNoResults.style.display = "block";
+      }
+    }
+
+    // =========================================================
+    // ADMIN
+    // =========================================================
+    const btnOpenAdmin = document.getElementById("btnOpenAdmin");
+    const adminModal = document.getElementById("adminModal");
+    const adminBackdrop = document.getElementById("adminBackdrop");
+    const btnCloseAdmin = document.getElementById("btnCloseAdmin");
+
+    const adminLoginBox = document.getElementById("adminLoginBox");
+    const adminPanelBox = document.getElementById("adminPanelBox");
+
+    const adminPass = document.getElementById("adminPass");
+    const btnAdminLogin = document.getElementById("btnAdminLogin");
+    const btnAdminCancel = document.getElementById("btnAdminCancel");
+    const adminLoginHint = document.getElementById("adminLoginHint");
+
+    const adminProductAction = document.getElementById("adminProductAction");
+    const boxAddProduct = document.getElementById("boxAddProduct");
+    const boxDeleteProduct = document.getElementById("boxDeleteProduct");
+    const adminProductToDelete = document.getElementById("adminProductToDelete");
+
+    const adminNewProduct = document.getElementById("adminNewProduct");
+    const btnAddProduct = document.getElementById("btnAddProduct");
+
+    const adminProduct = document.getElementById("adminProduct");
+    const btnDeleteProduct = document.getElementById("btnDeleteProduct");
+
+    const adminPatologia = document.getElementById("adminPatologia");
+    const adminContratable = document.getElementById("adminContratable");
+    const adminTipo = document.getElementById("adminTipo");
+    const adminComentario = document.getElementById("adminComentario");
+
+    const btnAdminSave = document.getElementById("btnAdminSave");
+    const btnAdminClearForm = document.getElementById("btnAdminClearForm");
+    const btnAdminLogout = document.getElementById("btnAdminLogout");
+    const adminCrudHint = document.getElementById("adminCrudHint");
+    const adminFilter = document.getElementById("adminFilter");
+    const adminList = document.getElementById("adminList");
+
+    let adminEditingKey = null;
+
+    function isAdminLogged() {
+      try {
+        const v = localStorage.getItem(STORAGE_KEY_ADMIN);
+        return (v === "true" || v === "1");
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function setAdminLogged(val) {
+      try {
+        localStorage.setItem(STORAGE_KEY_ADMIN, val ? "true" : "false");
+      } catch (e) { }
+    }
+
+    function openAdmin() {
+      adminModal.classList.add("open");
+      adminModal.setAttribute("aria-hidden", "false");
+
+      adminLoginHint.style.display = "none";
+      adminCrudHint.style.display = "none";
+
+      if (isAdminLogged()) {
+        showAdminPanel();
+      } else {
+        showAdminLogin();
+      }
+    }
+
+    function closeAdmin() {
+      adminModal.classList.remove("open");
+      adminModal.setAttribute("aria-hidden", "true");
+      adminPass.value = "";
+      adminLoginHint.style.display = "none";
+      adminCrudHint.style.display = "none";
+    }
+
+    function showAdminLogin() {
+      adminLoginBox.style.display = "block";
+      adminPanelBox.style.display = "none";
+      adminPass.value = "";
+      adminPass.focus();
+    }
+
+    function showAdminPanel() {
+      adminLoginBox.style.display = "none";
+      adminPanelBox.style.display = "block";
+      fillProductSelects();
+      resetAdminForm();
+      renderAdminList();
+    }
+
+    function fillProductSelects() {
+      adminProduct.innerHTML = "";
+      adminProductToDelete.innerHTML = "";
+
+      const sorted = PRODUCTS.slice().sort();
+
+      sorted.forEach(function (c) {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        adminProduct.appendChild(opt);
+
+        const optDel = document.createElement("option");
+        optDel.value = c;
+        optDel.textContent = c;
+        adminProductToDelete.appendChild(optDel);
+      });
+
+      if ((!adminProduct.value || !PATHOLOGIES[adminProduct.value]) && PRODUCTS.length) {
+        adminProduct.value = PRODUCTS[0];
+      }
+    }
+
+    function resetAdminForm() {
+      adminEditingKey = null;
+      adminPatologia.value = "";
+      adminContratable.value = "ACEPTADO";
+      adminTipo.value = "";
+      adminComentario.value = "";
+
+      adminCrudHint.style.display = "none";
+    }
+
+    function showCrudHint(text, kind) {
+      adminCrudHint.textContent = text;
+      adminCrudHint.className = "adminHint " + (kind === "ok" ? "ok" : (kind === "bad" ? "bad" : ""));
+      adminCrudHint.style.display = "block";
+    }
+
+    function showLoginHint(text) {
+      adminLoginHint.textContent = text;
+      adminLoginHint.style.display = "block";
+    }
+
+    function getProductList(p) {
+      const ck = normalizeCompanyKey(p);
+      const list = Array.isArray(PATHOLOGIES[ck]) ? PATHOLOGIES[ck] : [];
+      return list;
+    }
+
+    function setProductList(p, list) {
+      const ck = normalizeCompanyKey(p);
+      if (!PATHOLOGIES) PATHOLOGIES = {};
+      PATHOLOGIES[ck] = Array.isArray(list) ? list : [];
+    }
+
+    function persistProduct(p) {
+      const ck = normalizeCompanyKey(p);
+      const ov = loadOverridesV5();
+      if (!ov.data || typeof ov.data !== "object") ov.data = {};
+      if (!Array.isArray(ov.deleted)) ov.deleted = [];
+
+      ov.data[ck] = deepClone(getProductList(ck));
+      ov.deleted = ov.deleted.filter(function (x) { return normalizeCompanyKey(x) !== ck; });
+
+      saveOverridesV5(ov);
+      mergeBaseAndOverrides();
+      buildIndex();
+    }
+
+    function addProduct(name) {
+      const raw = safeVal(name);
+      const ck = normalizeCompanyKey(raw);
+
+      if (!raw) {
+        showCrudHint("El producto no puede estar vacío.", "bad");
+        return false;
+      }
+      if (!ck) {
+        showCrudHint("Nombre de producto inválido.", "bad");
+        return false;
+      }
+
+      if (PATHOLOGIES[ck]) {
+        showCrudHint("El producto ya existe: " + ck, "bad");
+        return false;
+      }
+
+      const ov = loadOverridesV5();
+      if (!ov.data || typeof ov.data !== "object") ov.data = {};
+      ov.deleted = (ov.deleted || []).filter(function (x) { return normalizeCompanyKey(x) !== ck; });
+      ov.data[ck] = Array.isArray(ov.data[ck]) ? ov.data[ck] : [];
+      saveOverridesV5(ov);
+
+      mergeBaseAndOverrides();
+      buildIndex();
+
+      fillProductSelects();
+      adminProduct.value = ck;
+      renderAdminList();
+
+      showCrudHint("Producto añadido: " + ck, "ok");
+      return true;
+    }
+
+    function deleteProduct(p) {
+      const ck = normalizeCompanyKey(p);
+      if (!ck) return false;
+      if (!PATHOLOGIES[ck]) return false;
+
+      const ok = window.confirm("¿Eliminar el producto '" + ck + "' y TODAS sus patologías?");
+      if (!ok) return false;
+
+      const ov = loadOverridesV5();
+      if (!ov.data || typeof ov.data !== "object") ov.data = {};
+      if (!Array.isArray(ov.deleted)) ov.deleted = [];
+
+      if (ov.deleted.map(function (x) { return normalizeCompanyKey(x); }).indexOf(ck) === -1) {
+        ov.deleted.push(ck);
+      }
+      if (ov.data[ck]) delete ov.data[ck];
+
+      saveOverridesV5(ov);
+      mergeBaseAndOverrides();
+      buildIndex();
+
+      fillProductSelects();
+      resetAdminForm();
+      adminFilter.value = "";
+      renderAdminList();
+
+      if ((elQ.value || "").trim()) search();
+
+      showCrudHint("Producto eliminado: " + ck, "ok");
+      return true;
+    }
+
+    function upsertPathology(p, patText, contratable, tipo, comentario) {
+      const ck = normalizeCompanyKey(p);
+      const name = safeVal(patText);
+      const val = safeVal(contratable) || "SI";
+      const tipoVal = safeVal(tipo);
+      const comVal = safeVal(comentario);
+      // Generamos fecha automáticamente al guardar
+      const fecha = new Date().toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const key = normalizeText(name);
+
+      if (!name) {
+        showCrudHint("La patología no puede estar vacía.", "bad");
+        return false;
+      }
+
+      if (!PATHOLOGIES[ck]) setProductList(ck, []);
+
+      const list = deepClone(getProductList(ck));
+      let foundIdx = -1;
+
+      for (let i = 0; i < list.length; i++) {
+        if (normalizeText(list[i].patologia) === key) {
+          foundIdx = i;
+          break;
+        }
+      }
+
+      if (foundIdx >= 0) {
+        list[foundIdx].patologia = name;
+        list[foundIdx].contratable = val;
+        list[foundIdx].tipo = tipoVal;
+        list[foundIdx].comentario = comVal;
+        list[foundIdx].fecha = fecha;
+      } else {
+        list.push({ patologia: name, contratable: val, tipo: tipoVal, comentario: comVal, fecha: fecha });
+      }
+
+      list.sort(function (a, b) {
+        const ka = normalizeText(a.patologia);
+        const kb = normalizeText(b.patologia);
+        if (ka < kb) return -1;
+        if (ka > kb) return 1;
+        return 0;
+      });
+
+      setProductList(ck, dedupeProductList(list));
+      persistProduct(ck);
+
+      showCrudHint(foundIdx >= 0 ? "Actualizado correctamente." : "Añadido correctamente.", "ok");
+      return true;
+    }
+
+    function deletePathology(p, normalizedKey) {
+      const ck = normalizeCompanyKey(p);
+      const list = deepClone(getProductList(ck));
+      const filtered = list.filter(function (r) {
+        return normalizeText(r.patologia) !== normalizedKey;
+      });
+
+      setProductList(ck, filtered);
+      persistProduct(ck);
+
+      showCrudHint("Eliminado correctamente.", "ok");
+      return true;
+    }
+
+    function renderAdminList() {
+      const p = normalizeCompanyKey(adminProduct.value);
+      const filter = normalizeText(adminFilter.value || "");
+      const list = deepClone(getProductList(p));
+
+      adminList.innerHTML = "";
+
+      if (!p || !PATHOLOGIES[p]) {
+        const empty = document.createElement("div");
+        empty.style.padding = "12px";
+        empty.style.color = "#475569";
+        empty.style.fontWeight = "900";
+        empty.textContent = "No hay producto seleccionado.";
+        adminList.appendChild(empty);
+        return;
+      }
+
+      const rows = list.filter(function (r) {
+        if (!filter) return true;
+        return normalizeText(r.patologia).includes(filter) ||
+          normalizeText(r.tipo).includes(filter) ||
+          normalizeText(r.comentario).includes(filter);
+      });
+
+      if (!rows.length) {
+        const empty = document.createElement("div");
+        empty.style.padding = "12px";
+        empty.style.color = "#475569";
+        empty.style.fontWeight = "900";
+        empty.textContent = "No hay patologías (o el filtro no coincide).";
+        adminList.appendChild(empty);
+        return;
+      }
+
+      rows.forEach(function (r) {
+        const row = document.createElement("div");
+        row.className = "row";
+
+        const name = document.createElement("div");
+        name.className = "rowName";
+        name.title = safeVal(r.patologia);
+        name.textContent = safeVal(r.patologia);
+
+        const right = document.createElement("div");
+        right.className = "rowRight";
+
+        const pTag = document.createElement("span");
+        pTag.className = "pill product";
+        pTag.textContent = p;
+        right.appendChild(pTag);
+
+        if (r.tipo) {
+          const tipoTag = document.createElement("span");
+          tipoTag.className = "fecha-tag";
+          tipoTag.textContent = r.tipo;
+          right.appendChild(tipoTag);
+        }
+
+        const pill = document.createElement("span");
+        const cls = badgeClassByContratable(r.contratable);
+        pill.className = "pill adminFull " + cls;
+        pill.textContent = safeVal(r.contratable) || "SIN DATO";
+
+        if (r.fecha) {
+          const fTag = document.createElement("span");
+          fTag.className = "fecha-tag";
+          fTag.style.marginLeft = "8px";
+          fTag.textContent = r.fecha;
+          right.appendChild(fTag);
+        }
+
+        const btnEdit = document.createElement("button");
+        btnEdit.type = "button";
+        btnEdit.className = "tinyBtn";
+        btnEdit.textContent = "Editar";
+
+        btnEdit.addEventListener("click", function () {
+          adminEditingKey = normalizeText(r.patologia);
+          adminPatologia.value = safeVal(r.patologia);
+          adminContratable.value = safeVal(r.contratable);
+          adminTipo.value = safeVal(r.tipo);
+          adminComentario.value = safeVal(r.comentario);
+          showCrudHint("Editando: guarda para aplicar cambios.", "");
+          adminPatologia.focus();
+        });
+
+        const btnDel = document.createElement("button");
+        btnDel.type = "button";
+        btnDel.className = "tinyBtn danger";
+        btnDel.textContent = "Eliminar";
+
+        btnDel.addEventListener("click", function () {
+          deletePathology(p, normalizeText(r.patologia));
+          renderAdminList();
+          resetAdminForm();
+        });
+
+        right.appendChild(pill);
+        right.appendChild(btnEdit);
+        right.appendChild(btnDel);
+
+        row.appendChild(name);
+        row.appendChild(right);
+        adminList.appendChild(row);
+      });
+    }
+
+    function adminSave() {
+      const p = adminProduct.value;
+      const pat = adminPatologia.value;
+      const contr = adminContratable.value;
+      const tip = adminTipo.value;
+      const com = adminComentario.value;
+
+      const ok = upsertPathology(p, pat, contr, tip, com);
+      if (!ok) return;
+
+      renderAdminList();
+      resetAdminForm();
+      if ((elQ.value || "").trim()) search();
+    }
+
+    // =========================================================
+    // INIT
+    // =========================================================
+    function init() {
+      mergeBaseAndOverrides();
+      buildIndex();
+      clearResults();
+    }
+
+    // =========================================================
+    // EVENTOS BUSCADOR
+    // =========================================================
+    elBtnBuscar.addEventListener("click", function () { search(); });
+
+    elBtnLimpiar.addEventListener("click", function () {
+      elQ.value = "";
+      clearResults();
+      elQ.focus();
+    });
+
+    elQ.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        search();
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        elQ.value = "";
+        clearResults();
+      }
+    });
+
+    // búsqueda rápida (si quieres SOLO botón, comenta estas 3 líneas)
+    elQ.addEventListener("input", debounce(function () {
+      search();
+    }, 180));
+
+    // =========================================================
+    // EVENTOS ADMIN
+    // =========================================================
+    btnOpenAdmin.addEventListener("click", function (e) { if (e) e.preventDefault(); openAdmin(); });
+
+    btnCloseAdmin.addEventListener("click", function () { closeAdmin(); });
+    adminBackdrop.addEventListener("click", function () { closeAdmin(); });
+
+    document.addEventListener("keydown", function (e) {
+      if (!adminModal.classList.contains("open")) return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeAdmin();
+      }
+    });
+
+    btnAdminCancel.addEventListener("click", function () {
+      closeAdmin();
+    });
+
+    btnAdminLogin.addEventListener("click", function () {
+      const u = safeVal(document.getElementById("loginUser").value);
+      const pass = safeVal(adminPass.value);
+
+      const found = USERS[u];
+      if (found && found.pass === pass) {
+        localStorage.setItem(STORAGE_KEY_USER_ROLE, found.role);
+        setAdminLogged(true);
+        applyRoleAccess();
+        adminLoginHint.style.display = "none";
+
+        if (found.role === "admin") {
+          showAdminPanel();
+        } else {
+          closeAdmin();
+        }
+      } else {
+        showLoginHint("Usuario o contraseña incorrectos.");
+      }
+    });
+
+    function applyRoleAccess() {
+      const role = localStorage.getItem(STORAGE_KEY_USER_ROLE);
+      const btnAdminHeader = document.getElementById("btnOpenAdmin");
+
+      if (role === "admin") {
+        if (btnAdminHeader) btnAdminHeader.style.display = "inline-flex";
+      } else {
+        if (btnAdminHeader) btnAdminHeader.style.display = "none";
+      }
+
+      // Actualizar iframe del chatbot con el rol (defer para que el DOM esté listo)
+      setTimeout(function () {
+        const iframe = document.getElementById("chatbotFrame");
+        if (iframe) {
+          let baseSrc = iframe.getAttribute("src").split("?")[0];
+          iframe.setAttribute("src", baseSrc + "?role=" + (role || "user"));
+        }
+      }, 0);
+    }
+
+    function checkAuth() {
+      const isLogged = isAdminLogged();
+      if (!isLogged) {
+        // Redirigir a la página de login centralizada
+        location.replace("../login.html");
+        return;
+      }
+      applyRoleAccess();
+    }
+
+    adminPass.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        btnAdminLogin.click();
+      }
+    });
+
+    btnAdminLogout.addEventListener("click", function () {
+      setAdminLogged(false);
+      localStorage.removeItem(STORAGE_KEY_USER_ROLE);
+      location.replace("../login.html");
+    });
+
+    btnAdminClearForm.addEventListener("click", function () {
+      resetAdminForm();
+      adminPatologia.focus();
+    });
+
+    btnAdminSave.addEventListener("click", function () {
+      adminSave();
+    });
+
+    adminProduct.addEventListener("change", function () {
+      resetAdminForm();
+      adminFilter.value = "";
+      renderAdminList();
+    });
+
+    adminFilter.addEventListener("input", debounce(function () {
+      renderAdminList();
+    }, 120));
+
+    // Añadir producto
+    btnAddProduct.addEventListener("click", function () {
+      const ok = addProduct(adminNewProduct.value);
+      if (ok) {
+        adminNewProduct.value = "";
+        adminFilter.value = "";
+        resetAdminForm();
+        renderAdminList();
+      }
+    });
+
+    adminProductAction.addEventListener("change", function () {
+      const v = adminProductAction.value;
+      boxAddProduct.style.display = (v === "add" ? "flex" : "none");
+      boxDeleteProduct.style.display = (v === "delete" ? "flex" : "none");
+    });
+
+    adminNewProduct.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        btnAddProduct.click();
+      }
+    });
+
+    // Eliminar producto
+    btnDeleteProduct.addEventListener("click", function () {
+      const c = adminProductToDelete.value;
+      const ok = deleteProduct(c);
+      if (ok) {
+        fillProductSelects();
+        renderAdminList();
+      }
+    });
+
+    // =========================================================
+    // ARRANQUE
+    // =========================================================
+    init();
+    checkAuth();
+
+    // -- Botón Salir del header --
+    (function initHeaderLogout() {
+      const btn = document.getElementById("btnLogout");
+      if (btn) btn.addEventListener("click", function () {
+        try {
+          localStorage.setItem("diblafe_admin_logged_v4", "false");
+          localStorage.removeItem("adeslas_user_role");
+        } catch (e) { }
+        location.replace("../login.html");
+      });
+    })();
+
+    // Auto-abrir Admin si vienes con #admin
+    try {
+      if (String(location.hash || "").toLowerCase() === "#admin") {
+        // esperamos al arranque para que todo exista
+        setTimeout(() => { try { openAdmin(); } catch (_e) { } }, 0);
+      }
+    } catch (_e) { }
+
+    // ==========================
+    // NAVEGACIÓN Y CHATBOT (DOMContentLoaded: chatbot panel está al final del body)
+    // ==========================
+    document.addEventListener("DOMContentLoaded", () => {
+      const btnOpenCotizador = document.getElementById("btnOpenCotizador");
+      const btnOpenIMC = document.getElementById("btnOpenIMC");
+      const btnOpenChatbot = document.getElementById("btnOpenChatbot");
+      // btnOpenAdmin ya tiene listener: no añadir otro aquí
+
+      const chatbotOverlay = document.getElementById("chatbotOverlay");
+      const chatbotPanel = document.getElementById("chatbotPanel");
+      const btnCloseChatbot = document.getElementById("btnCloseChatbot");
+
+      function openToolPage(kind) {
+        let url = "";
+
+        if (kind === "imc") {
+          url = "../calculadoraIMC.html";
+        } else if (kind === "patologias") {
+          url = "buscador_patologias_base_interna_v2.html";
+        } else if (kind === "cotizador") {
+          url = "../cotizador_comercial_cp_edades.html";
+        } else if (kind === "admin") {
+          url = "buscador_patologias_base_interna_v2.html#admin";
+        } else {
+          return;
+        }
+
+        location.href = url;
+      }
+
+      if (btnOpenCotizador) btnOpenCotizador.addEventListener("click", (e) => { e.preventDefault(); openToolPage("cotizador"); });
+      if (btnOpenIMC) btnOpenIMC.addEventListener("click", (e) => { e.preventDefault(); openToolPage("imc"); });
+      // NO añadimos otro listener para btnOpenAdmin (ya está en línea 2003)
+
+      function toggleChatbot(forceState) {
+        const isOpen = document.documentElement.classList.contains("cbOpen");
+        const nextState = (typeof forceState === "boolean") ? forceState : !isOpen;
+
+        document.documentElement.classList.toggle("cbOpen", nextState);
+        if (chatbotOverlay) chatbotOverlay.setAttribute("aria-hidden", !nextState);
+        if (chatbotPanel) chatbotPanel.setAttribute("aria-hidden", !nextState);
+
+        // Pasar rol al iframe cuando se abre el chatbot
+        if (nextState) {
+          const iframe = document.getElementById("chatbotFrame");
+          const role = localStorage.getItem("adeslas_user_role") || "user";
+          if (iframe) {
+            let baseSrc = iframe.getAttribute("src").split("?")[0];
+            iframe.setAttribute("src", baseSrc + "?role=" + role);
+          }
+        }
+      }
+
+      if (btnOpenChatbot) btnOpenChatbot.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleChatbot();
+      });
+      if (btnCloseChatbot) btnCloseChatbot.addEventListener("click", () => toggleChatbot(false));
+      if (chatbotOverlay) chatbotOverlay.addEventListener("click", () => toggleChatbot(false));
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") toggleChatbot(false);
+      });
+    });
+
+  </script>
+  <!-- ==========================
+     PANEL CHATBOT (IFRAME)
+     ========================== -->
+  <div id="chatbotOverlay" class="cbOverlay" aria-hidden="true"></div>
+
+  <aside id="chatbotPanel" class="cbPanel" aria-hidden="true" role="dialog" aria-label="Chatbot FAQ">
+    <div class="cbHeader">
+      <div class="cbTitle">
+        <b>Chatbot FAQ</b>
+        <small>Responde solo con el conocimiento cargado</small>
+      </div>
+      <button id="btnCloseChatbot" class="cbClose" type="button" aria-label="Cerrar">×</button>
+    </div>
+
+    <div class="cbBody">
+      <!-- Patologías suele estar en subcarpeta: por eso ../fackbot.html -->
+      <iframe id="chatbotFrame" class="cbFrame" src="../fackbot.html" title="FAQ Bot" loading="lazy"
+        referrerpolicy="no-referrer"></iframe>
+    </div>
+  </aside>
+
+</body>
+
+</html>
