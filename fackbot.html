@@ -616,14 +616,2546 @@
     import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
     // ⚠️ SOLO pruebas locales (API Key en frontend)
-    const API_KEY = "";
+    const API_KEY = "AIzaSyB2hirwfAgi_bVpTTDwd2oRu5dhhbjDvyw";
 
     // =============================
-    // PLATFORM DATA CACHE (Cotizador & Patologís)
+    // PLATFORM DATA CACHE (Cotizador & Patologías)
     // =============================
-    
-// === AUTO-INJECTED ADESLAS DATA === //
-const ADESLAS_COT_DATA = { "products": ["Go", "Plena Vital", "Plena Total Vital", "Plena", "Plena Plus", "Plena Total", "Plena Extra 150", "Seniors", "Seniors total", "NIF", "Pymes Total"], "price_table": { "Go": { "1": [{ "min": 0, "max": 54, "price": 21.0 }, { "min": 55, "max": 69, "price": 37.5 }, { "min": 70, "max": 120, "price": 50.0 }], "2": [{ "min": 0, "max": 54, "price": 21.5 }, { "min": 55, "max": 69, "price": 39.0 }, { "min": 70, "max": 120, "price": 52.0 }], "3": [{ "min": 0, "max": 54, "price": 22.0 }, { "min": 55, "max": 69, "price": 39.5 }, { "min": 70, "max": 120, "price": 53.0 }], "4": [{ "min": 0, "max": 54, "price": 22.5 }, { "min": 55, "max": 69, "price": 40.0 }, { "min": 70, "max": 120, "price": 53.5 }], "5": [{ "min": 0, "max": 54, "price": 23.0 }, { "min": 55, "max": 69, "price": 41.0 }, { "min": 70, "max": 120, "price": 54.0 }], "6": [{ "min": 0, "max": 54, "price": 23.5 }, { "min": 55, "max": 69, "price": 41.5 }, { "min": 70, "max": 120, "price": 45.0 }] }, "Plena Vital": { "1": [{ "min": 0, "max": 24, "price": 38.0 }, { "min": 25, "max": 44, "price": 50.0 }, { "min": 45, "max": 54, "price": 61.5 }, { "min": 55, "max": 59, "price": 94.0 }, { "min": 60, "max": 64, "price": 117.0 }, { "min": 65, "max": 69, "price": 156.0 }, { "min": 70, "max": 120, "price": 168.0 }], "2": [{ "min": 0, "max": 24, "price": 39.0 }, { "min": 25, "max": 44, "price": 50.5 }, { "min": 45, "max": 54, "price": 62.0 }, { "min": 55, "max": 59, "price": 95.0 }, { "min": 60, "max": 64, "price": 121.0 }, { "min": 65, "max": 69, "price": 163.0 }, { "min": 70, "max": 120, "price": 176.0 }], "3": [{ "min": 0, "max": 24, "price": 39.5 }, { "min": 25, "max": 44, "price": 51.0 }, { "min": 45, "max": 54, "price": 63.0 }, { "min": 55, "max": 59, "price": 96.5 }, { "min": 60, "max": 64, "price": 124.0 }, { "min": 65, "max": 69, "price": 167.0 }, { "min": 70, "max": 120, "price": 179.0 }], "4": [{ "min": 0, "max": 24, "price": 40.0 }, { "min": 25, "max": 44, "price": 52.0 }, { "min": 45, "max": 54, "price": 64.0 }, { "min": 55, "max": 59, "price": 99.0 }, { "min": 60, "max": 64, "price": 125.5 }, { "min": 65, "max": 69, "price": 167.5 }, { "min": 70, "max": 120, "price": 180.0 }], "5": [{ "min": 0, "max": 24, "price": 41.0 }, { "min": 25, "max": 44, "price": 53.5 }, { "min": 45, "max": 54, "price": 66.0 }, { "min": 55, "max": 59, "price": 101.0 }, { "min": 60, "max": 64, "price": 126.0 }, { "min": 65, "max": 69, "price": 168.0 }, { "min": 70, "max": 120, "price": 181.0 }], "6": [{ "min": 0, "max": 24, "price": 42.5 }, { "min": 25, "max": 44, "price": 54.0 }, { "min": 45, "max": 54, "price": 66.5 }, { "min": 55, "max": 59, "price": 103.0 }, { "min": 60, "max": 64, "price": 127.0 }, { "min": 65, "max": 69, "price": 169.0 }, { "min": 70, "max": 120, "price": 182.0 }] }, "Plena Total Vital": { "1": [{ "min": 0, "max": 24, "price": 48.5 }, { "min": 25, "max": 44, "price": 59.5 }, { "min": 45, "max": 54, "price": 72.5 }, { "min": 55, "max": 59, "price": 110.0 }, { "min": 60, "max": 62, "price": 132.0 }, { "min": 63, "max": 120, "price": 196.0 }], "2": [{ "min": 0, "max": 24, "price": 49.0 }, { "min": 25, "max": 44, "price": 61.0 }, { "min": 45, "max": 54, "price": 73.5 }, { "min": 55, "max": 59, "price": 112.0 }, { "min": 60, "max": 62, "price": 133.0 }, { "min": 63, "max": 120, "price": 201.0 }], "3": [{ "min": 0, "max": 24, "price": 50.0 }, { "min": 25, "max": 44, "price": 62.0 }, { "min": 45, "max": 54, "price": 75.0 }, { "min": 55, "max": 59, "price": 114.0 }, { "min": 60, "max": 62, "price": 137.0 }, { "min": 63, "max": 120, "price": 210.0 }], "4": [{ "min": 0, "max": 24, "price": 50.5 }, { "min": 25, "max": 44, "price": 62.5 }, { "min": 45, "max": 54, "price": 75.5 }, { "min": 55, "max": 59, "price": 114.5 }, { "min": 60, "max": 62, "price": 137.5 }, { "min": 63, "max": 120, "price": 210.5 }], "5": [{ "min": 0, "max": 24, "price": 52.0 }, { "min": 25, "max": 44, "price": 63.0 }, { "min": 45, "max": 54, "price": 77.0 }, { "min": 55, "max": 59, "price": 115.0 }, { "min": 60, "max": 62, "price": 140.0 }, { "min": 63, "max": 120, "price": 230.0 }], "6": [{ "min": 0, "max": 24, "price": 53.0 }, { "min": 25, "max": 44, "price": 65.0 }, { "min": 45, "max": 54, "price": 78.5 }, { "min": 55, "max": 59, "price": 118.0 }, { "min": 60, "max": 62, "price": 142.0 }, { "min": 63, "max": 120, "price": 235.0 }] }, "Plena": { "1": [{ "min": 0, "max": 24, "price": 50.0 }, { "min": 25, "max": 44, "price": 60.0 }, { "min": 45, "max": 54, "price": 72.0 }, { "min": 55, "max": 59, "price": 105.0 }, { "min": 60, "max": 64, "price": 128.0 }, { "min": 65, "max": 69, "price": 166.0 }, { "min": 70, "max": 120, "price": 225.0 }], "2": [{ "min": 0, "max": 24, "price": 51.0 }, { "min": 25, "max": 44, "price": 62.0 }, { "min": 45, "max": 54, "price": 73.0 }, { "min": 55, "max": 59, "price": 107.0 }, { "min": 60, "max": 64, "price": 130.0 }, { "min": 65, "max": 69, "price": 167.0 }, { "min": 70, "max": 120, "price": 227.0 }], "3": [{ "min": 0, "max": 24, "price": 52.0 }, { "min": 25, "max": 44, "price": 63.0 }, { "min": 45, "max": 54, "price": 74.0 }, { "min": 55, "max": 59, "price": 109.0 }, { "min": 60, "max": 64, "price": 131.0 }, { "min": 65, "max": 69, "price": 169.0 }, { "min": 70, "max": 120, "price": 229.0 }], "4": [{ "min": 0, "max": 24, "price": 53.0 }, { "min": 25, "max": 44, "price": 64.0 }, { "min": 45, "max": 54, "price": 75.0 }, { "min": 55, "max": 59, "price": 110.0 }, { "min": 60, "max": 64, "price": 135.0 }, { "min": 65, "max": 69, "price": 172.0 }, { "min": 70, "max": 120, "price": 235.0 }], "5": [{ "min": 0, "max": 24, "price": 54.0 }, { "min": 25, "max": 44, "price": 65.0 }, { "min": 45, "max": 54, "price": 78.0 }, { "min": 55, "max": 59, "price": 112.0 }, { "min": 60, "max": 64, "price": 139.0 }, { "min": 65, "max": 69, "price": 175.0 }, { "min": 70, "max": 120, "price": 239.0 }], "6": [{ "min": 0, "max": 24, "price": 55.0 }, { "min": 25, "max": 44, "price": 66.0 }, { "min": 45, "max": 54, "price": 79.0 }, { "min": 55, "max": 59, "price": 114.0 }, { "min": 60, "max": 64, "price": 140.0 }, { "min": 65, "max": 69, "price": 179.0 }, { "min": 70, "max": 120, "price": 240.0 }] }, "Plena Plus": { "1": [{ "min": 0, "max": 24, "price": 62.0 }, { "min": 25, "max": 44, "price": 72.0 }, { "min": 45, "max": 54, "price": 92.0 }, { "min": 55, "max": 59, "price": 149.0 }, { "min": 60, "max": 64, "price": 175.0 }, { "min": 65, "max": 69, "price": 239.0 }, { "min": 70, "max": 120, "price": 255.0 }], "2": [{ "min": 0, "max": 24, "price": 64.0 }, { "min": 25, "max": 44, "price": 75.0 }, { "min": 45, "max": 54, "price": 94.0 }, { "min": 55, "max": 59, "price": 155.0 }, { "min": 60, "max": 64, "price": 181.0 }, { "min": 65, "max": 69, "price": 255.0 }, { "min": 70, "max": 120, "price": 259.0 }], "3": [{ "min": 0, "max": 24, "price": 64.0 }, { "min": 25, "max": 44, "price": 76.0 }, { "min": 45, "max": 54, "price": 96.0 }, { "min": 55, "max": 59, "price": 159.0 }, { "min": 60, "max": 64, "price": 185.0 }, { "min": 65, "max": 69, "price": 259.0 }, { "min": 70, "max": 120, "price": 265.0 }], "4": [{ "min": 0, "max": 24, "price": 66.0 }, { "min": 25, "max": 44, "price": 77.0 }, { "min": 45, "max": 54, "price": 99.0 }, { "min": 55, "max": 59, "price": 164.0 }, { "min": 60, "max": 64, "price": 196.0 }, { "min": 65, "max": 69, "price": 275.0 }, { "min": 70, "max": 120, "price": 279.0 }], "5": [{ "min": 0, "max": 24, "price": 67.0 }, { "min": 25, "max": 44, "price": 79.0 }, { "min": 45, "max": 54, "price": 100.0 }, { "min": 55, "max": 59, "price": 166.0 }, { "min": 60, "max": 64, "price": 205.0 }, { "min": 65, "max": 69, "price": 289.0 }, { "min": 70, "max": 120, "price": 295.0 }], "6": [{ "min": 0, "max": 24, "price": 69.0 }, { "min": 25, "max": 44, "price": 79.0 }, { "min": 45, "max": 54, "price": 105.0 }, { "min": 55, "max": 59, "price": 167.0 }, { "min": 60, "max": 64, "price": 207.0 }, { "min": 65, "max": 69, "price": 291.0 }, { "min": 70, "max": 120, "price": 297.0 }] }, "Plena Total": { "1": [{ "min": 0, "max": 24, "price": 83.0 }, { "min": 25, "max": 44, "price": 99.0 }, { "min": 45, "max": 54, "price": 121.0 }, { "min": 55, "max": 59, "price": 169.0 }, { "min": 60, "max": 62, "price": 207.0 }, { "min": 63, "max": 120, "price": 273.0 }], "2": [{ "min": 0, "max": 24, "price": 82.0 }, { "min": 25, "max": 44, "price": 103.0 }, { "min": 45, "max": 54, "price": 124.0 }, { "min": 55, "max": 59, "price": 176.0 }, { "min": 60, "max": 62, "price": 217.0 }, { "min": 63, "max": 120, "price": 284.0 }], "3": [{ "min": 0, "max": 24, "price": 86.0 }, { "min": 25, "max": 44, "price": 104.0 }, { "min": 45, "max": 54, "price": 126.5 }, { "min": 55, "max": 59, "price": 179.0 }, { "min": 60, "max": 62, "price": 223.0 }, { "min": 63, "max": 120, "price": 288.0 }], "4": [{ "min": 0, "max": 24, "price": 87.0 }, { "min": 25, "max": 44, "price": 105.5 }, { "min": 45, "max": 54, "price": 131.0 }, { "min": 55, "max": 59, "price": 181.0 }, { "min": 60, "max": 62, "price": 227.0 }, { "min": 63, "max": 120, "price": 294.0 }], "5": [{ "min": 0, "max": 24, "price": 88.5 }, { "min": 25, "max": 44, "price": 108.5 }, { "min": 45, "max": 54, "price": 135.5 }, { "min": 55, "max": 59, "price": 189.0 }, { "min": 60, "max": 62, "price": 243.0 }, { "min": 63, "max": 120, "price": 315.0 }], "6": [{ "min": 0, "max": 24, "price": 89.5 }, { "min": 25, "max": 44, "price": 111.0 }, { "min": 45, "max": 54, "price": 137.0 }, { "min": 55, "max": 59, "price": 192.0 }, { "min": 60, "max": 62, "price": 247.0 }, { "min": 63, "max": 120, "price": 318.0 }] }, "Plena Extra 150": { "1": [{ "min": 0, "max": 24, "price": 90.0 }, { "min": 25, "max": 44, "price": 106.0 }, { "min": 45, "max": 54, "price": 112.0 }, { "min": 55, "max": 59, "price": 174.0 }, { "min": 60, "max": 64, "price": 206.0 }, { "min": 65, "max": 69, "price": 293.0 }, { "min": 70, "max": 120, "price": 304.0 }], "2": [{ "min": 0, "max": 24, "price": 93.0 }, { "min": 25, "max": 44, "price": 110.0 }, { "min": 45, "max": 54, "price": 118.0 }, { "min": 55, "max": 59, "price": 180.0 }, { "min": 60, "max": 64, "price": 210.0 }, { "min": 65, "max": 69, "price": 301.0 }, { "min": 70, "max": 120, "price": 309.0 }], "3": [{ "min": 0, "max": 24, "price": 94.0 }, { "min": 25, "max": 44, "price": 111.0 }, { "min": 45, "max": 54, "price": 119.0 }, { "min": 55, "max": 59, "price": 185.0 }, { "min": 60, "max": 64, "price": 215.0 }, { "min": 65, "max": 69, "price": 308.0 }, { "min": 70, "max": 120, "price": 319.0 }], "4": [{ "min": 0, "max": 24, "price": 102.0 }, { "min": 25, "max": 44, "price": 120.0 }, { "min": 45, "max": 54, "price": 129.0 }, { "min": 55, "max": 59, "price": 198.0 }, { "min": 60, "max": 64, "price": 228.0 }, { "min": 65, "max": 69, "price": 320.0 }, { "min": 70, "max": 120, "price": 329.0 }], "5": [{ "min": 0, "max": 24, "price": 102.5 }, { "min": 25, "max": 44, "price": 120.5 }, { "min": 45, "max": 54, "price": 130.0 }, { "min": 55, "max": 59, "price": 198.5 }, { "min": 60, "max": 64, "price": 228.5 }, { "min": 65, "max": 69, "price": 321.0 }, { "min": 70, "max": 120, "price": 330.0 }], "6": [{ "min": 0, "max": 24, "price": 104.0 }, { "min": 25, "max": 44, "price": 122.0 }, { "min": 45, "max": 54, "price": 132.0 }, { "min": 55, "max": 59, "price": 203.0 }, { "min": 60, "max": 64, "price": 233.0 }, { "min": 65, "max": 69, "price": 330.0 }, { "min": 70, "max": 120, "price": 340.0 }] }, "Seniors": { "1": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 67.5 }, { "min": 55, "max": 59, "price": 67.5 }, { "min": 60, "max": 64, "price": 86.0 }, { "min": 65, "max": 69, "price": 103.0 }, { "min": 70, "max": 74, "price": 133.0 }, { "min": 75, "max": 79, "price": 162.0 }, { "min": 80, "max": 120, "price": 170.0 }], "2": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 70.0 }, { "min": 55, "max": 59, "price": 70.0 }, { "min": 60, "max": 64, "price": 88.0 }, { "min": 65, "max": 69, "price": 105.0 }, { "min": 70, "max": 74, "price": 138.0 }, { "min": 75, "max": 79, "price": 167.0 }, { "min": 80, "max": 120, "price": 175.0 }], "3": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 71.0 }, { "min": 55, "max": 59, "price": 71.0 }, { "min": 60, "max": 64, "price": 89.5 }, { "min": 65, "max": 69, "price": 106.0 }, { "min": 70, "max": 74, "price": 140.0 }, { "min": 75, "max": 79, "price": 170.0 }, { "min": 80, "max": 120, "price": 177.0 }], "4": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 72.0 }, { "min": 55, "max": 59, "price": 72.0 }, { "min": 60, "max": 64, "price": 92.0 }, { "min": 65, "max": 69, "price": 111.0 }, { "min": 70, "max": 74, "price": 145.0 }, { "min": 75, "max": 79, "price": 175.0 }, { "min": 80, "max": 120, "price": 182.0 }], "5": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 73.0 }, { "min": 55, "max": 59, "price": 73.0 }, { "min": 60, "max": 64, "price": 93.0 }, { "min": 65, "max": 69, "price": 113.0 }, { "min": 70, "max": 74, "price": 149.0 }, { "min": 75, "max": 79, "price": 179.0 }, { "min": 80, "max": 120, "price": 188.0 }], "6": [{ "min": 0, "max": 49, "price": 0.0 }, { "min": 50, "max": 54, "price": 74.0 }, { "min": 55, "max": 59, "price": 74.0 }, { "min": 60, "max": 64, "price": 94.0 }, { "min": 65, "max": 69, "price": 115.0 }, { "min": 70, "max": 74, "price": 150.0 }, { "min": 75, "max": 79, "price": 183.0 }, { "min": 80, "max": 120, "price": 190.0 }] }, "Seniors total": { "1": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 101.0 }, { "min": 63, "max": 64, "price": 101.0 }, { "min": 65, "max": 69, "price": 138.0 }, { "min": 70, "max": 74, "price": 172.0 }, { "min": 75, "max": 84, "price": 231.0 }], "2": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 104.0 }, { "min": 63, "max": 64, "price": 104.0 }, { "min": 65, "max": 69, "price": 142.0 }, { "min": 70, "max": 74, "price": 176.0 }, { "min": 75, "max": 84, "price": 239.0 }], "3": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 105.0 }, { "min": 63, "max": 64, "price": 105.0 }, { "min": 65, "max": 69, "price": 144.0 }, { "min": 70, "max": 74, "price": 180.0 }, { "min": 75, "max": 84, "price": 245.0 }], "4": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 110.0 }, { "min": 63, "max": 64, "price": 110.0 }, { "min": 65, "max": 69, "price": 145.0 }, { "min": 70, "max": 74, "price": 184.0 }, { "min": 75, "max": 84, "price": 252.0 }], "5": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 113.0 }, { "min": 63, "max": 64, "price": 113.0 }, { "min": 65, "max": 69, "price": 151.5 }, { "min": 70, "max": 74, "price": 190.0 }, { "min": 75, "max": 84, "price": 254.0 }], "6": [{ "min": 0, "max": 59, "price": 0.0 }, { "min": 60, "max": 62, "price": 116.0 }, { "min": 63, "max": 64, "price": 116.0 }, { "min": 65, "max": 69, "price": 155.0 }, { "min": 70, "max": 74, "price": 195.0 }, { "min": 75, "max": 84, "price": 259.0 }] }, "NIF": { "1": [{ "min": 0, "max": 24, "price": 55.5 }, { "min": 25, "max": 44, "price": 61.0 }, { "min": 45, "max": 54, "price": 79.0 }, { "min": 55, "max": 59, "price": 123.0 }, { "min": 60, "max": 64, "price": 153.0 }, { "min": 65, "max": 69, "price": 235.0 }, { "min": 70, "max": 120, "price": 239.0 }], "2": [{ "min": 0, "max": 24, "price": 56.5 }, { "min": 25, "max": 44, "price": 63.5 }, { "min": 45, "max": 54, "price": 83.0 }, { "min": 55, "max": 59, "price": 127.0 }, { "min": 60, "max": 64, "price": 159.0 }, { "min": 65, "max": 69, "price": 238.0 }, { "min": 70, "max": 120, "price": 246.0 }], "3": [{ "min": 0, "max": 24, "price": 57.0 }, { "min": 25, "max": 44, "price": 64.5 }, { "min": 45, "max": 54, "price": 84.0 }, { "min": 55, "max": 59, "price": 129.0 }, { "min": 60, "max": 64, "price": 160.0 }, { "min": 65, "max": 69, "price": 240.0 }, { "min": 70, "max": 120, "price": 249.0 }], "4": [{ "min": 0, "max": 24, "price": 59.0 }, { "min": 25, "max": 44, "price": 65.5 }, { "min": 45, "max": 54, "price": 86.5 }, { "min": 55, "max": 59, "price": 134.0 }, { "min": 60, "max": 64, "price": 170.0 }, { "min": 65, "max": 69, "price": 249.0 }, { "min": 70, "max": 120, "price": 261.0 }], "5": [{ "min": 0, "max": 24, "price": 61.0 }, { "min": 25, "max": 44, "price": 66.5 }, { "min": 45, "max": 54, "price": 88.5 }, { "min": 55, "max": 59, "price": 139.0 }, { "min": 60, "max": 64, "price": 175.0 }, { "min": 65, "max": 69, "price": 269.0 }, { "min": 70, "max": 120, "price": 265.0 }], "6": [{ "min": 0, "max": 24, "price": 61.5 }, { "min": 25, "max": 44, "price": 68.0 }, { "min": 45, "max": 54, "price": 89.5 }, { "min": 55, "max": 59, "price": 139.5 }, { "min": 60, "max": 64, "price": 176.0 }, { "min": 65, "max": 69, "price": 264.0 }, { "min": 70, "max": 120, "price": 275.0 }] }, "Pymes Total": { "1": [{ "min": 0, "max": 44, "price": 60.0 }, { "min": 45, "max": 54, "price": 72.0 }, { "min": 55, "max": 59, "price": 89.0 }, { "min": 60, "max": 67, "price": 125.0 }, { "min": 68, "max": 120, "price": 189.0 }], "2": [{ "min": 0, "max": 44, "price": 62.0 }, { "min": 45, "max": 54, "price": 73.0 }, { "min": 55, "max": 59, "price": 95.0 }, { "min": 60, "max": 67, "price": 129.0 }, { "min": 68, "max": 120, "price": 199.0 }], "3": [{ "min": 0, "max": 44, "price": 63.0 }, { "min": 45, "max": 54, "price": 75.0 }, { "min": 55, "max": 59, "price": 98.0 }, { "min": 60, "max": 67, "price": 135.0 }, { "min": 68, "max": 120, "price": 205.0 }], "4": [{ "min": 0, "max": 44, "price": 65.0 }, { "min": 45, "max": 54, "price": 76.0 }, { "min": 55, "max": 59, "price": 99.0 }, { "min": 60, "max": 67, "price": 139.0 }, { "min": 68, "max": 120, "price": 209.0 }], "5": [{ "min": 0, "max": 44, "price": 66.0 }, { "min": 45, "max": 54, "price": 79.0 }, { "min": 55, "max": 59, "price": 105.0 }, { "min": 60, "max": 67, "price": 139.0 }, { "min": 68, "max": 120, "price": 219.0 }], "6": [{ "min": 0, "max": 44, "price": 67.0 }, { "min": 45, "max": 54, "price": 80.0 }, { "min": 55, "max": 59, "price": 110.0 }, { "min": 60, "max": 67, "price": 145.0 }, { "min": 68, "max": 120, "price": 225.0 }] } }, "cp_map": { "01": { "provincia": "Alava", "zona": 0 }, "02": { "provincia": "Albacete", "zona": 4 }, "03": { "provincia": "Alicante", "zona": 2 }, "04": { "provincia": "Almeria", "zona": 2 }, "05": { "provincia": "Avila", "zona": 3 }, "06": { "provincia": "Badajoz", "zona": 1 }, "07": { "provincia": "Palma", "zona": 6 }, "08": { "provincia": "Barcelona", "zona": 5 }, "09": { "provincia": "Burgos", "zona": 3 }, "10": { "provincia": "Caceres", "zona": 1 }, "11": { "provincia": "Cadiz", "zona": 2 }, "12": { "provincia": "Castellón", "zona": 2 }, "13": { "provincia": "Ciudad Real", "zona": 4 }, "14": { "provincia": "Cordoba", "zona": 2 }, "15": { "provincia": "A Coruña", "zona": 1 }, "16": { "provincia": "Cuenca", "zona": 4 }, "17": { "provincia": "Girona", "zona": 4 }, "18": { "provincia": "Granada", "zona": 2 }, "19": { "provincia": "Guadalajara", "zona": 4 }, "20": { "provincia": "Donostia / San Sebastián", "zona": 0 }, "21": { "provincia": "Huelva", "zona": 2 }, "22": { "provincia": "Huesca", "zona": 4 }, "23": { "provincia": "Jaen", "zona": 2 }, "24": { "provincia": "Leon", "zona": 3 }, "25": { "provincia": "Lleida", "zona": 4 }, "26": { "provincia": "La Rioja", "zona": 2 }, "27": { "provincia": "Lugo", "zona": 1 }, "28": { "provincia": "Madrid", "zona": 4 }, "29": { "provincia": "Malaga", "zona": 2 }, "30": { "provincia": "Murcia", "zona": 1 }, "31": { "provincia": "Navarra", "zona": 0 }, "32": { "provincia": "Ourense", "zona": 1 }, "33": { "provincia": "Oviedo", "zona": 0 }, "34": { "provincia": "Palencia", "zona": 3 }, "35": { "provincia": "Palmas de Gran Canaria", "zona": 1 }, "36": { "provincia": "Pontevedra", "zona": 1 }, "37": { "provincia": "Salamanca", "zona": 3 }, "38": { "provincia": "Santa Cruz de Tenerife", "zona": 1 }, "39": { "provincia": "Santander", "zona": 2 }, "40": { "provincia": "Segovia", "zona": 3 }, "41": { "provincia": "Sevilla", "zona": 2 }, "42": { "provincia": "Soria", "zona": 3 }, "43": { "provincia": "Tarragona", "zona": 4 }, "44": { "provincia": "Teruel", "zona": 4 }, "45": { "provincia": "Toledo", "zona": 4 }, "46": { "provincia": "Valencia", "zona": 2 }, "47": { "provincia": "Valladolid", "zona": 3 }, "48": { "provincia": "Bilbao", "zona": 0 }, "49": { "provincia": "Zamora", "zona": 3 }, "50": { "provincia": "Zaragoza", "zona": 4 }, "51": { "provincia": "Ceuta", "zona": 1 }, "52": { "provincia": "Melilla", "zona": 1 } }, "dental_map": { "1": 8.93, "2": 6.37, "3": 5.95, "4": 4.46, "5": 4.25, "6": 3.54, "7": 3.54, "8": 3.54 } };
+
+    // === AUTO-INJECTED ADESLAS DATA === //
+const ADESLAS_COT_DATA = {
+      "products": [
+        "Go",
+        "Plena Vital",
+        "Plena Total Vital",
+        "Plena",
+        "Plena Plus",
+        "Plena Total",
+        "Plena Extra 150",
+        "Seniors",
+        "Seniors total",
+        "NIF",
+        "Pymes Total"
+      ],
+      "price_table": {
+        "Go": {
+          "1": [
+            {
+              "min": 0,
+              "max": 54,
+              "price": 21.0
+            },
+            {
+              "min": 55,
+              "max": 69,
+              "price": 37.5
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 50.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 54,
+              "price": 21.5
+            },
+            {
+              "min": 55,
+              "max": 69,
+              "price": 39.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 52.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 54,
+              "price": 22.0
+            },
+            {
+              "min": 55,
+              "max": 69,
+              "price": 39.5
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 53.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 54,
+              "price": 22.5
+            },
+            {
+              "min": 55,
+              "max": 69,
+              "price": 40.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 53.5
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 54,
+              "price": 23.0
+            },
+            {
+              "min": 55,
+              "max": 69,
+              "price": 41.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 54.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 54,
+              "price": 23.5
+            },
+            {
+              "min": 55,
+              "max": 69,
+              "price": 41.5
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 54.5
+            }
+          ]
+        },
+        "Plena Vital": {
+          "1": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 38.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 50.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 61.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 94.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 117.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 156.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 168.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 39.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 50.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 62.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 95.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 121.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 163.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 176.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 39.5
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 51.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 63.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 96.5
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 124.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 167.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 179.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 40.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 52.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 64.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 99.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 125.5
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 167.5
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 180.0
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 41.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 53.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 66.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 101.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 126.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 168.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 181.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 42.5
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 54.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 66.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 103.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 127.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 169.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 182.0
+            }
+          ]
+        },
+        "Plena Total Vital": {
+          "1": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 48.5
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 59.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 72.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 110.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 132.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 196.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 49.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 61.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 73.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 112.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 133.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 201.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 50.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 62.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 75.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 114.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 137.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 210.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 50.5
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 62.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 75.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 114.5
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 137.5
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 210.5
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 52.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 63.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 77.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 115.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 140.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 230.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 53.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 65.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 78.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 118.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 142.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 235.0
+            }
+          ]
+        },
+        "Plena": {
+          "1": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 50.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 60.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 72.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 105.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 128.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 166.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 225.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 51.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 62.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 73.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 107.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 130.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 167.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 227.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 52.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 63.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 74.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 109.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 131.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 169.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 229.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 53.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 64.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 75.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 110.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 135.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 172.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 235.0
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 54.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 65.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 78.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 112.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 139.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 175.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 239.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 55.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 66.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 79.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 114.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 140.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 179.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 240.0
+            }
+          ]
+        },
+        "Plena Plus": {
+          "1": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 62.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 72.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 92.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 149.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 175.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 239.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 255.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 64.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 75.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 94.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 155.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 181.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 255.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 259.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 64.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 76.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 96.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 159.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 185.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 259.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 265.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 66.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 77.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 99.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 164.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 196.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 275.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 279.0
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 67.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 79.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 100.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 166.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 205.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 289.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 295.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 69.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 80.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 105.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 167.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 207.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 291.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 297.0
+            }
+          ]
+        },
+        "Plena Total": {
+          "1": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 83.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 99.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 121.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 169.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 207.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 273.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 85.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 103.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 124.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 176.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 217.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 284.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 86.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 104.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 126.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 179.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 223.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 288.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 87.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 105.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 131.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 181.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 227.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 294.0
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 88.5
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 108.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 135.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 189.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 243.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 315.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 89.5
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 111.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 137.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 192.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 247.0
+            },
+            {
+              "min": 63,
+              "max": 120,
+              "price": 318.0
+            }
+          ]
+        },
+        "Plena Extra 150": {
+          "1": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 90.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 106.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 112.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 174.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 206.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 293.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 304.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 93.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 110.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 118.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 180.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 210.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 301.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 309.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 94.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 111.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 119.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 185.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 215.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 308.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 319.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 102.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 120.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 129.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 198.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 228.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 320.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 329.0
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 102.5
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 120.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 130.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 198.5
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 228.5
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 321.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 330.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 104.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 122.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 132.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 203.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 233.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 330.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 340.0
+            }
+          ]
+        },
+        "Seniors": {
+          "1": [
+            {
+              "min": 0,
+              "max": 49,
+              "price": 0.0
+            },
+            {
+              "min": 50,
+              "max": 54,
+              "price": 67.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 67.5
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 86.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 103.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 133.0
+            },
+            {
+              "min": 75,
+              "max": 79,
+              "price": 162.0
+            },
+            {
+              "min": 80,
+              "max": 120,
+              "price": 170.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 49,
+              "price": 0.0
+            },
+            {
+              "min": 50,
+              "max": 54,
+              "price": 70.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 70.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 88.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 105.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 138.0
+            },
+            {
+              "min": 75,
+              "max": 79,
+              "price": 167.0
+            },
+            {
+              "min": 80,
+              "max": 120,
+              "price": 175.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 49,
+              "price": 0.0
+            },
+            {
+              "min": 50,
+              "max": 54,
+              "price": 71.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 71.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 89.5
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 106.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 140.0
+            },
+            {
+              "min": 75,
+              "max": 79,
+              "price": 170.0
+            },
+            {
+              "min": 80,
+              "max": 120,
+              "price": 188.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 49,
+              "price": 0.0
+            },
+            {
+              "min": 50,
+              "max": 54,
+              "price": 72.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 72.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 92.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 111.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 145.0
+            },
+            {
+              "min": 75,
+              "max": 79,
+              "price": 177.0
+            },
+            {
+              "min": 80,
+              "max": 120,
+              "price": 190.0
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 49,
+              "price": 0.0
+            },
+            {
+              "min": 50,
+              "max": 54,
+              "price": 73.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 73.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 93.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 113.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 149.0
+            },
+            {
+              "min": 75,
+              "max": 79,
+              "price": 179.0
+            },
+            {
+              "min": 80,
+              "max": 120,
+              "price": 188.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 49,
+              "price": 0.0
+            },
+            {
+              "min": 50,
+              "max": 54,
+              "price": 74.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 74.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 94.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 115.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 150.0
+            },
+            {
+              "min": 75,
+              "max": 79,
+              "price": 183.0
+            },
+            {
+              "min": 80,
+              "max": 120,
+              "price": 190.0
+            }
+          ]
+        },
+        "Seniors total": {
+          "1": [
+            {
+              "min": 0,
+              "max": 59,
+              "price": 0.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 101.0
+            },
+            {
+              "min": 63,
+              "max": 64,
+              "price": 101.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 138.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 172.0
+            },
+            {
+              "min": 75,
+              "max": 84,
+              "price": 231.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 59,
+              "price": 0.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 104.0
+            },
+            {
+              "min": 63,
+              "max": 64,
+              "price": 104.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 142.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 176.0
+            },
+            {
+              "min": 75,
+              "max": 84,
+              "price": 239.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 59,
+              "price": 0.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 105.0
+            },
+            {
+              "min": 63,
+              "max": 64,
+              "price": 105.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 144.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 180.0
+            },
+            {
+              "min": 75,
+              "max": 84,
+              "price": 245.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 59,
+              "price": 0.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 110.0
+            },
+            {
+              "min": 63,
+              "max": 64,
+              "price": 110.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 145.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 190.0
+            },
+            {
+              "min": 75,
+              "max": 84,
+              "price": 254.0
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 59,
+              "price": 0.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 113.0
+            },
+            {
+              "min": 63,
+              "max": 64,
+              "price": 113.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 151.5
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 190.0
+            },
+            {
+              "min": 75,
+              "max": 84,
+              "price": 254.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 59,
+              "price": 0.0
+            },
+            {
+              "min": 60,
+              "max": 62,
+              "price": 116.0
+            },
+            {
+              "min": 63,
+              "max": 64,
+              "price": 116.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 155.0
+            },
+            {
+              "min": 70,
+              "max": 74,
+              "price": 195.0
+            },
+            {
+              "min": 75,
+              "max": 84,
+              "price": 259.0
+            }
+          ]
+        },
+        "NIF": {
+          "1": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 55.5
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 61.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 79.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 123.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 153.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 235.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 261.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 56.5
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 63.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 83.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 127.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 159.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 238.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 259.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 57.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 64.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 84.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 129.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 160.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 240.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 264.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 59.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 65.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 86.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 134.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 170.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 240.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 239.0
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 61.0
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 66.5
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 88.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 139.0
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 175.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 259.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 265.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 24,
+              "price": 61.5
+            },
+            {
+              "min": 25,
+              "max": 44,
+              "price": 68.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 89.5
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 139.5
+            },
+            {
+              "min": 60,
+              "max": 64,
+              "price": 176.0
+            },
+            {
+              "min": 65,
+              "max": 69,
+              "price": 264.0
+            },
+            {
+              "min": 70,
+              "max": 120,
+              "price": 275.0
+            }
+          ]
+        },
+        "Pymes Total": {
+          "1": [
+            {
+              "min": 0,
+              "max": 44,
+              "price": 60.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 72.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 89.0
+            },
+            {
+              "min": 60,
+              "max": 67,
+              "price": 125.0
+            },
+            {
+              "min": 68,
+              "max": 120,
+              "price": 189.0
+            }
+          ],
+          "2": [
+            {
+              "min": 0,
+              "max": 44,
+              "price": 62.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 73.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 95.0
+            },
+            {
+              "min": 60,
+              "max": 67,
+              "price": 129.0
+            },
+            {
+              "min": 68,
+              "max": 120,
+              "price": 199.0
+            }
+          ],
+          "3": [
+            {
+              "min": 0,
+              "max": 44,
+              "price": 63.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 75.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 98.0
+            },
+            {
+              "min": 60,
+              "max": 67,
+              "price": 135.0
+            },
+            {
+              "min": 68,
+              "max": 120,
+              "price": 205.0
+            }
+          ],
+          "4": [
+            {
+              "min": 0,
+              "max": 44,
+              "price": 65.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 76.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 99.0
+            },
+            {
+              "min": 60,
+              "max": 67,
+              "price": 139.0
+            },
+            {
+              "min": 68,
+              "max": 120,
+              "price": 209.0
+            }
+          ],
+          "5": [
+            {
+              "min": 0,
+              "max": 44,
+              "price": 66.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 79.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 105.0
+            },
+            {
+              "min": 60,
+              "max": 67,
+              "price": 139.0
+            },
+            {
+              "min": 68,
+              "max": 120,
+              "price": 219.0
+            }
+          ],
+          "6": [
+            {
+              "min": 0,
+              "max": 44,
+              "price": 67.0
+            },
+            {
+              "min": 45,
+              "max": 54,
+              "price": 80.0
+            },
+            {
+              "min": 55,
+              "max": 59,
+              "price": 110.0
+            },
+            {
+              "min": 60,
+              "max": 67,
+              "price": 145.0
+            },
+            {
+              "min": 68,
+              "max": 120,
+              "price": 225.0
+            }
+          ]
+        }
+      },
+      "cp_map": {
+        "01": {
+          "provincia": "Alava",
+          "zona": 0
+        },
+        "02": {
+          "provincia": "Albacete",
+          "zona": 4
+        },
+        "03": {
+          "provincia": "Alicante",
+          "zona": 2
+        },
+        "04": {
+          "provincia": "Almeria",
+          "zona": 2
+        },
+        "05": {
+          "provincia": "Avila",
+          "zona": 3
+        },
+        "06": {
+          "provincia": "Badajoz",
+          "zona": 1
+        },
+        "07": {
+          "provincia": "Palma",
+          "zona": 6
+        },
+        "08": {
+          "provincia": "Barcelona",
+          "zona": 5
+        },
+        "09": {
+          "provincia": "Burgos",
+          "zona": 3
+        },
+        "10": {
+          "provincia": "Caceres",
+          "zona": 1
+        },
+        "11": {
+          "provincia": "Cadiz",
+          "zona": 2
+        },
+        "12": {
+          "provincia": "Castellón",
+          "zona": 2
+        },
+        "13": {
+          "provincia": "Ciudad Real",
+          "zona": 4
+        },
+        "14": {
+          "provincia": "Cordoba",
+          "zona": 2
+        },
+        "15": {
+          "provincia": "A Coruña",
+          "zona": 1
+        },
+        "16": {
+          "provincia": "Cuenca",
+          "zona": 4
+        },
+        "17": {
+          "provincia": "Girona",
+          "zona": 4
+        },
+        "18": {
+          "provincia": "Granada",
+          "zona": 2
+        },
+        "19": {
+          "provincia": "Guadalajara",
+          "zona": 4
+        },
+        "20": {
+          "provincia": "Donostia / San Sebastián",
+          "zona": 0
+        },
+        "21": {
+          "provincia": "Huelva",
+          "zona": 2
+        },
+        "22": {
+          "provincia": "Huesca",
+          "zona": 4
+        },
+        "23": {
+          "provincia": "Jaen",
+          "zona": 2
+        },
+        "24": {
+          "provincia": "Leon",
+          "zona": 3
+        },
+        "25": {
+          "provincia": "Lleida",
+          "zona": 4
+        },
+        "26": {
+          "provincia": "La Rioja",
+          "zona": 2
+        },
+        "27": {
+          "provincia": "Lugo",
+          "zona": 1
+        },
+        "28": {
+          "provincia": "Madrid",
+          "zona": 4
+        },
+        "29": {
+          "provincia": "Malaga",
+          "zona": 2
+        },
+        "30": {
+          "provincia": "Murcia",
+          "zona": 1
+        },
+        "31": {
+          "provincia": "Navarra",
+          "zona": 0
+        },
+        "32": {
+          "provincia": "Ourense",
+          "zona": 1
+        },
+        "33": {
+          "provincia": "Oviedo",
+          "zona": 0
+        },
+        "34": {
+          "provincia": "Palencia",
+          "zona": 3
+        },
+        "35": {
+          "provincia": "Palmas de Gran Canaria",
+          "zona": 1
+        },
+        "36": {
+          "provincia": "Pontevedra",
+          "zona": 1
+        },
+        "37": {
+          "provincia": "Salamanca",
+          "zona": 3
+        },
+        "38": {
+          "provincia": "Santa Cruz de Tenerife",
+          "zona": 1
+        },
+        "39": {
+          "provincia": "Santander",
+          "zona": 2
+        },
+        "40": {
+          "provincia": "Segovia",
+          "zona": 3
+        },
+        "41": {
+          "provincia": "Sevilla",
+          "zona": 2
+        },
+        "42": {
+          "provincia": "Soria",
+          "zona": 3
+        },
+        "43": {
+          "provincia": "Tarragona",
+          "zona": 4
+        },
+        "44": {
+          "provincia": "Teruel",
+          "zona": 4
+        },
+        "45": {
+          "provincia": "Toledo",
+          "zona": 4
+        },
+        "46": {
+          "provincia": "Valencia",
+          "zona": 2
+        },
+        "47": {
+          "provincia": "Valladolid",
+          "zona": 3
+        },
+        "48": {
+          "provincia": "Bilbao",
+          "zona": 0
+        },
+        "49": {
+          "provincia": "Zamora",
+          "zona": 3
+        },
+        "50": {
+          "provincia": "Zaragoza",
+          "zona": 4
+        },
+        "51": {
+          "provincia": "Ceuta",
+          "zona": 1
+        },
+        "52": {
+          "provincia": "Melilla",
+          "zona": 1
+        }
+      },
+      "dental_map": {
+        "1": 8.93,
+        "2": 6.37,
+        "3": 5.95,
+        "4": 4.46,
+        "5": 4.25,
+        "6": 3.54,
+        "7": 3.54,
+        "8": 3.54
+      },
+      "rules": {
+        "Go": {
+          "threshold": 69,
+          "ratio": 3,
+          "msg": "Requiere 3 menores de 60 por cada asegurado de 70+"
+        },
+        "Plena Vital": {
+          "threshold": 69,
+          "ratio": 3,
+          "msg": "Requiere 3 menores de 60 por cada asegurado de 70+"
+        },
+        "Plena Total Vital": {
+          "threshold": 62,
+          "ratio": 3,
+          "msg": "Requiere 3 menores de 60 por cada asegurado de 63+"
+        },
+        "Plena": {
+          "threshold": 69,
+          "ratio": 3,
+          "msg": "Requiere 3 menores de 60 por cada asegurado de 70+"
+        },
+        "Plena Plus": {
+          "threshold": 69,
+          "ratio": 3,
+          "msg": "Requiere 3 menores de 60 por cada asegurado de 70+"
+        },
+        "Plena Total": {
+          "threshold": 62,
+          "ratio": 3,
+          "msg": "Requiere 3 menores de 60 por cada asegurado de 63+"
+        },
+        "Plena Extra 150": {
+          "threshold": 63,
+          "ratio": 3,
+          "msg": "Requiere 3 menores de 60 por cada asegurado de 64+"
+        },
+        "Pymes Total": {
+          "threshold": 66,
+          "ratio": 3,
+          "msg": "Requiere 3 menores de 60 por cada asegurado de 67+"
+        },
+        "NIF": {
+          "threshold": 69,
+          "ratio": 3,
+          "msg": "Requiere 3 menores de 60 por cada asegurado de 70+"
+        }
+      },
+      "seniors_rules": {
+        "Seniors": {
+          "min_visibility_age": 50,
+          "restricted_range": [
+            50,
+            54
+          ],
+          "min_acomp_age": 55,
+          "max_normal_age": 84,
+          "ratio_85_plus": 3,
+          "msg_acomp": "Asegurados 50-54 requieren acompañante 55+",
+          "msg_85": "Asegurados 85+ requieren 3 personas < 60"
+        },
+        "Seniors total": {
+          "min_visibility_age": 60,
+          "restricted_range": [
+            60,
+            62
+          ],
+          "min_acomp_age": 63,
+          "max_allowable_age": 84,
+          "msg_acomp": "Asegurados 60-62 requieren acompañante 63+",
+          "msg_prohibit": "Asegurados 85+ no permitidos en Seniors Total"
+        }
+      }
+    };
 const ADESLAS_PAT_DATA = {
       "ADESLAS": [
         {
@@ -1753,7 +4285,7 @@ ${JSON.stringify(ADESLAS_COT_DATA)}
 Listado de patologías con su estado de contratación (ACEPTADO, EXCLUSIÓN, RECHAZO, EN VALORACIÓN MÉDICA) y comentarios.
 ${JSON.stringify(ADESLAS_PAT_DATA)}`;
 // ================================== //
-// =============================
+    // =============================
     // LÍMITE DE COSTE (FACTURACIÓN)
     // =============================
     const COST_PER_1M_TOKENS = 0.15; // Estimación mixta
@@ -2726,17 +5258,18 @@ REGLAS OBLIGATORIAS:
 1) Se te ha inyectado una "INFORMACIÓN GLOBAL" con las tablas de precios, zonas y patologías oficiales.
 2) Además, el usuario puede haber cargado un "CONTEXTO DOCUMENTO FAQ".
 3) Responde de forma precisa y clara a las consultas combinando ambas fuentes de información de forma prioritaria.
-4) Si te piden un precio o edad límite, calcúlalo mirando los tramos de las tablas del cotizador inyectado.
+4) Si te piden un precio o edad límite, calcúlalo mirando los tramos de las tablas del cotizador inyectado. 
+   IMPORTANTE: Verifica siempre el campo "rules" de cada producto (ej: ratio 3:1 de menores de 60 por cada mayor de X edad) y las "seniors_rules" antes de confirmar un precio. Si no se cumplen, indica que el producto no es contratable para esa composición familiar.
 5) Si te preguntan si pueden asegurar a alguien con X enfermedad, revisa la parte de las Patologías e indica su estado (ACEPTADO, EXCLUSIÓN, etc.) y las observaciones correspondientes.
 6) IMPORTANTE: Si la respuesta NO se encuentra ni en la "Información Global" inyectada ni en el "Contexto", responde exactamente: "No lo sé. No dispongo de esa información."
 7) Responde siempre en español. No inventes precios ni enfermedades.`;
 
     const MODEL_CANDIDATES = [
-      "gemini-2.5-flash",
-      "gemini-2.0-flash",
       "gemini-1.5-flash",
+      "gemini-2.0-flash",
+      "gemini-1.5-flash-8b",
       "gemini-1.5-pro",
-      "gemini-pro"
+      "gemini-2.0-flash-exp"
     ];
 
     const genAI = new GoogleGenerativeAI(API_KEY);
