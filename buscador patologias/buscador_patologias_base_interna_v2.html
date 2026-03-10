@@ -72,11 +72,11 @@
       padding: 10px 20px;
       font-weight: 1000;
       letter-spacing: .2px;
-      box-shadow: 0 4px 10px rgba(0, 85, 165, .12);
-      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(0, 85, 165, .08);
+      color: var(--brand);
       text-shadow: none;
       transition: all .2s ease;
-      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      background: #ffffff;
       cursor: pointer;
       white-space: nowrap;
       user-select: none;
@@ -92,15 +92,16 @@
 
     .btn-nav:hover {
       transform: translateY(-1.5px);
-      box-shadow: 0 6px 15px rgba(0, 85, 165, .20);
-      background: linear-gradient(135deg, var(--brand2), var(--brand));
+      box-shadow: 0 6px 15px rgba(0, 85, 165, .15);
+      background: #ffffff;
+      border-color: var(--brand);
     }
 
     .btn-nav.active {
-      background: #ffffff !important;
-      color: var(--brand) !important;
-      border-color: rgba(0, 85, 165, 0.25) !important;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      background: linear-gradient(135deg, var(--brand), var(--brand2)) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+      box-shadow: 0 6px 18px rgba(0, 85, 165, 0.25);
       text-shadow: none;
       cursor: default;
       pointer-events: none;
@@ -127,7 +128,7 @@
     /* ==========================
        ESTILOS UNIFICADOS (HEADER Y WRAP)
        ========================== */
-    
+
 
     .header-nav {
       display: flex;
@@ -147,9 +148,9 @@
       flex: 1 1 0;
     }
 
-    
 
-    
+
+
 
     :root {
       /* Paleta estilo Diblafe (azul marino + dorado) */
@@ -202,14 +203,14 @@
       overflow-y: scroll;
     }
 
-    
 
-    
+
+
 
     /* ==========================
        HEADER CORPORATIVO (UNIFICADO)
        ========================== */
-    
+
 
     .routeLinks {
       display: none !important;
@@ -583,9 +584,7 @@
 
     /* RESPONSIVE TOPBAR */
     @media (max-width: 760px) {
-      .topbar 
-
-      .brandTitle {
+      .topbar .brandTitle {
         flex: 1 1 100%;
         padding-right: 0;
       }
@@ -1041,8 +1040,7 @@
       </nav>
 
       <div class="header-right">
-        <button id="btnLogout" class="btn-nav"
-          style="background:#000000;border-color:#000000;color:#ffffff;"
+        <button id="btnLogout" class="btn-nav" style="background:#000000;border-color:#000000;color:#ffffff;"
           title="Cerrar sesión">⬤ Salir</button>
       </div>
     </div>

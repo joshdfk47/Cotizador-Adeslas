@@ -523,7 +523,7 @@
 
       <div class="kbBox">
         <div class="fileInput">
-          <input id="kbFile" type="file" accept=".pdf,.txt,.md,.json" />
+          <input id="kbFile" type="file" accept=".pdf,.txt,.md,.json,.xlsx,.xls" />
           <div class="row2">
             <button id="btnLoadKB" class="btnGreen" type="button">Cargar archivo</button>
             <button id="btnUseTextarea" class="btnGhost" type="button">Usar texto pegado</button>
@@ -534,6 +534,8 @@
           El bot NO inventará: si no encuentra la respuesta en el texto cargado, dirá:
           <span class="mono">No lo sé. No está en el documento.</span>
         </p>
+
+        <div id="kbFilesList" style="margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px;"></div>
 
         <div class="kpi">
           <div class="kcard">
@@ -604,6 +606,8 @@
 
   <!-- PDF.js (versión estable que expone window.pdfjsLib) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- SheetJS para Excels -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
     if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
       window.pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -618,6 +622,7 @@
 
     // DATA se carga desde data_autogen.js inyectado o global
     const API_KEY = (typeof DATA !== 'undefined' && DATA.config) ? DATA.config.gemini_api_key : "";
+    console.log("FAQBot: API_KEY detectada =", API_KEY ? (API_KEY.substring(0, 6) + "...") : "VACÍA");
 
     // =============================
     // PLATFORM DATA CACHE (Cotizador & Patologías)
@@ -4324,9 +4329,8 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
     // =============================
     // 1) KB (Conocimiento)
     // =============================
+    let KB_FILES = {}; // { name: { text, type } }
     let KB_TEXT = "";
-    let KB_SOURCE = "";
-    let KB_TYPE = "";
     let KB_CHUNKS = [];
     let FAQ_PAIRS = [];
     // =============================
@@ -4340,9 +4344,7 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
       try {
         const payload = {
           t: Date.now(),
-          KB_TEXT,
-          KB_SOURCE,
-          KB_TYPE
+          KB_FILES
         };
         localStorage.setItem(KB_CACHE_KEY, JSON.stringify(payload));
       } catch (e) {
@@ -4358,18 +4360,13 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
         const payload = JSON.parse(raw);
         if (!payload || !payload.KB_TEXT) return false;
 
-        KB_TEXT = String(payload.KB_TEXT || "");
-        KB_SOURCE = String(payload.KB_SOURCE || "cache");
-        KB_TYPE = String(payload.KB_TYPE || "cache");
+        KB_FILES = payload.KB_FILES || {};
+        rebuildAggregateKB();
 
-        KB_CHUNKS = buildChunksFromText(KB_TEXT);
-        FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
-
-        updateKBUI();
         addMsg(
           "bot",
-          "Conocimiento restaurado desde cache.\nFragmentos indexados: " + KB_CHUNKS.length +
-          "\nFAQs detectadas (Q/A): " + FAQ_PAIRS.length
+          "Conocimiento restaurado desde cache.\nArchivos: " + Object.keys(KB_FILES).length +
+          "\nFragmentos: " + KB_CHUNKS.length
         );
 
         return true;
@@ -4530,7 +4527,20 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
       //    (con esta separación ya detecta bien y NO arrastra la siguiente pregunta)
       const lines = cleaned
         .split("\n")
-        .map(x => String(x || "").replace(/\s+/g, " ").trim())
+        .map(x => {
+          let line = String(x || "").trim();
+          // FIX EXCEL: si tiene tabulador, es probable que sea "Pregunta \t Respuesta"
+          if (line.includes("\t")) {
+            const parts = line.split("\t");
+            if (parts.length >= 2) {
+              const q = parts[0].trim();
+              const a = parts.slice(1).join(" ").trim();
+              if (q && a) return "P: " + q + "\nR: " + a;
+            }
+          }
+          return line.replace(/\s+/g, " ").trim();
+        })
+        .flatMap(x => x.split("\n")) // por si el fix de excel inyectó saltos
         .filter(x => x !== "");
 
       const pairsLine = [];
@@ -4951,6 +4961,30 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
       return score;
     }
 
+    function rebuildAggregateKB() {
+      // Unimos todos los contenidos
+      const files = Object.values(KB_FILES);
+      if (files.length === 0) {
+        KB_TEXT = "";
+        KB_CHUNKS = [];
+        FAQ_PAIRS = [];
+      } else {
+        KB_TEXT = files.map(f => f.text).join("\n\n---\n\n");
+        KB_CHUNKS = buildChunksFromText(KB_TEXT);
+        FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
+      }
+      updateKBUI();
+      saveKBCache();
+    }
+
+    function removeKBFile(name) {
+      if (KB_FILES[name]) {
+        delete KB_FILES[name];
+        rebuildAggregateKB();
+        addMsg("bot", "Archivo eliminado: " + name);
+      }
+    }
+
     function pickRelevantContext(question) {
       if (!KB_TEXT || KB_CHUNKS.length === 0) return { context: "", used: [] };
 
@@ -4978,10 +5012,43 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
     }
 
     function updateKBUI() {
-      const has = !!KB_TEXT;
-      kbState.textContent = has ? ("Cargado: " + (KB_SOURCE || "texto")) : "Vacío";
+      const fileNames = Object.keys(KB_FILES);
+      const has = fileNames.length > 0;
+
+      kbState.textContent = has ? (fileNames.length + " archivos") : "Vacío";
       kbSize.textContent = (KB_TEXT ? KB_TEXT.length : 0) + " caracteres";
       kbChunksBadge.textContent = "Fragmentos: " + String(KB_CHUNKS.length || 0);
+
+      // Render lista de archivos
+      const listEl = document.getElementById("kbFilesList");
+      if (listEl) {
+        listEl.innerHTML = "";
+        fileNames.forEach(name => {
+          const item = document.createElement("div");
+          item.className = "badge";
+          item.style.justifyContent = "space-between";
+          item.style.width = "100%";
+          item.style.borderRadius = "10px";
+
+          const nameSpan = document.createElement("span");
+          nameSpan.textContent = name;
+          nameSpan.style.overflow = "hidden";
+          nameSpan.style.textOverflow = "ellipsis";
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "cbClose";
+          delBtn.style.width = "20px";
+          delBtn.style.height = "20px";
+          delBtn.style.fontSize = "14px";
+          delBtn.textContent = "×";
+          delBtn.type = "button";
+          delBtn.onclick = () => removeKBFile(name);
+
+          item.appendChild(nameSpan);
+          item.appendChild(delBtn);
+          listEl.appendChild(item);
+        });
+      }
 
       // Si está en LOCAL, mostramos el estado local; si no, estado normal de KB
       if (LOCAL_ONLY) {
@@ -4996,9 +5063,8 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
     // ACTUALIZADO: clearKB limpia FAQ_PAIRS y desactiva LOCAL_ONLY
     // =============================
     function clearKB() {
+      KB_FILES = {};
       KB_TEXT = "";
-      KB_SOURCE = "";
-      KB_TYPE = "";
       KB_CHUNKS = [];
       FAQ_PAIRS = [];
       kbTextarea.value = "";
@@ -5010,7 +5076,7 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
       modelActiveEl.textContent = ACTIVE_MODEL_ID ? ACTIVE_MODEL_ID : (model ? "inicializado" : "sin inicializar");
 
       updateKBUI();
-      addMsg("bot", "He vaciado el conocimiento. Carga un PDF/TXT/JSON para empezar.");
+      addMsg("bot", "He vaciado el conocimiento. Carga un PDF/TXT/JSON/Excel para empezar.");
       setDiag("KB vacía. FAQ_PAIRS=0. LOCAL_ONLY=false");
     }
 
@@ -5108,6 +5174,19 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
       return "";
     }
 
+    async function loadExcel(file) {
+      const ab = await file.arrayBuffer();
+      const wb = XLSX.read(ab, { type: "array" });
+      let text = "";
+      wb.SheetNames.forEach(name => {
+        text += "--- HOJA: " + name + " ---\n";
+        const ws = wb.Sheets[name];
+        // Convertimos a texto (CSV-like o simple)
+        text += XLSX.utils.sheet_to_txt(ws) + "\n\n";
+      });
+      return text.trim();
+    }
+
     // =============================
     // ACTUALIZADO: loadKBFromFile genera FAQ_PAIRS y respeta LOCAL_ONLY
     // =============================
@@ -5126,37 +5205,33 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
         const ext = (name.split(".").pop() || "").toLowerCase();
 
         let text = "";
+        let type = "text";
 
         if (ext === "pdf") {
-          KB_TYPE = "pdf";
+          type = "pdf";
           text = await loadPDF(file);
+        } else if (ext === "xlsx" || ext === "xls") {
+          type = "excel";
+          text = await loadExcel(file);
         } else if (ext === "json") {
-          KB_TYPE = "json";
+          type = "json";
           const raw = await readFileAsText(file);
           text = loadJSONToKB(raw);
           if (!text) throw new Error("JSON no reconocido o vacío (usa [{q,a}] o {pregunta:respuesta}).");
         } else {
-          KB_TYPE = "text";
+          type = "text";
           text = await readFileAsText(file);
         }
 
-        KB_TEXT = text || "";
-        KB_SOURCE = name;
-
-        KB_CHUNKS = buildChunksFromText(KB_TEXT);
-
-        // NUEVO: construir FAQ_PAIRS para modo local
-        FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
-
-        kbUsedInfo.textContent = "0";
-        updateKBUI();
-        saveKBCache();
+        // Guardamos en el objeto de archivos
+        KB_FILES[name] = { text: text || "", type };
+        rebuildAggregateKB();
 
         addMsg(
           "bot",
-          "Conocimiento cargado: " + name +
-          "\nFragmentos indexados: " + KB_CHUNKS.length +
-          "\nFAQs detectadas (Q/A): " + FAQ_PAIRS.length
+          "Archivo añadido: " + name +
+          "\nFragmentos totales: " + KB_CHUNKS.length +
+          "\nArchivos cargados: " + Object.keys(KB_FILES).length
         );
 
         setDiag("OK: KB cargado (" + KB_CHUNKS.length + " fragmentos). FAQ_PAIRS=" + FAQ_PAIRS.length + ". LOCAL_ONLY=" + String(LOCAL_ONLY));
@@ -5177,45 +5252,70 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
     // =============================
     // AUTO-CARGA DESDE CARPETA (faq/faq.pdf)
     // =============================
-    async function autoLoadDefaultKB() {
-      const DEFAULT_PDF_PATH = "faq/faq.pdf";
+    async function loadFAQFiles() {
+      const faqFiles = (typeof DATA !== 'undefined' && DATA.config && DATA.config.faq_files) ? DATA.config.faq_files : [];
+      if (!faqFiles.length) return;
 
-      try {
-        console.log("Intentando auto-cargar:", DEFAULT_PDF_PATH);
-        const resp = await fetch(DEFAULT_PDF_PATH);
-        if (!resp.ok) {
-          throw new Error("No se pudo encontrar el archivo " + DEFAULT_PDF_PATH + " para la auto-carga.");
+      console.log("FAQBot: Iniciando auto-carga de archivos FAQ:", faqFiles);
+      setStatus("Cargando base de conocimiento...", "warn", true);
+
+      let loadedAny = false;
+
+      for (const fileName of faqFiles) {
+        // Si ya está en KB_FILES (desde cache), lo saltamos para no re-fetch cada vez
+        // (A menos que quieras forzar actualización, pero por ahora respetamos cache)
+        if (KB_FILES[fileName]) continue;
+
+        const path = "faq/" + fileName;
+        try {
+          const resp = await fetch(path);
+          if (!resp.ok) continue;
+
+          const ab = await resp.arrayBuffer();
+          const ext = (fileName.split(".").pop() || "").toLowerCase();
+          let text = "";
+          let type = "text";
+
+          if (ext === "pdf") {
+            type = "pdf";
+            text = await loadPDF(ab);
+          } else if (ext === "xlsx" || ext === "xls") {
+            type = "excel";
+            const wb = XLSX.read(ab, { type: "array" });
+            wb.SheetNames.forEach(sheetName => {
+              text += "--- HOJA: " + sheetName + " ---\n";
+              text += XLSX.utils.sheet_to_txt(wb.Sheets[sheetName]) + "\n\n";
+            });
+            text = text.trim();
+          } else if (ext === "json") {
+            type = "json";
+            const raw = new TextDecoder().decode(ab);
+            text = loadJSONToKB(raw);
+          } else {
+            type = "text";
+            text = new TextDecoder().decode(ab);
+          }
+
+          if (text) {
+            KB_FILES[fileName] = { text, type };
+            loadedAny = true;
+            console.log("FAQBot: Cargado automáticamente:", fileName);
+          }
+        } catch (err) {
+          console.error("Error cargando FAQ automática:", fileName, err);
         }
+      }
 
-        const ab = await resp.arrayBuffer();
-
-        setStatus("Cargando FAQ automática…", "warn", true);
-        setDiag("Auto-cargando " + DEFAULT_PDF_PATH);
-
-        const text = await loadPDF(ab);
-
-        KB_TEXT = text || "";
-        KB_SOURCE = "faq.pdf (Auto)";
-        KB_TYPE = "pdf";
-        KB_CHUNKS = buildChunksFromText(KB_TEXT);
-        FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
-
-        updateKBUI();
-        saveKBCache();
-
+      if (loadedAny) {
+        rebuildAggregateKB();
         addMsg("bot", "Conocimiento FAQ cargado automáticamente.\n¿En qué puedo ayudarte?");
         setDiag("Auto-KB OK: " + KB_CHUNKS.length + " fragmentos.");
-      } catch (err) {
-        console.warn("Auto-carga fallida:", err);
-        setDiag("Aviso: No se pudo auto-cargar " + DEFAULT_PDF_PATH + ". Se recomienda usar un servidor local.");
-        // NO removemos auto-kb para no mostrar los botones, el usuario pidió que no salgan
-        // document.body.classList.remove("auto-kb");
-      } finally {
-        if (LOCAL_ONLY) {
-          setStatus("Modo local (sin API)", "warn", false);
-        } else {
-          setStatus(KB_TEXT ? "Conocimiento: cargado" : "Conocimiento: vacío", KB_TEXT ? "good" : "warn", false);
-        }
+      }
+
+      if (LOCAL_ONLY) {
+        setStatus("Modo local (sin API)", "warn", false);
+      } else {
+        setStatus(KB_TEXT ? "Conocimiento: cargado" : "Conocimiento: vacío", KB_TEXT ? "good" : "warn", false);
       }
     }
 
@@ -5228,24 +5328,14 @@ ${JSON.stringify(ADESLAS_PAT_DATA)}`;
         addMsg("bot", "Pega texto en el cuadro antes de usarlo.", true);
         return;
       }
-      KB_TEXT = t;
-      KB_SOURCE = "texto pegado";
-      KB_TYPE = "textarea";
-      KB_CHUNKS = buildChunksFromText(KB_TEXT);
-
-      // NUEVO: construir FAQ_PAIRS para modo local
-      FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
-
-      kbUsedInfo.textContent = "0";
-      updateKBUI();
-      saveKBCache();
+      const name = "texto_pegado_" + new Date().toLocaleTimeString();
+      KB_FILES[name] = { text: t, type: "textarea" };
+      rebuildAggregateKB();
 
       addMsg(
         "bot",
-        "Conocimiento cargado desde texto pegado.\nFragmentos indexados: " + KB_CHUNKS.length +
-        "\nFAQs detectadas (Q/A): " + FAQ_PAIRS.length
+        "Texto añadido al conocimiento.\nFragmentos totales: " + KB_CHUNKS.length
       );
-      setDiag("OK: KB desde textarea (" + KB_CHUNKS.length + " fragmentos). FAQ_PAIRS=" + FAQ_PAIRS.length + ". LOCAL_ONLY=" + String(LOCAL_ONLY));
     }
 
     // =============================
@@ -5266,13 +5356,13 @@ REGLAS OBLIGATORIAS:
 7) Responde siempre en español. No inventes precios ni enfermedades.`;
 
     const MODEL_CANDIDATES = [
+      "gemini-2.5-flash",
+      "gemini-2.5-pro",
+      "gemini-flash-latest",
+      "gemini-pro-latest",
       "gemini-1.5-flash",
-      "gemini-2.0-flash",
-      "gemini-1.5-flash-8b",
-      "gemini-1.5-pro",
-      "gemini-2.0-flash-exp"
+      "gemini-1.5-pro"
     ];
-
     const genAI = new GoogleGenerativeAI(API_KEY);
 
     let ACTIVE_MODEL_ID = "";
@@ -5294,37 +5384,44 @@ REGLAS OBLIGATORIAS:
     }
 
     async function initModelAuto() {
-      setDiag("Inicializando modelo… probando candidatos: " + MODEL_CANDIDATES.join(", "));
-      modelActiveEl.textContent = "probando…";
-      setStatus("Inicializando modelo…", "warn", true);
+      if (!API_KEY) {
+        setDiag("ERROR: No hay API_KEY en data_autogen.js");
+        modelActiveEl.textContent = "SIN CLAVE";
+        setStatus("Modelo: sin clave", "bad", false);
+        return;
+      }
 
-      let lastErr = null;
+      setDiag("Probando modelos...");
+      modelActiveEl.textContent = "probando...";
+      setStatus("Inicializando...", "warn", true);
+
+      let errors = [];
 
       for (const id of MODEL_CANDIDATES) {
         try {
+          setDiag("Probando " + id + "...");
           const m = await tryModelId(id);
           model = m;
           ACTIVE_MODEL_ID = id;
           chat = model.startChat();
           modelActiveEl.textContent = ACTIVE_MODEL_ID;
-          setDiag("OK: modelo activo = " + ACTIVE_MODEL_ID);
+          setDiag("OK: " + ACTIVE_MODEL_ID);
           setStatus(KB_TEXT ? "Conocimiento: cargado" : "Conocimiento: vacío", KB_TEXT ? "good" : "warn", false);
           return;
         } catch (e) {
-          lastErr = e;
-          console.warn("Model failed:", id, e);
+          const msg = e.message || String(e);
+          errors.push(id + ": " + (msg.includes("404") ? "404 (Not Found)" : msg.includes("400") ? "400 (Key Error)" : msg));
+          console.warn("Fallo modelo:", id, e);
         }
       }
 
       model = null;
       chat = null;
       ACTIVE_MODEL_ID = "";
-      modelActiveEl.textContent = "NO DISPONIBLE";
+      modelActiveEl.textContent = "ERROR";
 
-      const msg = (lastErr && lastErr.message) ? lastErr.message : String(lastErr || "error");
-      setDiag("ERROR: " + msg);
-
-      // Asegurar que el UI quede habilitado aunque falle el modelo
+      const finalErr = errors.join(" | ");
+      setDiag("ERRORES: " + finalErr);
       setStatus("Modelo: error", "bad", false);
     }
 
@@ -5539,10 +5636,8 @@ REGLAS DE RESPUESTA:
     updateKBUI();
     initModelAuto();
 
-    // Solo auto-carga desde archivo si NO hay KB ya cargada (evita sobreescribir cache)
-    if (!KB_TEXT) {
-      autoLoadDefaultKB();
-    }
+    // Auto-carga de archivos desde carpeta faq/
+    loadFAQFiles();
   </script>
 </body>
 

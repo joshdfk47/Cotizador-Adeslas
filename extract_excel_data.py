@@ -240,7 +240,8 @@ def main():
                 "admin": {"pass": os.getenv("ADMIN_PASS", "1234"), "role": "admin"},
                 "user": {"pass": os.getenv("USER_PASS", "1234"), "role": "user"}
             },
-            "gemini_api_key": os.getenv("GEMINI_API_KEY", "")
+            "gemini_api_key": os.getenv("GEMINI_API_KEY", ""),
+            "faq_files": [f for f in os.listdir(os.path.join(BASE_DIR, 'faq')) if os.path.isfile(os.path.join(BASE_DIR, 'faq', f)) and not f.startswith('.')] if os.path.exists(os.path.join(BASE_DIR, 'faq')) else []
         }
     }
     
