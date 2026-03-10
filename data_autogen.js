@@ -3889,5 +3889,18 @@ const DATA = {
     "Extra Negocios NIF >3": 1.0,
     "Plena Extra 150": 1.0,
     "Plena Total Vital": 1.0
+  },
+  "config": {
+    "users": {
+      "admin": {
+        "pass": "1234",
+        "role": "admin"
+      },
+      "user": {
+        "pass": "1234",
+        "role": "user"
+      }
+    },
+    "gemini_api_key": "AIzaSyB2hirwfAgi_bVpTTDwd2oRu5dhhbjDvyw"
   }
 };

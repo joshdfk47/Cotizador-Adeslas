@@ -2,9 +2,14 @@ import pandas as pd
 import json
 import re
 import openpyxl
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 EXCEL_FILE = 'Cotizador Base 2026 2.0  (2).xlsx'
-OUTPUT_FILE = 'data_autogen.js'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_FILE = os.path.join(BASE_DIR, 'data_autogen.js')
 
 def safe_float(val, default=0.0):
     try:
@@ -229,7 +234,14 @@ def main():
         "dental_total": d_total,
         "cp_map": cp_map,
         "product_rules": build_product_rules(),
-        "excepciones": exc
+        "excepciones": exc,
+        "config": {
+            "users": {
+                "admin": {"pass": os.getenv("ADMIN_PASS", "1234"), "role": "admin"},
+                "user": {"pass": os.getenv("USER_PASS", "1234"), "role": "user"}
+            },
+            "gemini_api_key": os.getenv("GEMINI_API_KEY", "")
+        }
     }
     
     with open(OUTPUT_FILE, 'w') as f:

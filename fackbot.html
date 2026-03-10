@@ -611,19 +611,20 @@
     }
   </script>
 
+  <script src="data_autogen.js"></script>
   <script type="module">
 
     import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
-    // ⚠️ SOLO pruebas locales (API Key en frontend)
-    const API_KEY = "";
+    // DATA se carga desde data_autogen.js inyectado o global
+    const API_KEY = (typeof DATA !== 'undefined' && DATA.config) ? DATA.config.gemini_api_key : "";
 
     // =============================
     // PLATFORM DATA CACHE (Cotizador & Patologías)
     // =============================
 
     // === AUTO-INJECTED ADESLAS DATA === //
-const ADESLAS_COT_DATA = {
+    const ADESLAS_COT_DATA = {
       "products": [
         "Go",
         "Plena Vital",
@@ -3156,7 +3157,7 @@ const ADESLAS_COT_DATA = {
         }
       }
     };
-const ADESLAS_PAT_DATA = {
+    const ADESLAS_PAT_DATA = {
       "ADESLAS": [
         {
           "patologia": "Glomerulo esclerosis renal con HTA y proteinuria Hace 1 año",
@@ -4277,14 +4278,14 @@ const ADESLAS_PAT_DATA = {
         }
       ]
     };
-const PLATFORM_DATA_TEXT = `--- BASE DE DATOS DE PRECIOS, EDADES Y ZONAS (COTIZADOR) ---
+    const PLATFORM_DATA_TEXT = `--- BASE DE DATOS DE PRECIOS, EDADES Y ZONAS (COTIZADOR) ---
 Aplica esta tabla para calcular precios según producto, edad y zona postal. El formato incluye tramos de edades [min, max] y precios.
 ${JSON.stringify(ADESLAS_COT_DATA)}
 
 --- DICCIONARIO MÉDICO (BUSCADOR DE PATOLOGÍAS) ---
 Listado de patologías con su estado de contratación (ACEPTADO, EXCLUSIÓN, RECHAZO, EN VALORACIÓN MÉDICA) y comentarios.
 ${JSON.stringify(ADESLAS_PAT_DATA)}`;
-// ================================== //
+    // ================================== //
     // =============================
     // LÍMITE DE COSTE (FACTURACIÓN)
     // =============================

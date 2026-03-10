@@ -903,11 +903,6 @@
             <option value="3">3%</option>
             <option value="4">4%</option>
             <option value="5">5%</option>
-            <option value="6">6%</option>
-            <option value="7">7%</option>
-            <option value="8">8%</option>
-            <option value="9">9%</option>
-            <option value="10">10%</option>
           </select>
         </div>
 
@@ -1372,14 +1367,17 @@
           else if (age > maxAgeNormal) sum += 0;
           else sum += 1;
         }
-        return sum >= 0;
+        if (sum < 0) return { ok: false, reason: `Apto si hay 3 menores de ${maxAgeNormal + 1} años por cada mayor de ${penaltyAge}` };
+        return { ok: true };
       };
 
       const ratioLogic = (triggerAge1, triggerAge2, youngAge) => {
         if (countIf(a => a > triggerAge1) > 0) {
-          if (countIf(a => a < youngAge) < 3 * countIf(a => a > triggerAge2)) return false;
+          if (countIf(a => a < youngAge) < 3 * countIf(a => a > triggerAge2)) {
+            return { ok: false, reason: `Apto si hay 3 menores de ${youngAge} años por cada mayor de ${triggerAge2}` };
+          }
         }
-        return true;
+        return { ok: true };
       };
 
       const n = productName.toLowerCase();
@@ -1395,27 +1393,47 @@
       if (n.includes("extra negocios nif")) return ratioLogic(69, 69, 60);
       if (n.includes("plena extra 150")) return ratioLogic(64, 64, 60);
       if (n.includes("plena total vital")) return ratioLogic(62, 62, 60);
+
       if (n.includes("negocios nif") || (n.includes("nif") && !n.includes("extra"))) {
         if (countIf(a => a > 70) > 0) {
-          if (countIf(a => a <= 60) < 3 * countIf(a => a >= 70)) return false;
+          if (countIf(a => a <= 60) < 3 * countIf(a => a >= 70)) {
+            return { ok: false, reason: "Apto si hay 3 menores de 60 por cada mayor de 70 años" };
+          }
         }
-        return true;
+        return { ok: true };
       }
+
       if (n.includes("extra negocios cif") || n.includes("extra cif")) {
-        return validAges.length <= 4;
+        if (validAges.length > 4) return { ok: false, reason: "Máximo 4 personas en total" };
+        return { ok: true };
       }
-      if (n === "adeslas seniors" || n === "seniors" || n === "seniors 2" || n === "adeslas senior") {
+
+      const isSeniorsTotal = n.includes("seniors total") || n.includes("plena total seniors");
+      const isSeniorsNormal = n.includes("seniors") && !isSeniorsTotal;
+
+      if (isSeniorsNormal) {
+        let cUnder50 = countIf(a => a < 50);
+        if (cUnder50 > 0) return { ok: false, reason: "No apto: Seniors no permite menores de 50 años" };
+
         let c50 = countIf(a => a >= 50), c54 = countIf(a => a > 54), c55 = countIf(a => a >= 55), cUnder55 = countIf(a => a < 55);
-        if ((c50 - c54 > 0) && (c55 > 0)) return true;
-        return (cUnder55 > 0) ? false : true;
+        if (c55 === 0) return { ok: false, reason: "Apto si hay al menos una persona con 55 años o más" };
+        if (cUnder55 > 1) return { ok: false, reason: "Solo se permite un acompañante menor de 55 años" };
+
+        return { ok: true };
       }
-      if (n === "adeslas plena total seniors" || n === "seniors total" || n === "seniors total 2") {
-        if (countIf(a => a > 84) > 0) return false;
-        let cond1 = (countIf(a => a >= 60) > 0 && countIf(a => a <= 62) > 0);
-        if (cond1 && countIf(a => a >= 63) > 0 && countIf(a => a < 60) === 0) return true;
-        return false;
+
+      if (isSeniorsTotal) {
+        if (countIf(a => a < 60) > 0) return { ok: false, reason: "No apto: Seniors Total no permite menores de 60 años" };
+        if (countIf(a => a > 84) > 0) return { ok: false, reason: "Edad máxima permitida: 84 años" };
+
+        let has60_62 = countIf(a => a >= 60 && a <= 62) > 0;
+        let has63plus = countIf(a => a >= 63) > 0;
+
+        if (has60_62 && has63plus) return { ok: true };
+        return { ok: false, reason: "Requiere al menos un asegurado 60-62 y otro mayor de 63 años" };
       }
-      return true;
+
+      return { ok: true };
     }
 
     function computeProduct(product, state) {
@@ -1474,15 +1492,14 @@
       const breakdown = [];
       const dental_pp = (DATA.dental_per_person && DATA.dental_per_person[String(numAseguradosTotal)]) || 0;
 
-      if (!isProductAllowed(product, state.ages)) {
-        return { ok: false, reason: "No cumples las reglas de contratación", product, constraints };
+      const allowedCheck = isProductAllowed(product, state.ages);
+      if (!allowedCheck.ok) {
+        return { ok: false, reason: allowedCheck.reason || "No cumple las reglas de contratación", product, constraints };
       }
 
       for (const age of state.ages) {
-        const base = getPrice(productLookup, state.zona, age);
-        if (base === "No asegurable") {
-          continue; // Salta esta persona (su precio base será 0, como hace el Excel)
-        }
+        const basePrice = getPrice(productLookup, state.zona, age);
+        const base = (basePrice === "No asegurable") ? 0 : basePrice;
 
         // Precio individual con descuentos
         const discounted = base * multiFactor * pensFactor * k6Factor;
@@ -1491,11 +1508,10 @@
         let conLine = discounted;
 
         if (rules.dental_mode === "per_person_inherited") {
-          // Go, Plena, Vital, Plus: con = discounted + dental_pp
-          conLine = discounted + dental_pp;
+          // Si la base es 0, el dental también suele serlo o no aplicar
+          conLine = base > 0 ? (discounted + dental_pp) : 0;
         } else if (rules.dental_mode === "per_person_direct") {
-          // Extra 150: con = base_raw + dental_pp (sin descuento multi en la base)
-          conLine = base + dental_pp;
+          conLine = base > 0 ? (base + dental_pp) : 0;
         }
 
         totalSinVal += sinLine;
@@ -1539,6 +1555,12 @@
       const payDisc = (PAY_DISCOUNT[state.pay] || 0);
       finalSin = applyDiscount(finalSin, payDisc);
       finalCon = applyDiscount(finalCon, payDisc);
+
+      // Descuento manual (comisión)
+      if (!isGOProduct(product)) {
+        finalSin = applyDiscount(finalSin, state.discount);
+        finalCon = applyDiscount(finalCon, state.discount);
+      }
 
       // Productos "only_con_dental" (Total, Pymes): sin dental no se muestra
       const isOnlyConDental = !!rules.only_con_dental;
@@ -1613,7 +1635,10 @@
         const normalizedName = x.product.toLowerCase();
         // Filtros estrictos de visualización (por descuento/tipo)
         if (x.isGO && state.discount > 0) return false;
-        if (normalizedName.includes("pymes total") && state.discount !== 0 && state.discount !== 10) return false;
+
+        // Productos trianuales (isOnlyConDental: Plena Total Vital, Plena Total, Seniors Total, Pymes Total)
+        // solo permiten pago MENSUAL.
+        if (x.isOnlyConDental && state.pay !== "mensual") return false;
 
         return true;
       });
@@ -1642,9 +1667,6 @@
       setStatus(`Tarificación lista: ${computed.length}/${computed.length} productos con precio`, "warn");
 
       computed.forEach(r => {
-        // HIDE COMPLETELY if not OK (Excel behavior: blank columns)
-        if (!r.ok) return;
-
         const card = document.createElement("div");
         card.className = "card product-card";
         card.setAttribute("draggable", "true");
@@ -1662,197 +1684,206 @@
         const content = document.createElement("div");
         content.className = "card-content";
 
-        const isTotal = !r.hasDental;
-        const prices = document.createElement("div");
-        prices.className = "prices";
-
-        if (r.isOnlyConDental) {
-          // Productos Total/Pymes: solo un precio ("Con Dental" / precio único)
-          const lineOnly = document.createElement("div");
-          lineOnly.className = "priceLine";
-          lineOnly.innerHTML = `
-            <div style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b style="font-size:15px; color:#1e293b;">Con Dental</b>
-                <span class="val" style="font-size:18px;">${fmtEUR(r.periodWithDental)}</span>
-              </div>
-            </div>
-          `;
-          prices.appendChild(lineOnly);
-        } else if (r.hasDental) {
-          // Products with separate Sin/Con dental
-          const lineSin = document.createElement("div");
-          lineSin.className = "priceLine";
-          lineSin.innerHTML = `
-            <div style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b style="font-size:15px; color:#1e293b;">Sin Dental</b>
-                <span class="val" style="font-size:18px;">${fmtEUR(r.periodBase)}</span>
-              </div>
-            </div>
-          `;
-          prices.appendChild(lineSin);
-
-          const lineCon = document.createElement("div");
-          lineCon.className = "priceLine";
-          lineCon.style.marginTop = "8px";
-          lineCon.innerHTML = `
-            <div style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b style="font-size:15px; color:#1e293b;">Con Dental</b>
-                <span class="val" style="font-size:18px;">${fmtEUR(r.periodWithDental)}</span>
-              </div>
-            </div>
-          `;
-          prices.appendChild(lineCon);
-
+        if (!r.ok) {
+          // PRODUCTO NO CONTRATABLE
+          const noDiv = document.createElement("div");
+          noDiv.className = "no";
+          noDiv.style.textAlign = "center";
+          noDiv.style.padding = "10px";
+          noDiv.textContent = r.reason || "Producto no contratable por edad";
+          content.appendChild(noDiv);
         } else {
-          // Only one price line
-          const lineBase = document.createElement("div");
-          lineBase.className = "priceLine";
-          lineBase.innerHTML = `
+          const isTotal = !r.hasDental;
+          const prices = document.createElement("div");
+          prices.className = "prices";
+
+          if (r.isOnlyConDental) {
+            // Productos Total/Pymes: solo un precio ("Con Dental" / precio único)
+            const lineOnly = document.createElement("div");
+            lineOnly.className = "priceLine";
+            lineOnly.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:15px; color:#1e293b;">Con Dental</b>
+                  <span class="val" style="font-size:18px;">${fmtEUR(r.periodWithDental)}</span>
+                </div>
+              </div>
+            `;
+            prices.appendChild(lineOnly);
+          } else if (r.hasDental) {
+            // Products with separate Sin/Con dental
+            const lineSin = document.createElement("div");
+            lineSin.className = "priceLine";
+            lineSin.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:15px; color:#1e293b;">Sin Dental</b>
+                  <span class="val" style="font-size:18px;">${fmtEUR(r.periodBase)}</span>
+                </div>
+              </div>
+            `;
+            prices.appendChild(lineSin);
+
+            const lineCon = document.createElement("div");
+            lineCon.className = "priceLine";
+            lineCon.style.marginTop = "8px";
+            lineCon.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:15px; color:#1e293b;">Con Dental</b>
+                  <span class="val" style="font-size:18px;">${fmtEUR(r.periodWithDental)}</span>
+                </div>
+              </div>
+            `;
+            prices.appendChild(lineCon);
+
+          } else {
+            // Only one price line
+            const lineBase = document.createElement("div");
+            lineBase.className = "priceLine";
+            lineBase.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:15px; color:#1e293b;">Total Salud</b>
+                  <span class="val" style="font-size:18px;">${fmtEUR(r.periodBase)}</span>
+                </div>
+              </div>
+            `;
+            prices.appendChild(lineBase);
+          }
+
+          content.appendChild(prices);
+
+          const det = document.createElement("details");
+          det.innerHTML = `
+            <summary>
+              <span class="sumRow">
+                <span>Ver desglose por edad</span>
+                <span class="pm" aria-hidden="true"></span>
+              </span>
+            </summary>
+          `;
+
+          const box = document.createElement("div");
+          box.className = "detailBox";
+
+          for (const b of r.breakdown) {
+            const rowA = document.createElement("div");
+            rowA.className = "priceLine";
+            rowA.style.marginBottom = "8px";
+            // Aplicamos todos los factores individuales del breakdown + descuento de pago
+            let finalAgePrice = b.base * b.multi * b.pens * b.k6;
+            finalAgePrice = applyDiscount(finalAgePrice, r.payDisc);
+            finalAgePrice = applyDiscount(finalAgePrice, r.manualDiscApplied);
+
+            rowA.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:15px; color:#1e293b;">${b.age} años</b>
+                  <span class="val" style="font-size:18px;">${fmtEUR(finalAgePrice)}</span>
+                </div>
+              </div>
+            `;
+            box.appendChild(rowA);
+          }
+
+          const nAseg = state.ages.length;
+          const per = r.dentalPer;
+          const drow = document.createElement("div");
+          drow.className = "priceLine";
+          drow.style.marginBottom = "8px";
+          drow.innerHTML = `
             <div style="width:100%;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b style="font-size:15px; color:#1e293b;">Total Salud</b>
-                <span class="val" style="font-size:18px;">${fmtEUR(r.periodBase)}</span>
+                <b style="font-size:15px; color:#1e293b;">Dental</b>
+                <span class="val" style="font-size:18px;">${(per === null) ? "—" : (fmtEUR(per))}</span>
               </div>
             </div>
           `;
-          prices.appendChild(lineBase);
-        }
+          box.appendChild(drow);
 
-        content.appendChild(prices);
-
-        const det = document.createElement("details");
-        det.innerHTML = `
-          <summary>
-            <span class="sumRow">
-              <span>Ver desglose por edad</span>
-              <span class="pm" aria-hidden="true"></span>
-            </span>
-          </summary>
-        `;
-
-        const box = document.createElement("div");
-        box.className = "detailBox";
-
-        for (const b of r.breakdown) {
-          const rowA = document.createElement("div");
-          rowA.className = "priceLine";
-          rowA.style.marginBottom = "8px";
-          // Aplicamos todos los factores individuales del breakdown + descuento de pago
-          let finalAgePrice = b.base * b.multi * b.pens * b.k6;
-          finalAgePrice = applyDiscount(finalAgePrice, r.payDisc);
-          finalAgePrice = applyDiscount(finalAgePrice, r.manualDiscApplied);
-
-          rowA.innerHTML = `
-            <div style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b style="font-size:15px; color:#1e293b;">Asegurado (${b.age} años)</b>
-                <span class="val" style="font-size:18px;">${fmtEUR(finalAgePrice)}</span>
+          if (r.payDisc > 0) {
+            const prow1 = document.createElement("div");
+            prow1.className = "priceLine";
+            prow1.style.marginBottom = "8px";
+            prow1.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:15px; color:#1e293b;">Pago (${state.pay})</b>
+                  <span class="val" style="font-size:15px; color:#16a34a;">-${(r.payDisc || 0)}%</span>
+                </div>
               </div>
-            </div>
-          `;
-          box.appendChild(rowA);
-        }
+            `;
+            box.appendChild(prow1);
+          }
 
-        const nAseg = state.ages.length;
-        const per = r.dentalPer;
-        const drow = document.createElement("div");
-        drow.className = "priceLine";
-        drow.style.marginBottom = "8px";
-        drow.innerHTML = `
-          <div style="width:100%;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <b style="font-size:15px; color:#1e293b;">Dental</b>
-              <span class="val" style="font-size:18px;">${(per === null) ? "—" : (fmtEUR(per))}</span>
-            </div>
-          </div>
-        `;
-        box.appendChild(drow);
-
-        if (r.payDisc > 0) {
-          const prow1 = document.createElement("div");
-          prow1.className = "priceLine";
-          prow1.style.marginBottom = "8px";
-          prow1.innerHTML = `
-            <div style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b style="font-size:15px; color:#1e293b;">Pago (${state.pay})</b>
-                <span class="val" style="font-size:15px; color:#16a34a;">-${(r.payDisc || 0)}%</span>
+          if (r.autoNDisc > 0) {
+            const prowN = document.createElement("div");
+            prowN.className = "priceLine";
+            prowN.style.marginBottom = "8px";
+            prowN.style.background = "#f0fdf4";
+            prowN.style.borderColor = "#bbf7d0";
+            prowN.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:15px; color:#1e293b;">Desc. asegurados</b>
+                  <span class="val" style="font-size:15px; color:#16a34a;">-${r.autoNDisc}%</span>
+                </div>
               </div>
-            </div>
-          `;
-          box.appendChild(prow1);
-        }
+            `;
+            box.appendChild(prowN);
+          }
 
-        if (r.autoNDisc > 0) {
-          const prowN = document.createElement("div");
-          prowN.className = "priceLine";
-          prowN.style.marginBottom = "8px";
-          prowN.style.background = "#f0fdf4";
-          prowN.style.borderColor = "#bbf7d0";
-          prowN.innerHTML = `
-            <div style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b style="font-size:15px; color:#1e293b;">Desc. asegurados</b>
-                <span class="val" style="font-size:15px; color:#16a34a;">-${r.autoNDisc}%</span>
+          if (!r.isGO && r.manualDiscApplied > 0) {
+            const prow2 = document.createElement("div");
+            prow2.className = "priceLine";
+            prow2.style.marginBottom = "8px";
+            const mdisc = (r.manualDiscApplied || 0);
+            prow2.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:15px; color:#1e293b;">Dto</b>
+                  <span class="val" style="font-size:15px; color:#16a34a;">-${mdisc}%</span>
+                </div>
               </div>
-            </div>
+            `;
+            box.appendChild(prow2);
+          }
+
+          det.appendChild(box);
+          content.appendChild(det);
+
+          const detAnual = document.createElement("details");
+          detAnual.style.marginTop = "10px";
+          detAnual.innerHTML = `
+            <summary>
+              <span class="sumRow">
+                <span>Ver desglose Prima Anual</span>
+                <span class="pm" aria-hidden="true"></span>
+              </span>
+            </summary>
           `;
-          box.appendChild(prowN);
+          const boxAnual = document.createElement("div");
+          boxAnual.className = "detailBox";
+
+          if (isTotal) {
+            boxAnual.innerHTML += `
+              <div class="anualHeader">PRIMA ANUAL SALUD</div>
+              <div class="detailRow grey"><span>TOTAL ANUAL</span><span>${fmtEUR(r.annual.sin)}</span></div>
+            `;
+          } else {
+            boxAnual.innerHTML += `
+              <div class="anualHeader">PRIMAS ANUALES</div>
+              <div class="detailRow grey"><span>SIN DENTAL</span><span>${fmtEUR(r.annual.sin)}</span></div>
+              <div class="detailRow grey" style="margin-top:10px; border-radius:8px 8px 0 0;"><span>CON DENTAL</span><span>${fmtEUR(r.annual.con)}</span></div>
+            `;
+          }
+
+          detAnual.appendChild(boxAnual);
+          content.appendChild(detAnual);
         }
-
-        if (!r.isGO && r.manualDiscApplied > 0) {
-          const prow2 = document.createElement("div");
-          prow2.className = "priceLine";
-          prow2.style.marginBottom = "8px";
-          const mdisc = (r.manualDiscApplied || 0);
-          prow2.innerHTML = `
-            <div style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b style="font-size:15px; color:#1e293b;">Dto</b>
-                <span class="val" style="font-size:15px; color:#16a34a;">-${mdisc}%</span>
-              </div>
-            </div>
-          `;
-          box.appendChild(prow2);
-        }
-
-        det.appendChild(box);
-        content.appendChild(det);
-
-        const detAnual = document.createElement("details");
-        detAnual.style.marginTop = "10px";
-        detAnual.innerHTML = `
-          <summary>
-            <span class="sumRow">
-              <span>Ver desglose Prima Anual</span>
-              <span class="pm" aria-hidden="true"></span>
-            </span>
-          </summary>
-        `;
-        const boxAnual = document.createElement("div");
-        boxAnual.className = "detailBox";
-
-        if (isTotal) {
-          boxAnual.innerHTML += `
-            <div class="anualHeader">PRIMA ANUAL SALUD</div>
-            <div class="detailRow grey"><span>TOTAL ANUAL</span><span>${fmtEUR(r.annual.sin)}</span></div>
-          `;
-        } else {
-          boxAnual.innerHTML += `
-            <div class="anualHeader">PRIMAS ANUALES</div>
-            <div class="detailRow grey"><span>SIN DENTAL</span><span>${fmtEUR(r.annual.sin)}</span></div>
-            <div class="detailRow grey" style="margin-top:10px; border-radius:8px 8px 0 0;"><span>CON DENTAL</span><span>${fmtEUR(r.annual.con)}</span></div>
-          `;
-        }
-
-        detAnual.appendChild(boxAnual);
-        content.appendChild(detAnual);
 
         card.appendChild(content);
-
         elResults.appendChild(card);
       });
       syncHeights();

@@ -419,13 +419,15 @@
         </div>
     </div>
 
+    <script src="data_autogen.js"></script>
     <script>
         // ============================================================
         // Credenciales y roles
         // ============================================================
-        const USERS = {
-            "admin": { pass: "1234", role: "admin" },
-            "user": { pass: "1234", role: "user" }
+        // DATA se carga desde data_autogen.js
+        const USERS = (typeof DATA !== 'undefined' && DATA.config) ? DATA.config.users : {
+            "admin": { pass: "", role: "admin" },
+            "user": { pass: "", role: "user" }
         };
 
         const STORAGE_KEY_ADMIN = "diblafe_admin_logged_v4";
