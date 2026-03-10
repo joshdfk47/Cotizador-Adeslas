@@ -597,6 +597,19 @@
 
       <div class="kbBox">
         <div class="panelTitle">
+          <h3>Configuración API</h3>
+        </div>
+        <p class="small">Introduce tu <b>Gemini API Key</b>. Se guardará localmente en tu navegador.</p>
+        <div class="inputWrap">
+          <input type="password" id="gemini-key-input" placeholder="AIzaSy..."
+            style="width:100%; margin-top:5px; padding:8px; border-radius:8px; border:1px solid var(--line);" />
+        </div>
+        <button id="save-key-btn" class="btnGreen" type="button" style="margin-top:8px; width:100%;">Guardar
+          Key</button>
+      </div>
+
+      <div class="kbBox">
+        <div class="panelTitle">
           <h3>Diagnóstico</h3>
         </div>
         <p class="small mono" id="diagBox">—</p>
@@ -616,13 +629,22 @@
   </script>
 
   <script src="data_autogen.js"></script>
+  <script src="config_local.js"></script>
   <script type="module">
 
     import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
     // DATA se carga desde data_autogen.js inyectado o global
-    const API_KEY = (typeof DATA !== 'undefined' && DATA.config) ? DATA.config.gemini_api_key : "";
-    console.log("FAQBot: API_KEY detectada =", API_KEY ? (API_KEY.substring(0, 6) + "...") : "VACÍA");
+    // Prioridad: localStorage > CONFIG_LOCAL > DATA.config > ""
+    let API_KEY = localStorage.getItem("gemini_api_key") ||
+      (typeof CONFIG_LOCAL !== 'undefined' ? CONFIG_LOCAL.gemini_api_key : "") ||
+      ((typeof DATA !== 'undefined' && DATA.config) ? DATA.config.gemini_api_key : "");
+
+    if (API_KEY) {
+      console.log("FAQBot: API_KEY detectada =", API_KEY.substring(0, 6) + "...");
+    } else {
+      console.warn("FAQBot: No se detectó API_KEY. El usuario deberá introducirla manualmente.");
+    }
 
     // =============================
     // PLATFORM DATA CACHE (Cotizador & Patologías)
@@ -5385,7 +5407,7 @@ REGLAS OBLIGATORIAS:
 
     async function initModelAuto() {
       if (!API_KEY) {
-        setDiag("ERROR: No hay API_KEY en data_autogen.js");
+        setDiag("ERROR: No hay Gemini API Key. Introdúcela en el panel de Configuración API.");
         modelActiveEl.textContent = "SIN CLAVE";
         setStatus("Modelo: sin clave", "bad", false);
         return;
@@ -5632,6 +5654,29 @@ REGLAS DE RESPUESTA:
       KB_CHUNKS = buildChunksFromText(KB_TEXT);
       FAQ_PAIRS = parseFAQPairsFromText(KB_TEXT);
     }
+
+    // Configuración API Key
+    const saveKeyBtn = document.getElementById("save-key-btn");
+    const keyInput = document.getElementById("gemini-key-input");
+
+    if (API_KEY) {
+      keyInput.value = API_KEY;
+    }
+
+    saveKeyBtn.addEventListener("click", () => {
+      const val = keyInput.value.trim();
+      if (!val) {
+        alert("Introduce una clave válida.");
+        return;
+      }
+      localStorage.setItem("gemini_api_key", val);
+      API_KEY = val;
+      alert("Clave guardada. Reiniciando modelo...");
+      // Re-inicializamos genAI con la nueva clave
+      // Nota: genAI es const en el script actual, así que cargamos una instancia local o lo cambiamos a let
+      // Para mayor seguridad y simplicidad, pedimos recargar
+      location.reload();
+    });
 
     updateKBUI();
     initModelAuto();

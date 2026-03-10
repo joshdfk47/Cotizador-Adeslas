@@ -1,0 +1,1 @@
+const CONFIG_LOCAL = { "gemini_api_key": "AIzaSyD2NUJhJNUyU0nO89pKnh_e5vThgIOj8lQ" };

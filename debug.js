@@ -3,7 +3,7 @@
     
 
     // ⚠️ SOLO pruebas locales (API Key en frontend)
-    const API_KEY = "AIzaSyCDYV1zY3hCZdER25Du5T94sdYpixMsyYw";
+    const API_KEY = "";
 
     // =============================
     // PLATFORM DATA CACHE (Cotizador & Patologías)

@@ -3901,7 +3901,7 @@ const DATA = {
         "role": "user"
       }
     },
-    "gemini_api_key": "AIzaSyD2NUJhJNUyU0nO89pKnh_e5vThgIOj8lQ",
+    "gemini_api_key": "",
     "faq_files": [
       "faq.pdf"
     ]

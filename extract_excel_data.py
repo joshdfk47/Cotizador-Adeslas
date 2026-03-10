@@ -240,7 +240,7 @@ def main():
                 "admin": {"pass": os.getenv("ADMIN_PASS", "1234"), "role": "admin"},
                 "user": {"pass": os.getenv("USER_PASS", "1234"), "role": "user"}
             },
-            "gemini_api_key": os.getenv("GEMINI_API_KEY", ""),
+            "gemini_api_key": "", # Removed for security, use local storage or manual input
             "faq_files": [f for f in os.listdir(os.path.join(BASE_DIR, 'faq')) if os.path.isfile(os.path.join(BASE_DIR, 'faq', f)) and not f.startswith('.')] if os.path.exists(os.path.join(BASE_DIR, 'faq')) else []
         }
     }
@@ -252,6 +252,13 @@ def main():
     print(f"  Productos: {len(data['products'])}")
     print(f"  Tablas de precios: {len(price_table)} bases")
     print(f"  Mapa CP: {len(cp_map)} prefijos")
+
+    # Generar config_local.js para uso local (No subir a repositorio)
+    config_local_file = os.path.join(BASE_DIR, 'config_local.js')
+    gemini_key = os.getenv("GEMINI_API_KEY", "")
+    with open(config_local_file, 'w') as f:
+        f.write(f"const CONFIG_LOCAL = {{ \"gemini_api_key\": \"{gemini_key}\" }};")
+    print(f"Generado {config_local_file} (Clave API para uso local)")
 
 if __name__ == "__main__":
     main()
