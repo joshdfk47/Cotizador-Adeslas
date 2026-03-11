@@ -41,7 +41,7 @@
 
     .brand-logo {
       height: 120px;
-      width: 120;
+      width: auto;
       display: block;
       object-fit: contain;
       filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .10));
@@ -898,7 +898,7 @@
   <header class="main-header">
     <div class="header-wrap">
       <div class="brand-block">
-        <img class="brand-logo" src="buscador patologias/logo-adeslas.png" alt="Adeslas">
+        <img class="brand-logo" src="buscador patologias/logo-adeslas.png" alt="Adeslas" height="120" width="auto" loading="eager" fetchpriority="high">
       </div>
 
       <nav class="header-nav" aria-label="Navegación superior">
@@ -960,7 +960,6 @@
             <input id="ageInput" type="number" min="0" max="120" placeholder="Edad" />
             <button class="btn primary" id="btnAddAge" type="button">+ Añadir</button>
           </div>
-          <div class="chips" id="agesChips"></div>
         </div>
 
         <div class="field">
@@ -988,6 +987,11 @@
             <option value="anual">Anual (-6%)</option>
           </select>
         </div>
+      </div>
+
+      <!-- Chips de edades: fila propia bajo los controles -->
+      <div id="agesChipsRow" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; padding: 0 2px;">
+        <div class="chips" id="agesChips"></div>
       </div>
 
       <div class="actions" style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: start; justify-content: space-between;">
