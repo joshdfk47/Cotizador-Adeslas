@@ -93,12 +93,19 @@
             pointer-events: none;
         }
 
-        .logoWrap {
+        .logoSvgWrap {
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin-bottom: 18px;
-            gap: 12px;
+            justify-content: center;
+            width: min(100%, 560px);
+            min-height: 96px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1.5px solid rgba(255, 255, 255, 0.30);
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         }
 
         .logoSvgWrap {
@@ -112,7 +119,14 @@
             padding: 10px 20px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         }
-
+        .brandLogo {
+            display: block;
+            width: auto;
+            height: 72px;
+            max-width: 100%;
+            object-fit: contain;
+            image-rendering: auto;
+        }
         .cardHead h1 {
             font-size: 22px;
             font-weight: 900;
@@ -330,20 +344,32 @@
 
         /* ============================================================
        RESPONSIVE
-    ============================================================ */
-        @media (max-width: 480px) {
-            .cardHead {
-                padding: 24px 20px 18px;
-            }
-
-            .cardBody {
-                padding: 20px 20px 24px;
-            }
-
-            .cardFoot {
-                padding: 0 20px 18px;
-            }
+        ============================================================ */
+    @media (max-width: 480px) {
+        .cardHead {
+            padding: 24px 20px 18px;
         }
+    
+        .cardBody {
+            padding: 20px 20px 24px;
+        }
+    
+        .cardFoot {
+            padding: 0 20px 18px;
+        }
+    
+        .logoSvgWrap {
+            width: 100%;
+            min-height: 82px;
+            padding: 10px 14px;
+            border-radius: 16px;
+        }
+    
+        .brandLogo {
+            height: 52px;
+            max-width: 92%;
+        }
+    }
     </style>
 </head>
 
@@ -351,8 +377,10 @@
 
     <div class="loginCard" role="main">
         <div class="cardHead">
-            <div class="logoSvgWrap">
-                <img src="buscador patologias/logo-adeslas.png" alt="Tojumana" style="height:38px; width:auto; display:block;">
+            <div class="logoWrap">
+                <div class="logoSvgWrap">
+                    <img class="brandLogo" src="buscador patologias/logo-adeslas.png" alt="Tojumana">
+                </div>
             </div>
 
             </div>
