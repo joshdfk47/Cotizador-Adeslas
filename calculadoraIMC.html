@@ -10,49 +10,6 @@
     /* ==========================
        ESTILOS CORPORATIVOS UNIFICADOS (MODO COMPACTO)
        ========================== */
-    :root {
-      --bg: #f6f8fb;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #475569;
-      --border: rgba(15, 23, 42, 0.10);
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-      --shadow2: 0 6px 18px rgba(15, 23, 42, 0.07);
-      --radius: 16px;
-      --radius2: 12px;
-      --focus: rgba(37, 99, 235, 0.20);
-      --accent: #2563eb;
-      --good: #16a34a;
-      --bad: #ef4444;
-
-      /* ====== corporativo ====== */
-      --safeTop: env(safe-area-inset-top, 0px);
-      --brand: #007bc4;
-      /* Azul Adeslas */
-      --brand2: #00A1E0;
-      /* Azul Adeslas (degradado) */
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      overflow-y: scroll;
-    }
-
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      color: var(--text);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.10), transparent 60%),
-        radial-gradient(900px 500px at 90% 0%, rgba(16, 185, 129, 0.10), transparent 55%),
-        var(--bg);
-      min-height: 100vh;
-      font-size: 17px;
-    }
-
     header.main-header {
       position: sticky;
       top: 0;
@@ -84,12 +41,10 @@
     }
 
     .brand-logo {
-      height: 120px;
+      height: 44px;
       width: auto;
-      max-width: 220px;
       display: block;
       object-fit: contain;
-      object-position: center;
       filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .10));
     }
 
@@ -159,9 +114,22 @@
       box-sizing: border-box;
     }
 
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.10), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(16, 185, 129, 0.10), transparent 55%),
+        var(--bg);
+      min-height: 100vh;
+      font-size: 17px;
+    }
+
     /* ==========================
        ESTILOS UNIFICADOS (HEADER Y WRAP)
        ========================== */
+
+
     .header-nav {
       display: flex;
       align-items: center;
@@ -179,6 +147,46 @@
       gap: 12px;
       flex: 1 1 0;
     }
+
+
+
+
+
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: rgba(15, 23, 42, 0.10);
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow2: 0 6px 18px rgba(15, 23, 42, 0.07);
+      --radius: 16px;
+      --radius2: 12px;
+      --focus: rgba(37, 99, 235, 0.20);
+      --accent: #2563eb;
+      --good: #16a34a;
+      --bad: #ef4444;
+
+      /* ====== corporativo ====== */
+      --safeTop: env(safe-area-inset-top, 0px);
+      --brand: #007bc4;
+      /* Azul Adeslas */
+      --brand2: #00A1E0;
+      /* Azul Adeslas (degradado) */
+
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      overflow-y: scroll;
+    }
+
+
+
+
 
     /* Header centrado como la foto */
     .topTitle {
@@ -203,8 +211,8 @@
     }
 
     /* ==========================
-       RUTA / ENLACES (breadcrumbs) dentro del panel
-       ========================== */
+      RUTA / ENLACES (breadcrumbs) dentro del panel
+      ========================== */
     .routeLinks {
       display: none !important;
     }
@@ -545,8 +553,10 @@
     .btnBackGreen {
       position: fixed;
       top: calc(var(--safeTop) + 10px);
+      /* <-- ACTUALIZADO: respeta safe area */
       left: 10px;
       z-index: 999;
+
       border: 1px solid rgba(255, 255, 255, .25);
       background: linear-gradient(135deg, #10b981, #22c55e);
       color: #ffffff;
@@ -557,6 +567,7 @@
       box-shadow: 0 12px 22px rgba(16, 185, 129, .28);
       font-size: 14px;
       white-space: nowrap;
+
       transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
     }
 
@@ -672,46 +683,15 @@
     /* ==========================
        HEADER CORPORATIVO (UNIFICADO)
        ========================== */
+    /* ==========================
+       HEADER CORPORATIVO (UNIFICADO)
+       ========================== */
+
+
+
+
     .routeLinks {
       display: none !important;
-    }
-
-    @media (max-width: 900px) {
-      .brand-logo {
-        height: 108px;
-        max-width: 190px;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .header-wrap {
-        padding: 0 12px;
-        gap: 12px;
-        height: auto;
-        min-height: 72px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .brand-block {
-        justify-content: center;
-        flex: 1 1 100%;
-      }
-
-      .brand-logo {
-        height: 92px;
-        max-width: 170px;
-      }
-
-      .header-nav {
-        justify-content: center;
-        gap: 8px;
-      }
-
-      .header-right {
-        justify-content: center;
-        flex: 1 1 100%;
-      }
     }
   </style>
 </head>
@@ -937,6 +917,7 @@
   </div>
 
   <script>
+
     /* ==========================
        CHATBOT PANEL (open/close) - ÚNICO Y ROBUSTO
        - Abre: botón topbar
@@ -970,15 +951,8 @@
         }
       }
 
-      if (btnHeader) btnHeader.addEventListener('click', (e) => {
-        e.preventDefault();
-        toggleChatbot();
-      });
-
-      if (btnTopOpen) btnTopOpen.addEventListener('click', (e) => {
-        e.preventDefault();
-        toggleChatbot();
-      });
+      if (btnHeader) btnHeader.addEventListener('click', (e) => { e.preventDefault(); toggleChatbot(); });
+      if (btnTopOpen) btnTopOpen.addEventListener('click', (e) => { e.preventDefault(); toggleChatbot(); });
 
       btnClose.addEventListener('click', function (e) {
         e.preventDefault();
@@ -1110,23 +1084,15 @@
     btnLimpiar.addEventListener("click", limpiar);
 
     elPeso.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        calcularIMC();
-      }
+      if (e.key === "Enter") { e.preventDefault(); calcularIMC(); }
     });
-
     elAltura.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        calcularIMC();
-      }
+      if (e.key === "Enter") { e.preventDefault(); calcularIMC(); }
     });
 
     elPeso.addEventListener("input", () => {
       if (String(elIMC.textContent).trim() !== "—") calcularIMC();
     });
-
     elAltura.addEventListener("input", () => {
       if (String(elIMC.textContent).trim() !== "—") calcularIMC();
     });
@@ -1144,7 +1110,6 @@
 
     function openToolPage(kind) {
       let url = "";
-
       if (kind === "imc") {
         url = "calculadoraIMC.html";
       } else if (kind === "patologias") {
@@ -1156,7 +1121,6 @@
       } else {
         return;
       }
-
       location.href = url;
     }
 
@@ -1166,22 +1130,10 @@
     const btnOpenAdmin = document.getElementById("btnOpenAdmin");
 
     if (btnGoCotizador) btnGoCotizador.addEventListener("click", () => openToolPage("cotizador"));
-    if (btnOpenCotizador) btnOpenCotizador.addEventListener("click", (e) => {
-      e.preventDefault();
-      openToolPage("cotizador");
-    });
-    if (btnOpenPatologias) btnOpenPatologias.addEventListener("click", (e) => {
-      e.preventDefault();
-      openToolPage("patologias");
-    });
-    if (btnOpenAdmin) btnOpenAdmin.addEventListener("click", (e) => {
-      e.preventDefault();
-      openToolPage("admin");
-    });
-    if (btnOpenIMC) btnOpenIMC.addEventListener("click", (e) => {
-      e.preventDefault();
-      openToolPage("imc");
-    });
+    if (btnOpenCotizador) btnOpenCotizador.addEventListener("click", (e) => { e.preventDefault(); openToolPage("cotizador"); });
+    if (btnOpenPatologias) btnOpenPatologias.addEventListener("click", (e) => { e.preventDefault(); openToolPage("patologias"); });
+    if (btnOpenAdmin) btnOpenAdmin.addEventListener("click", (e) => { e.preventDefault(); openToolPage("admin"); });
+    if (btnOpenIMC) btnOpenIMC.addEventListener("click", (e) => { e.preventDefault(); openToolPage("imc"); });
 
     // ==========================
     // AUTH CHECK & ROLE
