@@ -817,8 +817,78 @@
 
 
 
-    .routeLinks {
-      display: none !important;
+    .quote-switcher {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.05);
+      padding: 6px;
+      border-radius: 14px;
+      margin-bottom: 4px;
+      max-width: 420px;
+    }
+    .btn-quote {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-weight: 750;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      flex: 1;
+      text-align: center;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-quote:hover {
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--brand);
+    }
+    .btn-quote.active {
+      background: white;
+      color: var(--brand);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    .btn-quote .remove-quote {
+      margin-left: 8px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      background: rgba(0,0,0,0.05);
+      color: var(--muted);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-quote .remove-quote:hover {
+      background: var(--bad);
+      color: white;
+    }
+    .btn-add-quote {
+      background: transparent;
+      border: 1px dashed var(--brand);
+      color: var(--brand);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .btn-add-quote:hover {
+      background: rgba(0, 123, 196, 0.05);
+      transform: scale(1.05);
     }
   </style>
 </head>
@@ -920,6 +990,18 @@
         </div>
       </div>
 
+      <div class="actions" style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: start; justify-content: space-between;">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="quote-switcher" id="quoteSwitcher">
+            <!-- Botones generados dinámicamente -->
+          </div>
+          <button id="btnAddQuoteSlot" class="btn-add-quote" style="width: fit-content; border-style: solid; font-size: 13px;" title="Añadir nueva cotización">+ Añadir Cotización</button>
+        </div>
+        <div style="display:flex; gap: 10px;">
+          <button class="btn danger" id="btnResetAllQuotes" type="button" style="font-size:14px; padding:10px 16px;">🗑️ Resetear todas</button>
+        </div>
+      </div>
+
       <div class="meta" style="display:none;">
         <div class="badge" id="badgeStatus">
           <span class="dot warn" id="dotStatus"></span>
@@ -962,19 +1044,83 @@
   <script src="data_autogen.js"></script>
 
   <script>
-    // ====== ESTADO ======
-    const state = {
-      cp: "",
-      provCode: "",
-      provincia: "",
-      zona: null,
-      zonaRaw: null,
-      ages: [],
-      discount: 0,
-      pay: "mensual",
-      filter: "",
-      productOrder: []
-    };
+    function getEmptyState() {
+      return {
+        cp: "", provCode: "", provincia: "", zona: null, zonaRaw: null,
+        ages: [], discount: 0, pay: "mensual", filter: "", productOrder: []
+      };
+    }
+
+    let quotes = [getEmptyState(), getEmptyState(), getEmptyState()];
+    let activeQuoteIndex = 0;
+    let state = quotes[activeQuoteIndex];
+
+    function renderQuoteTabs() {
+      const switcher = document.getElementById("quoteSwitcher");
+      if (!switcher) return;
+      switcher.innerHTML = "";
+      
+      quotes.forEach((q, i) => {
+        const btn = document.createElement("button");
+        btn.className = "btn-quote" + (activeQuoteIndex === i ? " active" : "");
+        btn.innerHTML = `<span>Cotización ${i + 1}</span>`;
+        if (i >= 3) {
+          const x = document.createElement("span");
+          x.className = "remove-quote";
+          x.innerHTML = "×";
+          x.onclick = (e) => {
+            e.stopPropagation();
+            removeQuoteSlot(i);
+          };
+          btn.appendChild(x);
+        }
+        btn.onclick = () => switchQuote(i);
+        switcher.appendChild(btn);
+      });
+    }
+
+    function addQuoteSlot() {
+      if (quotes.length >= 10) {
+        alert("Máximo 10 cotizaciones permitidas");
+        return;
+      }
+      quotes.push(getEmptyState());
+      switchQuote(quotes.length - 1);
+    }
+
+    function removeQuoteSlot(idx) {
+      if (idx < 3) return; // Protegemos las 3 bases
+      quotes.splice(idx, 1);
+      if (activeQuoteIndex >= quotes.length) {
+        activeQuoteIndex = quotes.length - 1;
+      }
+      switchQuote(activeQuoteIndex);
+    }
+
+    function switchQuote(idx) {
+      activeQuoteIndex = idx;
+      state = quotes[activeQuoteIndex];
+      renderQuoteTabs();
+
+      // Sincronizar inputs del DOM
+      const elCP = document.getElementById("cpInput");
+      const elDiscount = document.getElementById("discountSelect");
+      const elPay = document.getElementById("paySelect");
+      const elFilter = document.getElementById("filterProduct");
+      
+      if (elCP) elCP.value = state.cp || "";
+      if (elDiscount) elDiscount.value = state.discount.toString();
+      if (elPay) elPay.value = state.pay || "mensual";
+      if (elFilter) elFilter.value = state.filter || "";
+      
+      renderAll();
+    }
+
+    function resetAllQuotes() {
+      if (!confirm("¿Deseas resetear las 3 cotizaciones por completo?")) return;
+      quotes = [getEmptyState(), getEmptyState(), getEmptyState()];
+      switchQuote(0);
+    }
 
     // ==========================
     // CHATBOT PANEL (open/close) - ÚNICO
@@ -1427,11 +1573,11 @@
         if (countIf(a => a < 60) > 0) return { ok: false, reason: "No apto: Seniors Total no permite menores de 60 años" };
         if (countIf(a => a > 84) > 0) return { ok: false, reason: "Edad máxima permitida: 84 años" };
 
-        let has60_62 = countIf(a => a >= 60 && a <= 62) > 0;
-        let has63plus = countIf(a => a >= 63) > 0;
-
-        if (has60_62 && has63plus) return { ok: true };
-        return { ok: false, reason: "Requiere al menos un asegurado 60-62 y otro mayor de 63 años" };
+        let has63plus = countIf(a => a >= 63 && a <= 84) > 0;
+        if (!has63plus) {
+          return { ok: false, reason: "Seniors Total requiere al menos un asegurado entre 63 y 84 años" };
+        }
+        return { ok: true };
       }
 
       return { ok: true };
@@ -1557,14 +1703,20 @@
       finalSin = applyDiscount(finalSin, payDisc);
       finalCon = applyDiscount(finalCon, payDisc);
 
-      // Descuento manual (comisión)
+      // Productos "only_con_dental" (Total, Pymes): sin dental no se muestra
+      const isOnlyConDental = !!rules.only_con_dental;
+
+      // Descuento manual (comisión) — debe ir después de declarar isOnlyConDental
+      let annualLoss = 0;
       if (!isGOProduct(product)) {
+        if (state.discount > 0) {
+          // La base de la pérdida es el precio antes de aplicar el descuento manual
+          const lossBase = isOnlyConDental ? finalSin : finalCon;
+          annualLoss = lossBase * (state.discount / 100) * 12;
+        }
         finalSin = applyDiscount(finalSin, state.discount);
         finalCon = applyDiscount(finalCon, state.discount);
       }
-
-      // Productos "only_con_dental" (Total, Pymes): sin dental no se muestra
-      const isOnlyConDental = !!rules.only_con_dental;
       const hasDental = (rules.dental_mode !== null && rules.dental_mode !== "none") || isOnlyConDental;
 
       let monthsPerPeriod = 1;
@@ -1599,7 +1751,8 @@
         payDisc,
         manualDiscApplied: state.discount,
         dentalPer: (rules.dental_mode && rules.dental_mode.includes("per_person")) ? dental_pp : null,
-        isGO: (productLookup === "Go")
+        isGO: (productLookup === "Go"),
+        annualLoss: roundPrice(annualLoss)
       };
     }
 
@@ -1880,6 +2033,15 @@
             `;
           }
 
+          if (r.annualLoss > 0) {
+            boxAnual.innerHTML += `
+              <div class="detailRow red" style="margin-top:8px;">
+                <span>COMISIÓN CEDIDA (Anual)</span>
+                <span>-${fmtEUR(r.annualLoss)}</span>
+              </div>
+            `;
+          }
+
           detAnual.appendChild(boxAnual);
           content.appendChild(detAnual);
         }
@@ -2053,7 +2215,11 @@
       renderAll();
     });
 
-    if (elReset) elReset.addEventListener("click", resetAll);
+    const btnResetAll = document.getElementById("btnResetAllQuotes");
+    if (btnResetAll) btnResetAll.addEventListener("click", resetAllQuotes);
+
+    const btnAddSlot = document.getElementById("btnAddQuoteSlot");
+    if (btnAddSlot) btnAddSlot.addEventListener("click", addQuoteSlot);
 
     if (elFilter) {
       elFilter.addEventListener("input", () => {
@@ -2172,8 +2338,7 @@
     });
 
     // ====== INIT ======
-
-    resetAll();
+    switchQuote(0);
 
     // ==========================
     // LOGOUT
