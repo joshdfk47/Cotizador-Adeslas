@@ -820,29 +820,31 @@
     .quote-switcher {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 4px;
       background: rgba(15, 23, 42, 0.05);
-      padding: 6px;
-      border-radius: 14px;
+      padding: 4px;
+      border-radius: 12px;
       margin-bottom: 4px;
-      max-width: 420px;
+      max-width: fit-content;
     }
     .btn-quote {
-      border: none;
+      border: 1px solid transparent;
       background: transparent;
       color: var(--muted);
-      border-radius: 10px;
-      padding: 6px 12px;
+      border-radius: 6px;
+      padding: 0 8px;
+      height: 24px;
       font-weight: 750;
-      font-size: 13px;
+      font-size: 11px;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      flex: 1;
+      flex: 0 1 auto;
       text-align: center;
       white-space: nowrap;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      min-width: 70px;
     }
     .btn-quote:hover {
       background: rgba(255, 255, 255, 0.6);
@@ -851,7 +853,21 @@
     .btn-quote.active {
       background: white;
       color: var(--brand);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      border-color: rgba(0, 0, 0, 0.05);
+      font-weight: 1000;
+    }
+    .btn-quote.has-data:not(.active) {
+      background: var(--brand);
+      color: #ffffff;
+      border-color: var(--brand);
+      font-weight: 800;
+    }
+    .btn-quote.has-data.active {
+      border-color: var(--brand);
+      background: white;
+      color: var(--brand);
+      border-width: 2px;
     }
     .btn-quote .remove-quote {
       margin-left: 8px;
@@ -994,15 +1010,13 @@
         <div class="chips" id="agesChips"></div>
       </div>
 
-      <div class="actions" style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap; align-items: start; justify-content: space-between;">
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <div class="quote-switcher" id="quoteSwitcher">
-            <!-- Botones generados dinámicamente -->
-          </div>
-          <button id="btnAddQuoteSlot" class="btn-add-quote" style="width: fit-content; border-style: solid; font-size: 13px;" title="Añadir nueva cotización">+ Añadir Cotización</button>
+      <div class="actions" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+        <div class="quote-switcher" id="quoteSwitcher" style="margin-bottom: 0; max-width: 100%;">
+          <!-- Botones generados dinámicamente -->
         </div>
-        <div style="display:flex; gap: 10px;">
-          <button class="btn danger" id="btnResetAllQuotes" type="button" style="font-size:14px; padding:10px 16px;">🗑️ Resetear todas</button>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button id="btnAddQuoteSlot" class="btn-add-quote" style="width: fit-content; border-style: solid; font-size: 13px; padding: 0 12px; height: 32px;" title="Añadir nueva cotización">+ Añadir Cotización</button>
+          <button class="btn danger" id="btnResetAllQuotes" type="button" style="font-size:13px; padding: 0 12px; height: 32px; font-weight: 700;">🗑️ Resetear todas</button>
         </div>
       </div>
 
@@ -1066,7 +1080,11 @@
       
       quotes.forEach((q, i) => {
         const btn = document.createElement("button");
-        btn.className = "btn-quote" + (activeQuoteIndex === i ? " active" : "");
+        const hasData = q.ages.length > 0 || (q.cp && q.cp.length >= 2);
+        btn.className = "btn-quote" + 
+                        (activeQuoteIndex === i ? " active" : "") +
+                        (hasData ? " has-data" : "");
+        
         btn.innerHTML = `<span>Cotización ${i + 1}</span>`;
         if (i >= 3) {
           const x = document.createElement("span");
@@ -2095,6 +2113,7 @@
       renderAges();
       renderMeta();
       renderResults();
+      renderQuoteTabs();
     }
 
     // ====== EVENTS ======
