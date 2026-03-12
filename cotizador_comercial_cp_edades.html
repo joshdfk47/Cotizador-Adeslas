@@ -1069,7 +1069,7 @@
       };
     }
 
-    let quotes = [getEmptyState(), getEmptyState(), getEmptyState()];
+    let quotes = [getEmptyState()];
     let activeQuoteIndex = 0;
     let state = quotes[activeQuoteIndex];
 
@@ -1086,7 +1086,7 @@
                         (hasData ? " has-data" : "");
         
         btn.innerHTML = `<span>Cotización ${i + 1}</span>`;
-        if (i >= 3) {
+        if (i >= 1) { // Permitir borrar cualquiera menos la primera
           const x = document.createElement("span");
           x.className = "remove-quote";
           x.innerHTML = "×";
@@ -1111,7 +1111,7 @@
     }
 
     function removeQuoteSlot(idx) {
-      if (idx < 3) return; // Protegemos las 3 bases
+      if (idx < 1) return; // Protegemos la primera
       quotes.splice(idx, 1);
       if (activeQuoteIndex >= quotes.length) {
         activeQuoteIndex = quotes.length - 1;
@@ -1139,8 +1139,8 @@
     }
 
     function resetAllQuotes() {
-      if (!confirm("¿Deseas resetear las 3 cotizaciones por completo?")) return;
-      quotes = [getEmptyState(), getEmptyState(), getEmptyState()];
+      if (!confirm("¿Deseas resetear todas las cotizaciones?")) return;
+      quotes = [getEmptyState()];
       switchQuote(0);
     }
 
@@ -1729,15 +1729,22 @@
       const isOnlyConDental = !!rules.only_con_dental;
 
       // Descuento manual (comisión) — debe ir después de declarar isOnlyConDental
+      let effectiveDiscount = 0;
       let annualLoss = 0;
       if (!isGOProduct(product)) {
-        if (state.discount > 0) {
+        effectiveDiscount = state.discount;
+        // PYMES TOTAL aplica el doble de descuento
+        if (product && product.toLowerCase().includes("pymes total")) {
+          effectiveDiscount = state.discount * 2;
+        }
+
+        if (effectiveDiscount > 0) {
           // La base de la pérdida es el precio antes de aplicar el descuento manual
           const lossBase = isOnlyConDental ? finalSin : finalCon;
-          annualLoss = lossBase * (state.discount / 100) * 12;
+          annualLoss = lossBase * (effectiveDiscount / 100) * 12;
         }
-        finalSin = applyDiscount(finalSin, state.discount);
-        finalCon = applyDiscount(finalCon, state.discount);
+        finalSin = applyDiscount(finalSin, effectiveDiscount);
+        finalCon = applyDiscount(finalCon, effectiveDiscount);
       }
       const hasDental = (rules.dental_mode !== null && rules.dental_mode !== "none") || isOnlyConDental;
 
@@ -1771,7 +1778,7 @@
         monthsPerPeriod,
         breakdown,
         payDisc,
-        manualDiscApplied: state.discount,
+        manualDiscApplied: effectiveDiscount,
         dentalPer: (rules.dental_mode && rules.dental_mode.includes("per_person")) ? dental_pp : null,
         isGO: (productLookup === "Go"),
         annualLoss: roundPrice(annualLoss)
@@ -2042,26 +2049,58 @@
           const boxAnual = document.createElement("div");
           boxAnual.className = "detailBox";
 
-          if (isTotal) {
-            boxAnual.innerHTML += `
-              <div class="anualHeader">PRIMA ANUAL SALUD</div>
-              <div class="detailRow grey"><span>TOTAL ANUAL</span><span>${fmtEUR(r.annual.sin)}</span></div>
-            `;
-          } else {
-            boxAnual.innerHTML += `
-              <div class="anualHeader">PRIMAS ANUALES</div>
-              <div class="detailRow grey"><span>SIN DENTAL</span><span>${fmtEUR(r.annual.sin)}</span></div>
-              <div class="detailRow grey" style="margin-top:10px; border-radius:8px 8px 0 0;"><span>CON DENTAL</span><span>${fmtEUR(r.annual.con)}</span></div>
-            `;
-          }
+          const discPct = r.manualDiscApplied || 0;
 
-          if (r.annualLoss > 0) {
-            boxAnual.innerHTML += `
-              <div class="detailRow red" style="margin-top:8px;">
-                <span>COMISIÓN CEDIDA (Anual)</span>
-                <span>-${fmtEUR(r.annualLoss)}</span>
-              </div>
-            `;
+          // Tabla de factores "Valor de Venta" del Excel (no pensionista)
+          // Aplica SOLO a productos regulares (NO a Go ni a productos "Total"/only_con_dental)
+          const ventaFactorTable = {0: 1.00, 1: 0.89, 2: 0.88, 3: 0.86, 4: 0.84, 5: 0.82};
+          const needsVentaFactor = !r.isGO && !r.isOnlyConDental;
+          const ventaFactor = needsVentaFactor ? (ventaFactorTable[state.discount] || 1.0) : 1.0;
+
+          const createBlock = (title, val) => {
+            if (val === null || val === undefined) return "";
+            if (discPct > 0) {
+              const sinDesc = roundPrice(val / (1 - (discPct / 100)));
+              const valorVenta = roundPrice(val * ventaFactor);
+              const loss = roundPrice(sinDesc - valorVenta);
+              return `
+                <div class="detailRow" style="border-radius:8px 8px 0 0; margin-top:10px; background:#d1d5db; border:1px solid #9ca3af;">
+                  <span style="font-size:13px; font-weight:1000;">${title}</span>
+                  <span style="font-weight:1000; font-size:15px;">${fmtEUR(val)}</span>
+                </div>
+                <div class="detailRow yellow" style="border-radius:0; border-top:none; margin-top:0;">
+                  <span style="font-size:13px; font-weight:1000; font-style: italic;">SIN DESCUENTO</span>
+                  <span style="font-weight:1000;">${fmtEUR(sinDesc)}</span>
+                </div>
+                <div class="detailRow red" style="border-radius:0; border-top:none; border-bottom:none; margin-top:0;">
+                  <span style="font-size:14px;">🔻</span>
+                  <span style="font-weight:900;">-${fmtEUR(loss)}</span>
+                </div>
+                <div class="detailRow white" style="border-radius:0 0 8px 8px; border-top:1px solid #e2e8f0; background: #fff; margin-top:0;">
+                  <span style="font-size:13px; font-weight:1000;">VALOR DE VENTA</span>
+                  <span style="font-weight:1000; font-size:15px;">${fmtEUR(valorVenta)}</span>
+                </div>
+              `;
+            } else {
+              return `
+                <div class="detailRow" style="border-radius:8px 8px 0 0; margin-top:10px; background:#d1d5db; border:1px solid #9ca3af;">
+                  <span style="font-size:13px; font-weight:1000;">${title}</span>
+                  <span style="font-weight:1000; font-size:15px;">${fmtEUR(val)}</span>
+                </div>
+                <div class="detailRow white" style="border-radius:0 0 8px 8px; border-top:none; margin-top:0;">
+                  <span style="font-size:13px; font-weight:1000;">VALOR DE VENTA</span>
+                  <span style="font-weight:1000; font-size:15px;">${fmtEUR(val)}</span>
+                </div>
+              `;
+            }
+          };
+
+          if (isTotal) {
+             const label = r.isOnlyConDental ? "CON DENTAL" : "TOTAL SALUD";
+             boxAnual.innerHTML = createBlock(label, r.annual.sin || r.annual.con);
+          } else {
+             boxAnual.innerHTML = createBlock("SIN DENTAL", r.annual.sin);
+             boxAnual.innerHTML += createBlock("CON DENTAL", r.annual.con);
           }
 
           detAnual.appendChild(boxAnual);
