@@ -1,0 +1,1121 @@
+{
+  "ADESLAS": [
+    {
+      "patologia": "Glomerulo esclerosis renal con HTA y proteinuria Hace 1 año",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Sertralina antidepresivo + secuelas de hernia discal",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Autismo, Síndrome de Asperger",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "Necesario informe médico para valorar."
+    },
+    {
+      "patologia": "Artritis Reumatoide",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "90% de casos son Rechazo directo. Necesario informe médico para valorar."
+    },
+    {
+      "patologia": "Stent. Endoprótesis vasculares (endoprotesis, stem, sten, marcapasos, stent, estent, esten, wallstent)",
+      "contratable": "RECHAZO",
+      "comentario": "Rechazo directo."
+    },
+    {
+      "patologia": "Altura 170 cm, Peso 93 Kg, Resultado Índice de masa corporal (IMC) = 32,2",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "Excluidos los ingresos, y procedimientos para el estudio diagnóstico y/o tratamiento médico, endoscópicoo quirúrgico de la obesidad. Si en el futuro baja peso se puede solicitar una nueva selección de riesgo aportando nuevo cuestionario e informes sobre la exclusión.\n\nNo hay un tiempo específico, lo puede solicitar incluso el año que viene. Dicho esto, no significa que una vez que lo aporte se le quite la exclusión dependerá de la valoración del departamento médico."
+    },
+    {
+      "patologia": "Diabetes tipo 1 (se pincha insulina, diabético, diabética, diabete)",
+      "contratable": "RECHAZO",
+      "comentario": "Rechazo directo."
+    },
+    {
+      "patologia": "Parkinson",
+      "contratable": "RECHAZO",
+      "comentario": "Enfermedad degenerativa. Rechazo directo."
+    },
+    {
+      "patologia": "Hiperuricemia (gota), anemia ferropénica. deficit B12, diabetes,...",
+      "contratable": "RECHAZO",
+      "comentario": "Necesario informe médico para valorar. Rechazada."
+    },
+    {
+      "patologia": "Hígado grasiento diagnosticado hace más de 20 años (higado, hígado graso)",
+      "contratable": "RECHAZO",
+      "comentario": "Rechazo directo."
+    },
+    {
+      "patologia": "Operación de femur hace más de 40 años (fémur) (pierna, rodilla, cadera).",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "2-EXCLUSIÓN RETIRADA, SUSTITUCIÓN Y/O RECAMBIO DEL MATERIAL DE OSTEOSÍNTESIS FEMUR INTERVENIDO (MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS), ASÍ COMO POR SUS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS. Necesario firmar la exclusión para poder asegurar. Tardarán varios días en enviarte la carta de exclusión, paciencia."
+    },
+    {
+      "patologia": "Desprendimiento de retina.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE\nDESPRENDIMIENTO DE RETINA"
+    },
+    {
+      "patologia": "Altura 165 cm, Peso 100 Kg. Resultado Índice de masa corporal (IMC) = 36,7",
+      "contratable": "RECHAZO",
+      "comentario": "No asegurable por peso"
+    },
+    {
+      "patologia": "3 hernias discales 2017 sin operar. No aporta informe actualizado.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "Necesario informe médico para valorar. Si no aporta informe será necesario una carta jurada. En este caso queda excluída de todo lo relacionado con las hernias. Si no aporta informe se le aplica la máxima exclusión."
+    },
+    {
+      "patologia": "Migrañas, tratamiento con bótox (botox, dolor de cabeza)",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN DE CEFALEA/MIGRAÑA: MEDIOS DIAGNÓSTICOS, TRATAMIENTO E INGRESOS ASÍ COMO POR SUS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "Hernia de hiato intervenida.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE\nHERNIA DE HIATO INTERVENIDA"
+    },
+    {
+      "patologia": "Hipotiroidismo, tiroides, hipertiroidismo, hipotiroides, hipertiroides, sin operar toma pastillas Eutirox",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION AFECCIONES DE TIROIDES: MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS , ASI COMO POR SUS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "Le han quitado miomas, (mioma)",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O\nSECUELAS DE TUMORES BENIGNOS DE UTERO (1) , METRORRAGIAS (2)"
+    },
+    {
+      "patologia": "Hace 10 años corte de ligamentos y menisco de la rodilla izquierda, ingresada y operada, sin secuelas en la actualidad, lleva una grapa.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN DE MEDIOS DIAGNÓSTICOS, TRATAMIENTO E INGRESOS RELACIONADOS CON LAS RECIDIVAS, COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS DE RODILLA IZQUIERDA INTERVENIDA."
+    },
+    {
+      "patologia": "Prótesis en las dos rodillas hace 12 años",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "HISTORIAL MÉDICO COMPLETO Y ACTUALIZADO QUE INCLUYA DIAGNÓSTICOS EN VIGOR,ANTECEDENTES MÉDICO.QUIRÚRGICOS, TRATAMIENTOS, SITUACIÓN ACTUAL"
+    },
+    {
+      "patologia": "La causa de rechazo es IMC de la asegurada Rocío Hidalgo. Edad 13 años, estatura 159,5 y peso 86,5. Obesidad. IMC = 34",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Operada de tiroides, toma Eutirox. Debe aportar informe médico, si no puede conseguirlo hay que hacerle una carta jurada para que declare la enfermedad que tiene y que confirme que acepta la máxima exclusíon posible. Si en un futuro aporta informe se puede mandar a Adeslas para valorarlo nuevamente.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "SE PRECISA INFORMACIÓN MÉDICA ACTUALIZADA SOBRE TIROIDECTOMÍA: DIAGNÓSTICO/CAUSA/MOTIVO, LOCALIZACIÓN, FECHAS, TRATAMIENTO, PRONÓSTICO Y SITUACIÓN ACTUAL"
+    },
+    {
+      "patologia": "Extirpación de vesícula, le quitaron la vesícula",
+      "contratable": "EXCLUSIÓN",
+      "comentario": ""
+    },
+    {
+      "patologia": "Tea leve, sin mediación, autismo, recién diagnosticado, sin tratamiento.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN DE LOS MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS RELACIONADOS CON  LAS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS DE TRASTORNO DEL ESPECTRO AUTISTA (TEA)"
+    },
+    {
+      "patologia": "Lleva una placa con tornillos en el radio hace 25 años",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION RETIRADA , SUSTITUCION Y/O RECAMBIO DEL MATERIAL DE\nOSTEOSINTESIS (MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS) , ASI\nCOMO POR SUS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "Meningioma pequeño",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Reducción de estómago en el 2018, hace 6 años.",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "Tiene un lado de cadera operada y el otro sin operar",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "NECESARIO INFORME MÉDICO DE LAS DOS CADERAS PARA CONTINUAR CON LA VALORACIÓN"
+    },
+    {
+      "patologia": "Operación de cataratas en los dos ojos",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN DE CATARATAS"
+    },
+    {
+      "patologia": "Operación apendicitis de niño",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "Vasectomia para operar en seguridad social",
+      "contratable": "ACEPTADO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Asma y Fuma medio paquete al día",
+      "contratable": "RECHAZO",
+      "comentario": "ASMA Y FUMA RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "Hiperuricemia",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "Cirugía mayor reciente sea cual sea la edad y el estado del paciente",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "Artrosis",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "NECESARIO INFORME MÉDICO PARA VALORAR, COMO MÍNIMO EXCLUSIÓN DE ARTROSIS. Y ES POSIBLE QUE NO SEA ASEGURABLE."
+    },
+    {
+      "patologia": "Diabetes tipo 2 (no insulinodependiente), EPOC, Hipertensión (HTA) e Obesidad (IMC ≥ 16,5 y ≤ 40).",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "DEPENDIENDO DEL INFORME Y DE LA SITUACIÓN DEL CLIENTE PUEDE SER ASEGURABLE AUNQUE HAY MUCHA PROBABILIDAD DE QUE SEA RECHAZO DIRECTO POR PLURIPATOLOGÍA."
+    },
+    {
+      "patologia": "Enfermedades graves en tratamiento",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Enfermedades del riñón, como insuficiencia renal...",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Enfermedades cardiovasculares, como por ejemplo, infarto, angina de pecho...",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Enfermedades psiquiátricas, como depresión, trastornos bipolares, esquizofrenia, trastornos alimentarios...",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Enfermedades del sistema nervioso, como esclerosis múltiple, ictus, párkinson...",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Enfermedades reumatológicas, como artritis, lupus, fibromialgia...",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Enfermedades del aparato digestivo, como cirrosis, colitis ulcerosa, Crohn...",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Trasplantes",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Enfermedades del sistema respiratorio, como apneas del sueño...",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Diabetes tipo 1 / insulinodependiente",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Cáncer hace menos de 5 años del tratamiento y sin recaída posterior (valoración conforme a la Ley del Olvido Oncológico)",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "FRACTURA HUMERO IZDO INTERVENIDA",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE FRACTURA HUMERO IZDO INTERVENIDA"
+    },
+    {
+      "patologia": "Toma medicación para la tensión",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "Toma antidepresivo, para ansiedad, estés, medicación: Escitalopram.",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO, HABLA CON EL CLIENTE SOBRE ESTO Y HAZ TODO LO POSIBLE PARA QUE NO LO DECLARE O SE VA LA PÓLIZA A LA MIERDA."
+    },
+    {
+      "patologia": "37% INVALIDEZ POR TRASPLANTE HÍGADO AÑO 2015, ADJUNTO INFORME ALTA MÉDICA AÑO 2015. TOMA CERCET ADVAGRAF INMUNOSUPRESORES TRAS LA OPERACIÓN.",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Operado de las lumbares para quitar una hernia de lumbar hace 7 años",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "INFORME MÉDICO ACTUAL  HERNIAS INTERVENIDAS : DIAGNÓSTICO, ANATOMIA PATOLÓGICA, LOCALIZACIÓN,  FECHAS, TRATAMIENTO, SITUACIÓN ACTUAL, PRONÓSTICO"
+    },
+    {
+      "patologia": "Operación hernia discal hace 30 años sin secuelas ni tratamiento ni mediación, tiene 33% de invalidez.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "TE PIDEN INFORME, Y EN SU DEFECTO TENDRÁS QUE HACER CARTA JURADA ACEPTANDO EXCLUSIÓN."
+    },
+    {
+      "patologia": "30 años. Hernia Lumbar L4 y L5 va a ser operado en breve por la seguridad social",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA SIN EXCLUSIÓN"
+    },
+    {
+      "patologia": "25 años. hace 3 años se rompió el cubito del brazo izquierdo y lleva una placa con tornillos y se la van a retirar en breve por la seguridad social.",
+      "contratable": "ACEPTADO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Operación hace 1 año le sacaraon líquido del ojo y además tenía tiroides y tratamiento para la tensión.",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO POR PLURIPATOLOGÍA"
+    },
+    {
+      "patologia": "70 año le extirparon hace 40 años la tiroides",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA, PERO OTROS CLIENTES IGUAL SI QUE HAN PUESTO EXCLUSIÓN"
+    },
+    {
+      "patologia": "La próstata se le ha hecho muy grande, toma medicación",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION AFECCIONES DE PROSTATA (MEDIOS DE DIAGNOSTICO , TRATAMIENTOS\nE INGRESOS) , ASI COMO POR SUS COMPLICACIONES , CONSECUENCIAS Y/O\nSECUELAS"
+    },
+    {
+      "patologia": "Accidente de moto hace 20 años, fractura vertebras y lleva placas.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O\nSECUELAS DE FRACTURAS VERTEBRALES"
+    },
+    {
+      "patologia": "Desde el COVID lleva audífonos Sorda, sordera, audífono.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION SORDERA/HIPOACUSIA Y SUS CAUSAS (MEDIOS DE DIAGNOSTICO ,\nTRATAMIENTOS E INGRESOS) , ASI COMO POR SUS COMPLICACIONES ,\nCONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "Hernia inguinal hace 12 años",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "VIH. Tiene el sida desde los 18 tiene 52. Únicamente toma medicación (retrovirales).",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "SE PRECISA INFORMACIÓN MÉDICA ACTUALIZADA SOBRE HISTORIAL MÉDICO COMPLETO Y ACTUALIZADO QUE INCLUYA DIAGNÓSTICOS EN VIGOR,ANTECEDENTES MÉDICO-QUIRÚRGICOS, TRATAMIENTOS, SITUACIÓN ACTUAL"
+    },
+    {
+      "patologia": "Operación menisco hace 5 años y el otro hace 2 años.",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "SE PRECISA INFORME PARA PODER VALORAR."
+    },
+    {
+      "patologia": "Antidepresivos.",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO."
+    },
+    {
+      "patologia": "Cirrosis Biliar",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO."
+    },
+    {
+      "patologia": "Adiro, medicamento antiagregante, acido acetilsalicilico, adiro",
+      "contratable": "RECHAZO",
+      "comentario": "SI TOMA UNA MEDICACIÓN ANTIAGREGANTE NO ES ASEGURABLE, GO."
+    },
+    {
+      "patologia": "Tornillo en la rodilla derecha para centrar el desvió de la rotula, hace 45 años.",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA."
+    },
+    {
+      "patologia": "Osteoporosis, osteporosis.",
+      "contratable": "RECHAZO",
+      "comentario": "PIDEN INFORME. DEPENDIENDO DEL GRADO ES POSIBLE ASEGURAR, PERO EN LA MAYORÍA DE CASOS ES RECHAZO."
+    },
+    {
+      "patologia": "Operación suelo pélvico hace menos de 1 año.",
+      "contratable": "RECHAZO",
+      "comentario": "CUALQUIER OPERACIÓN DE MENOS DE 1 AÑO ADESLAS NO LO VALORA SEA LO QUE SEA"
+    },
+    {
+      "patologia": "Uveitis anteior recidivante HLA-B51+ desde enero 2015, tratamiento con metotraxate retirado en 2020. Además intervención de cataratas y sinequiolisis, tratamiento con adalimumab en julio 2024.",
+      "contratable": "RECHAZO",
+      "comentario": "TRATAMIENTO E INTEVENCIÓN MUY RECIENTE."
+    },
+    {
+      "patologia": "De baja desde hace 1 mes por una queratitis que le impide realizar su trabajo correctamente, se echa unas gotitas en el ojo, le darán el alta en los próximos días, perfecto estado de salud.",
+      "contratable": "RECHAZO",
+      "comentario": "UNA BAJA EN CURSO SIN ALTA, ES RECHAZO DIRECTO. CUIDADO."
+    },
+    {
+      "patologia": "Niña celiaca de 10 años de edad (con altura y peso normal).",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN enfermedad celiaca: medios de diagnóstico, tratamientos e ingresos, así como por sus complicaciones, consecuencias y/o secuelas."
+    },
+    {
+      "patologia": "Apnea del sueño, CPAP (Presión Positiva Continua en la Vía Aérea)",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Celiaco. Para valorar la enfermedad celíaca, CONFIRMANDO que el resto de respuestas son negativas, y que los parámetros de peso y talla están dentro de la normalidad, se aceptaría con EXCLUSIÓN.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN enfermedad celiaca: medios de diagnóstico, tratamientos e ingresos, así como por sus complicaciones, consecuencias y/o secuelas."
+    },
+    {
+      "patologia": "Síndrome de Down, NECESARIO INFORME PARA VALORAR.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "Solicitan informe médico actual sobre: cardiopatía, patología ocular, apnea del sueño o malformaciones intestinales conocidas (diagnóstico/causa/motivo, localización, fechas, tratamiento, pronóstico y situación actual)."
+    },
+    {
+      "patologia": "Prótesis en las dos caderas año 2011. Cadera intervenida.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "- 1.-EXCLUSIÓN DE LOS MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS RECIDIVAS, COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS DE PATOLOGIA DE LAS CADERAS INTERVENIDAS"
+    },
+    {
+      "patologia": "Úlcera corneal, queratitis, herida abierta en la córnea.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "AMEOTROPIA: MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS , ASI COMO POR SUS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "Pastillas para el colesterol y tensión por prevención. 69 años viene de otra compañía.",
+      "contratable": "ACEPTADO",
+      "comentario": "ACEPTAR (si resto de respuestas son negativas y peso y talla están dentro de parámetros)"
+    },
+    {
+      "patologia": "le falta hierro, principio de osteopenia",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "LLEVARÁ SEGURAMENTE EXCLUSIÓN, Y PUEDE QUE PIDAN INFORME."
+    },
+    {
+      "patologia": "Tenosinovitis de De Quervain, tendinitis de quervain,",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN INFORME"
+    },
+    {
+      "patologia": "Leucemia desde 2021",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "TENSION Y DIABETES TIPO 2 Y 2022 OPERADO VESICULA BILIAR",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO POR PLURIPATOLOGÍA, PRINCIPALMENTE POR LA VESICULA BILIAR"
+    },
+    {
+      "patologia": "HEPATITIS C",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "PIDEN INFORME"
+    },
+    {
+      "patologia": "hiperplasia benigna de próstata",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "PIDEN INFORME"
+    },
+    {
+      "patologia": "Estenosis de la válvula aórtica. Paciente 78 años que tiene un estrechamiento de la vena aortica y le tienen que intervenir.",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "Un quiste, o masa, renal es una bolsa de líquido que se forma sobre o dentro del riñón",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO PATOLOGÍA NO ASEGURABLE"
+    },
+    {
+      "patologia": "operación de próstata con LASER DE HOLEP",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN INFORME Y ES RECHAZO"
+    },
+    {
+      "patologia": "Una colecistectomía es una cirugía que se utiliza para extirpar la vesícula.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": ""
+    },
+    {
+      "patologia": "Poliquistosis renal.",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "Se precisaría información médica actualizada de poliquistosis renal (1), funcionalismo renal (2): Diagnóstico/Motivo/Causa, localización, fechas, tratamiento, situación actual y pronóstico."
+    },
+    {
+      "patologia": "Operado de HOMBRO MANGUITO ROTADOR HACE 4 AÑOS intervenido CON ADESLAS",
+      "contratable": "ACEPTADO",
+      "comentario": "ES RARO PERO HA PASADO LIMPIA"
+    },
+    {
+      "patologia": "ENERO 2023 OPERACIÓN DE PRÓSTATA, LE QUITARON PARTE DE LA PRÓSTATA, DESDE ENTONCES SIN MEDICACIÓN, SIN TRATAMIENTO Y SIN RECAÍDA.",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN INFORME PARA PODER VALORAR."
+    },
+    {
+      "patologia": "Se le reconoció un 35% de discapacidad por la operación de la rodilla hace 19 años.",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN HISTORIAL MÉDICO"
+    },
+    {
+      "patologia": "Extracción de una piedra en la vesícula (cálculos biliares) de manera no intrusiva mediante colonoscopia, hace 2 años. Sin complicaciones, tratamientos posteriores  ni secuelas.",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN HISTORIAL MÉDICO"
+    },
+    {
+      "patologia": "Operación de la rodilla derecha hace 19 años debido a una caída para la introducción de una prótesis, dicha operación no ha generado complicaciones, tratamientos posteriores y actualmente no tiene secuelas, debido a esta operación se me reconoció un 35% de discapacidad",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN HISTORIAL MÉDICO"
+    },
+    {
+      "patologia": "Pastillas para la tension alta indapamida, amblodipino\noperada vesicula biliar en el año 2000",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN HISTORIAL MÉDICO"
+    },
+    {
+      "patologia": "ARTROSIS HACE 17 AÑOS INFORME EXCLUSIÓN.\nINVALIDEZ DE 33% TOTAL PERMANENTE CONTRIBUTIVA",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "PIDEN INFORME Y LLEVARÁ EXCLUSIÓN"
+    },
+    {
+      "patologia": "Prótesis de cadera izquierda en el año 2022. Aporta informe.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "NOS PIDEN INFORME DE LA CADERA DERECHA O DE LO CONTRARIO NO SE PUEDE HACER LA PÓLIZA. NO VALE CON CARTA JURADA."
+    },
+    {
+      "patologia": "síndrome de Sjögren",
+      "contratable": "RECHAZO",
+      "comentario": "La valoración del caso  con los datos proporcionados es DENEGAR por riesgo no asegurable (Sd Sjögren)"
+    },
+    {
+      "patologia": "apendicitis año 1977. 2023 extirpar ovarios y trompas por un quiste y por prevencion",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA."
+    },
+    {
+      "patologia": "Fibrosis retroperitoneal, diagnosticado hace 15 AÑOS, sin consecuencias, tratamiento: toma corticoides de 2,5 y anticoagulante savelto",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO."
+    },
+    {
+      "patologia": "EPOC leve 80% y diabetes tipo 2. Para poder valorar es necesario que aporte informe del EPOC.",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN INFORME MÉDICO ACTUAL   EPOC: DIAGNÓSTICO, CLASIFICACIÓN GOLD, FECHAS, TRATAMIENTO, SITUACIÓN ACTUAL, PRONÓSTICO"
+    },
+    {
+      "patologia": "160, 85 KG, IMC 32,2 OBESIDAD.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUIDOS LOS INGRESOS Y PROCEDIMIENTOS PARA ESTUDIO DIAGNOSTICO Y/O TRATAMIENTO MEDICO , ENDOSCOPICO O QUIRURGICO DE LA OBESIDAD"
+    },
+    {
+      "patologia": "OPERADA DE LA ESPALDA EN 2023. APORTA INFORME DE LA OPERACIÓN.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE CIRUGIA DE COLUMNA LUMBO-SACRA Y SUS CAUSAS"
+    },
+    {
+      "patologia": "Tiene artrosis leve, toma una pastilla al día de Condrosan de 400mg. Y se hace infiltraciones 1 vez al año en la rodilla y cadera.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "HISTORIAL MÉDICO ACTUALIZADO COMPLETO CON ANTECEDENTES PERSONALES"
+    },
+    {
+      "patologia": "Apnea del sueño. Lleva mascarilla por las noches porque ronca, únicamente para respirar mejor, no tiene nada más, lo hizo principalmente por que su mujer no podía dormir, pero no tiene patologías añadidas ni nada más-",
+      "contratable": "RECHAZO",
+      "comentario": "La valoración del caso  con los datos proporcionados es DENEGAR por riesgo no asegurable. (SAOS con CPAP)"
+    },
+    {
+      "patologia": "operación vesícula biliar en póliza plena",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA."
+    },
+    {
+      "patologia": "Discapacidad reconocida del 81% por miopía hace 15 años. Sin embargo el paciente indica que puede ver con casi total normalidad y que puede tener una vida autónoma sin problema. APORTA INFORME",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN DE CIN/SIL-VHP"
+    },
+    {
+      "patologia": "operacion cuello de utero en 2020",
+      "contratable": "EXCLUSIÓN",
+      "comentario": ""
+    },
+    {
+      "patologia": "OPERADA DE LAS DOS PIERNAS EN NOVIEMBRE 2024. (menos de 1 año) LIPEDEMA",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "ENDOMETRIOSIS",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN : ENDOMETRIOSIS  medios de diagnóstico, tratamientos e ingresos, así como por sus complicaciones, consecuencias y/o secuelas."
+    },
+    {
+      "patologia": "La trombocitemia esencial",
+      "contratable": "RECHAZO",
+      "comentario": "DENEGAR por riesgo no asegurable"
+    },
+    {
+      "patologia": "Arritmia, arritmias",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Operación de la rodilla derecha para una prótesis hace 3 años aproximadamente por artrosis, no tiene secuelas, ni tratamientos posteriores a la operación.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION ARTROSIS (1), RODILLA DERECHA (2): MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS, ASÍ COMO POR SUS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "Con 14 años se le diagnostico con un lipoma en la médula anclada, tiene una falta de control de micción como secuela.",
+      "contratable": "RECHAZO",
+      "comentario": "Lipoma en la médula anclada causante de una falta de control de micción como secuela. - DENEGAR por riesgo no asegurable"
+    },
+    {
+      "patologia": "Insuficiencia Venosa Crónica diagnoticada hace 10 años, sin tratamiento en curos o secuelas - ACEPTAR con la siguiente EXCLUSIÓN.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN Insuficiencia Venosa de Extremidades Inferiores: medios de diagnóstico, tratamientos e ingresos, así como por sus complicaciones, consecuencias y/o secuelas."
+    },
+    {
+      "patologia": "Lumbalgia en tratamiento",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "Rechazo por tratamiento en curso."
+    },
+    {
+      "patologia": "Se drogó cuando era joven.",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "Van a pedir historial médico para poder valorar."
+    },
+    {
+      "patologia": "OPERACIÓN DE L4 L5",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "SIN INFORME NO SE PUEDE HACER NADA."
+    },
+    {
+      "patologia": "Demencia leve diagnosticada hace 1 año, sin tratamiento en curso, Diabetes tipo 2 e hipertensión.",
+      "contratable": "RECHAZO",
+      "comentario": "DENEGAR por riesgo no asegurable"
+    },
+    {
+      "patologia": "Ácido úrico toma una pastilla desde hace 10 años",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "NECESARIO INFORME MÉDICO PARA PODER VALORAR. NO VALE CON UNA ANALÍTICA, SI NO ENTREGA INFORME NO SE PUEDE CONTINUAR."
+    },
+    {
+      "patologia": "DIU",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "1.INFORME MÉDICO ACTUALIZADO GINECOLOGÍA : DIAGNOSTICO/CAUSA/MOTIVO, LOCALIZACIÓN, FECHAS, TRATAMIENTO, PRONOSTICO Y SITUACIÓN ACTUAL. RECOMENDARLE QUE NO LO DECLARE."
+    },
+    {
+      "patologia": "PRÓTESIS EN RODILLA DERECHA INTERVENIDA HACE 10 MESES.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": ""
+    },
+    {
+      "patologia": "Prótesis en las dos rodillas",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION (1) AFEFECCIONES RODILLA IZD (2) RETIRADA /RECAMBIO PROTESIS RODILLA DCHA (2) AFECCIONES RODILLA DCHA (MEDIOS DIAGNOSTICO , TRATAMIENTOS E INGRESOS) ASI COMO POR SUS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "Colon irritable. Síndrome del intestino irritable. El síndrome del intestino irritable (SII) es un trastorno que lleva a dolor en el abdomen y cambios en los movimientos intestinales. Este síndrome no es lo mismo que enfermedad intestinal inflamatoria (EII).",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "NECESARIO INFORME MÉDICO PARA PODER VALORAR. NO VALE CON UNA ANALÍTICA, SI NO ENTREGA INFORME NO SE PUEDE CONTINUAR."
+    },
+    {
+      "patologia": "Hernia discal intervenida hace 18 años. Artrosis en la rodilla.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "NO ES NECESARIO INFORME."
+    },
+    {
+      "patologia": "69 años Hepatitis autoinmune sin tratamiento en la actualidad y Diabetes tipo 2 pastillas.",
+      "contratable": "RECHAZO",
+      "comentario": "DENEGAR por riesgo no asegurable"
+    },
+    {
+      "patologia": "Esclerodermia",
+      "contratable": "RECHAZO",
+      "comentario": "DENEGAR por riesgo no asegurable"
+    },
+    {
+      "patologia": "Operada de una cadera. Aporta informe año 2022 (hace 4 años).",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "SIN INFORME ACTUALIZADO NO SE PUEDE CONTINUAR."
+    },
+    {
+      "patologia": "Operada de una cadera. Aporta informe año 2024 de la cadera intervenida. (hace 1 año)",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "ES NECESARIO EL INFORME DE LAS DOS CADERAS, LA OPERADA Y LA QUE NO ESTÁ OPERADA, DE LO CONTRARIO NO SE PUEDE CONTINUAR CON LA VALORACIÓN MÉDICA."
+    },
+    {
+      "patologia": "Fibrilación auricular, toma xarelto 20 miligramos, es como las arritmias",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "El señor se toma unas pastillas para prevenir la horgura de la próstata desde hace 3 años.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "NO HA SIDO NECESARIO INFORME."
+    },
+    {
+      "patologia": "Polineuritis",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Operada de cadera hace menos de 1 año. Aporta informe donde pone que se recomienda fisioterapia para patología muscular y lumbar. Y donde se recomienda visita a cirugía vascular si perssiste edema en ambos tobillos. No está recuperada al 100%.",
+      "contratable": "RECHAZO",
+      "comentario": "TRAS VER EL INFORME PROCEDEN AL RECHAZO."
+    },
+    {
+      "patologia": "Operación de rodilla para una prótesis hace más de 4 años.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "ACEPTAN SI EL INFORME ES FAVORABLE."
+    },
+    {
+      "patologia": "Epilepsia, epiléptica",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "Se precisaría información médica actualizada de la patología declarada EPILEPSIA: Diagnóstico/Motivo/Causa, localización, fechas, tratamiento, situación actual y pronóstico."
+    },
+    {
+      "patologia": "El síndrome de Asperger, ​ también llamado simplemente aspérger o ásperger, ​dificultad para afrontar situaciones sociales.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "2.⁠ ⁠EXCLUSIÓN DE LOS MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS RELACIONADOS CON  LAS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS DE TRASTORNO DEL ESPECTRO AUTISTA (TEA)"
+    },
+    {
+      "patologia": "Granuloma eosinófilo: 13 de Marzo del 2009, fue operado con éxito y le dieron el alta en los días siguientes. Las revisiones posteriores mostraron que NO QUEDÓ SECUELA alguna hasta el punto de que no se ve siguiera la cicatriz en el hueso.",
+      "contratable": "ACEPTADO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Absceso: No lo recuerdo pero pudiera ser en Noviembre del 2007 a consecuencia de la varicela o en mayo del 2020 cuando tenía acné. En todo caso está totalmente curado y NO HAY SECUELAS",
+      "contratable": "ACEPTADO",
+      "comentario": ""
+    },
+    {
+      "patologia": "A los 10 años ( Noviembre 2013) Por MIOPÍA y ESTIGMATISMO. EN LA ACTUALIDAD SIGUE LLEVANDO GAFAS",
+      "contratable": "ACEPTADO",
+      "comentario": ""
+    },
+    {
+      "patologia": "UVEITIS OJO IZQUIERDO",
+      "contratable": "EXCLUSIÓN",
+      "comentario": ""
+    },
+    {
+      "patologia": "Mujer de 70 años con ácido úrico causado por la menopausa desde los 50 años. Toma mediación Alopurinol de 300 mg.",
+      "contratable": "ACEPTADO",
+      "comentario": "Aceptado sin exclusión. Aunque otros ácidos úricos si ha habido exclusión."
+    },
+    {
+      "patologia": "ICTUS hace 5 años.",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO."
+    },
+    {
+      "patologia": "Colesterol: Simvastatina 10mg, 1 al día. Controlado por debajo de 220 mg/dL.\nAcido úrico: Alopurinol 100mg, 1 al día. Diagnosticado a raíz de la menopausia.\nHipotiroidismo, Eutirox 100mg, 1 al día.\nHipertensión: Telmisartan 80mg, 1 al día. 13/7 y 13/8",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION AFECCIONES BENIGNAS DE TIROIDES y EXCLUSION HIPERURICEMIA- GOTA."
+    },
+    {
+      "patologia": "Operación de rodilla de hace 3 meses aporta informe de alta.",
+      "contratable": "RECHAZO",
+      "comentario": "Rechazo directo por operación muy reciente."
+    },
+    {
+      "patologia": "VPH. Virus del papiloma humano.",
+      "contratable": "RECHAZO",
+      "comentario": "RECHZADO DIRECTO"
+    },
+    {
+      "patologia": "Escoliosis leve, desviación de la columna.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION"
+    },
+    {
+      "patologia": "Gonalgia (dolor en la rodilla)",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "INFORME MÉDICO ACTUAL   GONALGIA: DIAGNÓSTICO/MOTIVO/CAUSA, LOCALIZACIÓN,  FECHAS, TRATAMIENTO, SITUACIÓN ACTUAL, PRONÓSTICO"
+    },
+    {
+      "patologia": "REUMATITIS",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "Cornetas nasales, dificultad para respirar por la nariz",
+      "contratable": "ACEPTADO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Epilepsia toma DEPAKINE",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "INFORME MÉDICO ACTUAL   TTO.DEPAKINE: DIAGNÓSTICO/MOTIVO/CAUSA,  FECHA ÚLTIMA CRISIS, TRATAMIENTO, SITUACIÓN ACTUAL, PRONÓSTICO"
+    },
+    {
+      "patologia": "Operada Vegetaciones y amígdalas",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "Operada de cervicales en 2022",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "Estenosis Uretral",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": ""
+    },
+    {
+      "patologia": "Un paciente de 68 con una operación para solucionar el síndrome de Wolff Parkinson White hace 22 años, quemando la parte sobrante que provoca este síndrome, sin complicaciones ni tratamiento desde entonces.",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "MASTOCITOSIS SISTÉMICA toma CLOMOGLICATO 200 MG 4 VECES AL DIA",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "trastorno obsesivo-compulsivo (TOC)",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "Prediabético, prediabetes",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "HISTORIAL MÉDICO"
+    },
+    {
+      "patologia": "Prótesis de 1 cadera.",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN INFORME DE LAS 2 CADERAS, LA BUENA Y LA MALA.\nEXCLUSION (1) AFECCIONES CADERA DCHA (2) RETIRADA/RECAMBIO PROTESIS\nCADERA DCHA (MEDIOS DIAGNOSTICO , TRATAMIENTOS E INGRESOS) ASI COMO\nPOR SUS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "hesterosis de ureter",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN INFORME."
+    },
+    {
+      "patologia": "Operación de tobillo hace 2 años",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN INFORME. PUEDEN APLICAR EXCLUSIÓN O RECHAZO SEGÚN ESTÉ."
+    },
+    {
+      "patologia": "ARTROSCOPIA RODILLA IZDA. Y SUS CAUSAS (MENISCOPATIA)",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "NECESARIO INFORME Y APLICAN EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "Litotricia",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "INFORME MÉDICO LITOTRICIA : DIAGNOSTICO/CAUSA/MOTIVO, LOCALIZACIÓN, FECHAS, TRATAMIENTO, PRONOSTICO Y SITUACIÓN ACTUAL. TRAS VER INFORME ADESLAS LO RECHAZA."
+    },
+    {
+      "patologia": "SIDA, VIH, cero positivo, sida desde 2011 aporta informe",
+      "contratable": "ACEPTADO",
+      "comentario": "TRAS VER INFORME LO ACEPTAN SIN EXCLUSIÓN"
+    },
+    {
+      "patologia": "Operación para la extracción de la vesícula hace 2 años. Sin tratamientos ni complicaciones desde entonces.",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "ANEURISMA",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "Intervenida de cadera derecha, nos piden informe de la izquierda, aportamos carta jurada.",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "TUMOR OVARIO, quiste ovario.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O\nSECUELAS DE TUMORES BENIGNOS DE OVARIO Y SU CIRUGIA"
+    },
+    {
+      "patologia": "21/09/2023 CIRUGÍA AMBULATORIA PARA HACERLE UNA ECOGRAFÍA Y POSTERIORMENTE DIAGNOSTICARLE OBSTRUCCIÓN INTESTINAL. SIN TRATAMIENTO, SIN SECUELAS.",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "Reducción de estómago",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO POR CIRUGÍA BARIÁTRICA"
+    },
+    {
+      "patologia": "DIABETES TIPO 2, RYBELSUS 5MG Y Xigduo, HTA y OBESIDAD. TODO JUNTO.",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN INFORME Y TRAS VERLO LO RECHAZAN."
+    },
+    {
+      "patologia": "BIOPSIA MAMA IZQUIERDA",
+      "contratable": "ACEPTADO",
+      "comentario": "PIDEN INFORME, LA CLIENTA LO ADJUNTA Y PASA LIMPIA."
+    },
+    {
+      "patologia": "Vejiga hiperactiva",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO POR CUESTIONARIO SALUD"
+    },
+    {
+      "patologia": "a los 51 años sufrí un accidente con un producto químico desatascador que al explotar en el fregadero me realizó quemaduras en el nervio óptico del ojo de ambos ojos",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "1.-EXCLUSIÓN DE LOS MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS RECIDIVAS, COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS DE QUEMADURAS TÓXICAS EN AMBOS N.OPTICOS"
+    },
+    {
+      "patologia": "Siringomielia desde hace 7 años, sin tratamiento, ni operaciones.",
+      "contratable": "RECHAZO",
+      "comentario": "La valoración del caso  con los datos proporcionados es DENEGAR por riesgo no asegurable. (Siringomielia)"
+    },
+    {
+      "patologia": "túnel carpiano mano derecha operado hace 10 años ha pasado limpio sin exclusion.",
+      "contratable": "ACEPTADO",
+      "comentario": ""
+    },
+    {
+      "patologia": "82 años operado hace 42 años del estomago y quedo genial solo va una vez al año a revision, tambien fue operado hace 25 años de hernia y le dieron el alta no va ni a revision, operado de la prostata en el año 2008 y solo va a revision una vez al año y operado en 2017 de diverticulis tambien revision una vez al año",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO POR PLURIPATOLOGÍA"
+    },
+    {
+      "patologia": "CONDROMALACIA ROTULIANA",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION"
+    },
+    {
+      "patologia": "Paciente de 59 años con Hipoplasia medular diagnosticada 7 años atrás sin tratamientos en curso ni en historial médico, ni complicaciones ni secuelas adversas. Sin otras patologias e IMC de 24",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO POR MedExpert"
+    },
+    {
+      "patologia": "espondilitis anquilosante. Sin tratamientos en ningún momento referentes a esta operación, complicaciones o secuelas adversas.",
+      "contratable": "RECHAZO",
+      "comentario": "MedExpert: con los datos proporcionados es DENEGAR por ESPONDILITIS ANQUILOSANTE"
+    },
+    {
+      "patologia": "Extracción de vesícula en el 17/02/2021",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "1. ESÓFAGO BARRET. PROCESO EN CURSO PENDIENTE DE RESOLUCIÓN",
+      "contratable": "RECHAZO",
+      "comentario": "Rechazo"
+    },
+    {
+      "patologia": "POLIOMIELITIS",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS RELACIONADOS CON LAS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE POLIOMIELITIS"
+    },
+    {
+      "patologia": "Le quitaron un polipo de 3mm el 06/06/2025 y finalizo tratamiento el dia 09/12/2025 por lo tanto es rechazo directo (sigmoidectomía laparoscópica )",
+      "contratable": "RECHAZO",
+      "comentario": "NO ASEGURABLE POR OPERACION RECIENTE HACE MENOS DE 1 AÑO"
+    },
+    {
+      "patologia": "ARTRODESIS, FIJACION L5-S1 Y PROTESIS L5-L4. HACE 4 AÑOS",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE LAS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE\nAFECCIONES COLUMNA LUMBOSACRE L5-S1 Y SU CIRUGIA: MEDIOS DE\nDIAGNOSTICO , TRATAMIENTOS E INGRESOS"
+    }
+  ],
+  "SENIORS": [
+    {
+      "patologia": "Diabetes Tipo 1 (se pincha insulina diabético, diabética, diabete)",
+      "contratable": "RECHAZO",
+      "comentario": "Necesario informe médico para valorar."
+    },
+    {
+      "patologia": "Diabetes Tipo 2 (tratamiento con pastillas)",
+      "contratable": "ACEPTADO",
+      "comentario": "No es necesario aportar informe, pasa limpia."
+    },
+    {
+      "patologia": "Próstata operada hace 15 años (no es tumor no cáncer). Cataratas operadas hace 2 años. (prostata)",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION (1) AFECCIONES DE PRÓSTATA Y (2) CATARATAS  (MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS), ASÍ COMO POR SUS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "operada en los dos ojos de miopia",
+      "contratable": "ACEPTADO",
+      "comentario": "Aceptado sin carencias y sin exclusiones, PASA LIMPIA."
+    },
+    {
+      "patologia": "diabético tipo 2 toma 2 pastillas distintas por la diabetes",
+      "contratable": "ACEPTADO",
+      "comentario": "Aceptado sin carencias y sin exclusiones, PASA LIMPIA."
+    },
+    {
+      "patologia": "hipertensión",
+      "contratable": "ACEPTADO",
+      "comentario": "Aceptado sin carencias y sin exclusiones, PASA LIMPIA."
+    },
+    {
+      "patologia": "80 años de edad que hace 12 años le pusieron un STENT. Pesa 68kg y mide 167cm. No tiene ningún tipo de recaída y secuela durante todos estos años.",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "diabetes tipo 2 + hipertensión + operación de cadera menos de 1 año",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "tensión alta azúcar y una hernia inguinal que se la han quitado hace años",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA"
+    },
+    {
+      "patologia": "Cirugía mayor reciente sea cual sea la edad y el estado del paciente",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "Operación de uretra",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE LOS MEDIOS DE DIAGNOSTICO , TRATAMIENTOS E INGRESOS\nRELACIONADOS CON LAS RECIDIVAS , COMPLICACIONES , CONSECUENCIAS Y/O\nSECUELAS DE TTO DE PROSTATA DECLARADO Y SUS CAUSAS"
+    },
+    {
+      "patologia": "Prostatitis en tratamiento.",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZO DIRECTO"
+    },
+    {
+      "patologia": "Próstata operada no indica fecha de la operación",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "LO IDEAL ES INDICAR LA FECHA DE LA OPERACIÓN Y EL ALTA"
+    },
+    {
+      "patologia": "EPOC LEVE estadio 1, GRADO 1 (enfermedad pulmonar obstructiva crónica)",
+      "contratable": "ACEPTADO",
+      "comentario": "PASAN LIMPIAS, EXCEPTO AQUELLAS QUE PRESENTANDO INFORME NO SEA FAVORABLE, POR LO GENERAL, PASAN CASI TODAS."
+    },
+    {
+      "patologia": "Hipertensión (HTA)",
+      "contratable": "ACEPTADO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Obesidad (IMC ≥ 16 5 y ≤ 40).",
+      "contratable": "ACEPTADO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Hace 3 años le quitaron la próstata por error médico y tiene Flebitis que es inflamación de las venas sobre todo la orta que pasa por la ingle",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "Altura 182 cm Peso 129 kg IMC 39. Fuma medio paquete al día.",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA SIN EXCLUSIÓN"
+    },
+    {
+      "patologia": "póliza 3.000€ los dos tenían colesterol y tensión. Operación en ambas manos por tendinitis 36% discapacidad.",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA, SIN EXCLUSIÓN."
+    },
+    {
+      "patologia": "Artrosis en las dos rodillas aporta informe.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "SE PRECISA INFORME PARA PODER VALORAR."
+    },
+    {
+      "patologia": "Extirpación de vesícula y apéndice",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA."
+    },
+    {
+      "patologia": "Hipertensión alta medicación Atenolol 50mg",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA."
+    },
+    {
+      "patologia": "operación de cataratas hace 1 año.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN CATARATAS"
+    },
+    {
+      "patologia": "OPERADO DE CATARATAS HACE 7 Y 10 AÑOS SIN SECUELAS EN PERFECTO ESTADO",
+      "contratable": "EXCLUSIÓN",
+      "comentario": ""
+    },
+    {
+      "patologia": "Esguince de tercer grado el ligamento roto por todas partes. Persona de 55 años altura 160 cm peso 54kg.",
+      "contratable": "ACEPTADO",
+      "comentario": "NO ENTENDEMOS POR QUÉ HA PASADO LIMPIA. OTROS CASOS IGUALES NO NOS LO HAN ACEPTADO NI DE BROMA."
+    },
+    {
+      "patologia": "Operación de cervicales con placa de titanio hace más de xx años.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION DE MEDIOS DIAGNOSTICOS , TRATAMIENTO E INGRESOS RELACIONADOS CON LAS COMPLICACIONES , CONSECUENCIAS Y/O SECUELAS DE AFECCION COLUMNA CERVICAL Y SU CIRUGIA"
+    },
+    {
+      "patologia": "Asmatica que le inyectan una vez al mes Nucala y ventolín.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": ""
+    },
+    {
+      "patologia": "Pastillas para el colesterol y vitamina d por prevención para los huesos. Toma Simvastatina 10 mg para el colesterol.",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA."
+    },
+    {
+      "patologia": "ARTRODESIS TOBILLO CURADA Y SIN NINGUN TIPO DE SECUELA NI TRATAMIENTO. ¡¡NECESARIO INFORME PARA PODER VALORAR!!",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "INFORME MÉDICO ACTUAL   CIRUGÍA DE TOBILLO DECLARADA: DIAGNÓSTICO/MOTIVO/CAUSA, LOCALIZACIÓN,  FECHAS, TRATAMIENTO, SITUACIÓN ACTUAL, PRONÓSTICO"
+    },
+    {
+      "patologia": "Operado de menisco hace 5 años sin secuelas sin tratamiento, sin recaída",
+      "contratable": "ACEPTADO",
+      "comentario": "SORPRENDENTEMENTE PASA LIMPIA."
+    },
+    {
+      "patologia": "1 pastilla por la mañana enalapril y otra por la noche de atenolol. Operación hace más de 15 años de un quiste en la nuez y una fistula hace 20 años. Operacion de cataratas hace más de 4 años en sanitas.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "SOLO HAN APLICADO EXCLUSIÓN DE CATARATAS, EL RESTO PASA LIMPIO."
+    },
+    {
+      "patologia": "con reducción de estómago y con altura de 167 y 105 kilos (IMC 37.6)",
+      "contratable": "RECHAZO",
+      "comentario": "RECHAZAR por riesgo no asegurable (Cirugía Bariátrica, IMC>34)"
+    },
+    {
+      "patologia": "TOTAL firma digital, el cielnte puso en la declaración textualmente \"traumatología codo derecho hace 5 años sin secuelas\"",
+      "contratable": "ACEPTADO",
+      "comentario": "PASA LIMPIA."
+    },
+    {
+      "patologia": "Extracción de una piedra en la vesícula (cálculos biliares) de manera no intrusiva mediante colonoscopia hace 2 años. MUY GORDA IMC 36.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSIÓN DE LA VESÍCULA Y LA OBESIDAD."
+    },
+    {
+      "patologia": "OPERACION DE VESÍCULA EN SEPTIEMBRE DEL 2023 SIN SECUELAS, SIN RECAÍDA Y SIN TRATAMIENTO POSTERIOR.",
+      "contratable": "ACEPTADO",
+      "comentario": ""
+    },
+    {
+      "patologia": "un oído perfecto, el otro con el 65% de périda de audición, operado a los 4 años y desde entonces le pusieron un audífono. Desde entonces realiza controles con otorrino.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION HIPOACUSIA/SORDERA : MEDIOS DE DIAGNÓSTICO, TRATAMIENTOS E INGRESOS, ASÍ COMO POR SUS COMPLICACIONES, CONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "TOTAL. Osteoporosis no tiene ningún tratamiento, solo toma calcio y sale a caminar.",
+      "contratable": "EXCLUSIÓN",
+      "comentario": "EXCLUSION OSTEOPENIA (1) , OSTEOPOROSIS (2): MEDIOS DE DIAGNOSTICO ,\nTRATAMIENTOS E INGRESOS , ASI COMO POR SUS COMPLICACIONES ,\nCONSECUENCIAS Y/O SECUELAS"
+    },
+    {
+      "patologia": "Mujer de 68 años con Amilodiosis desde hace 8 años.",
+      "contratable": "RECHAZO",
+      "comentario": ""
+    },
+    {
+      "patologia": "OSTEOPOROSIS.",
+      "contratable": "EN VALORACIÓN MÉDICA",
+      "comentario": "PIDEN INFORME, DE LO CONTRARIO NO SE PUEDE CONTINUAR. SI EL INFORME ES FAVORABLE SE PUEDE ASEGURAR CON EXCLUSIÓN. EN ESTE CASO TRAS VALORAR INFORME FUE RECHAZO."
+    }
+  ]
+}

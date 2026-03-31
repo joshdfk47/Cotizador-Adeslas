@@ -1,0 +1,7 @@
+.DS_Store
+**/.DS_Store
+__MACOSX/
+**/__MACOSX/
+*.swp
+*.swo
+Thumbs.db

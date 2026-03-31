@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Gestión de Promos — Adeslas Tools</title>
+  <style>
+    /* ==========================
+       ESTILOS CORPORATIVOS UNIFICADOS
+       ========================== */
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: rgba(15, 23, 42, 0.10);
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow2: 0 6px 18px rgba(15, 23, 42, 0.07);
+      --radius: 16px;
+      --radius2: 12px;
+      --focus: rgba(37, 99, 235, 0.20);
+      --accent: #2563eb;
+      --good: #16a34a;
+      --bad: #ef4444;
+      --warn: #f59e0b;
+      --safeTop: env(safe-area-inset-top, 0px);
+      --brand: #007bc4;
+      --brand2: #00A1E0;
+    }
+
+    * { box-sizing: border-box; }
+    html { overflow-y: scroll; }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(37, 99, 235, 0.10), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(16, 185, 129, 0.10), transparent 55%),
+        var(--bg);
+      min-height: 100vh;
+      font-size: 17px;
+    }
+
+    header.main-header {
+      position: sticky;
+      top: 0;
+      z-index: 10000;
+      padding-top: var(--safeTop);
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+      border-bottom: 1px solid rgba(0, 0, 0, .05);
+    }
+
+    .header-wrap {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      height: 80px;
+      box-sizing: border-box;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1 1 0;
+    }
+
+    .brand-logo {
+      height: 85px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .10));
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      flex: 0 0 auto;
+      height: 100%;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      flex: 1 1 0;
+    }
+
+    .btn-nav {
+      border: 1px solid var(--brand2);
+      border-radius: 999px;
+      padding: 10px 20px;
+      font-weight: 1000;
+      letter-spacing: .2px;
+      box-shadow: 0 4px 10px rgba(0, 85, 165, .08);
+      color: var(--brand);
+      text-shadow: none;
+      transition: all .2s ease;
+      background: #ffffff;
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15.5px;
+      font-family: inherit;
+      box-sizing: border-box;
+      line-height: 1.1;
+    }
+
+    .btn-nav:hover {
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 15px rgba(0, 85, 165, .15);
+      background: #ffffff;
+      border-color: var(--brand);
+    }
+
+    .btn-nav.active {
+      background: linear-gradient(135deg, var(--brand), var(--brand2)) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+      box-shadow: 0 6px 18px rgba(0, 85, 165, 0.25);
+      text-shadow: none;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .btn-nav.promo-btn {
+      background: linear-gradient(135deg, #f59e0b, #f97316) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+      animation: promoPulse 2s ease-in-out infinite;
+    }
+
+    .btn-nav.promo-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(245, 158, 11, 0.45);
+    }
+
+    .btn-nav.promo-btn.active {
+      animation: none;
+      background: linear-gradient(135deg, #d97706, #ea580c) !important;
+    }
+
+    @keyframes promoPulse {
+      0%, 100% { box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); }
+      50% { box-shadow: 0 4px 22px rgba(245, 158, 11, 0.55); }
+    }
+
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+      box-sizing: border-box;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .panel h2 {
+      margin: 0 0 18px 0;
+      font-size: 20px;
+      font-weight: 1000;
+      color: var(--text);
+      letter-spacing: .2px;
+    }
+
+    .panel h3 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--muted);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 16px;
+    }
+
+    .label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      font-size: 15px;
+      font-family: inherit;
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(37, 99, 235, 0.5);
+      box-shadow: 0 0 0 4px var(--focus);
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .btn {
+      border: 1px solid rgba(0, 85, 165, 0.12);
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all .2s ease;
+      white-space: nowrap;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--brand);
+      box-shadow: 0 4px 10px rgba(11, 43, 76, .05);
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(11, 43, 76, .12);
+      border-color: rgba(0, 85, 165, 0.3);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 18px rgba(0, 85, 165, 0.25);
+    }
+
+    .btn.danger {
+      background: #fff;
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #ef4444;
+    }
+
+    .btn.danger:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+      box-shadow: 0 8px 18px rgba(239, 68, 68, 0.15);
+    }
+
+    .btn.success {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 18px rgba(22, 163, 74, 0.25);
+    }
+
+    /* Promo list items */
+    .promo-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow2);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .promo-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    }
+
+    .promo-item .promo-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .promo-item .promo-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .promo-item .promo-name {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .promo-item .promo-desc {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .promo-item .promo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      background: rgba(22, 163, 74, 0.1);
+      color: #16a34a;
+      border: 1px solid rgba(22, 163, 74, 0.2);
+    }
+
+    .promo-item .promo-badge.inactive {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .promo-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .promo-actions button {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s ease;
+    }
+
+    .promo-actions button:hover {
+      transform: scale(1.08);
+    }
+
+    .promo-actions .btn-del:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .empty-state .emoji {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    /* Form grid for promo values */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .values-grid .val-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .values-grid .val-cell label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .values-grid .val-cell input {
+      width: 100%;
+      padding: 8px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* Two column form */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px dashed var(--border);
+      margin: 20px 0;
+    }
+
+    .topTitle {
+      text-align: center;
+      margin: 8px 0 18px;
+    }
+
+    .topTitle h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: .2px;
+      color: var(--brand);
+      font-weight: 1000;
+    }
+
+    .topTitle p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Toggle switch */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      background: #cbd5e1;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background .2s ease;
+    }
+
+    .toggle.on {
+      background: #16a34a;
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 999px;
+      transition: transform .2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .toggle.on::after {
+      transform: translateX(22px);
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="main-header">
+    <div class="header-wrap">
+      <div class="brand-block">
+        <img class="brand-logo" src="buscador patologias/logo-adeslas.png" alt="Adeslas" height="120" width="auto">
+      </div>
+
+      <nav class="header-nav" aria-label="Navegación superior">
+        <a class="btn-nav cotizador" href="#" id="btnOpenCotizador">Cotizador</a>
+        <a class="btn-nav patologias" href="#" id="btnOpenPatologias">Buscador Patologías</a>
+        <a class="btn-nav imc" href="#" id="btnOpenIMC">Calculadora IMC</a>
+        <a class="btn-nav chatbot" href="#" id="btnOpenChatbot">TOJUCHATIS</a>
+        <a class="btn-nav promo-btn active" href="#" id="btnOpenPromos">🎁 Promos</a>
+        <a class="btn-nav admin" href="#" id="btnOpenAdmin">Admin</a>
+      </nav>
+
+      <div class="header-right">
+        <button id="btnLogout" class="btn-nav" style="background:#000000;border-color:#000000;color:#ffffff;"
+          title="Cerrar sesión">⬤ Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="topTitle">
+      <h1>🎁 Gestión de Promociones</h1>
+      <p>Crea, activa y gestiona las promos que aparecen en el cotizador</p>
+    </div>
+
+    <!-- LIST OF EXISTING PROMOS -->
+    <div class="panel">
+      <h2>Promociones activas</h2>
+      <div id="promoList"></div>
+    </div>
+
+    <!-- CREATE NEW PROMO FORM -->
+    <div class="panel" id="promoFormPanel">
+      <h2>➕ Crear nueva promoción</h2>
+
+      <div class="form-row">
+        <div class="field">
+          <div class="label">Nombre de la promo</div>
+          <input type="text" id="promoName" placeholder="Ej: Tarjeta Regalo" />
+        </div>
+        <div class="field">
+          <div class="label">Icono / Emoji</div>
+          <input type="text" id="promoIcon" placeholder="Ej: 🎁" value="🎁" />
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label">Descripción (opcional)</div>
+        <textarea id="promoDesc" placeholder="Ej: Tarjeta regalo por contratación. Válida hasta junio 2026."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <div class="label">Ubicación en el cotizador</div>
+          <select id="promoLocation">
+            <option value="above_desglose">Arriba de "Ver desglose por edad"</option>
+            <option value="below_prices">Debajo de los precios</option>
+            <option value="above_prices">Arriba de los precios</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="label">Tipo de valor</div>
+          <select id="promoType">
+            <option value="per_insured">Por nº de asegurados (diccionario)</option>
+            <option value="fixed">Valor fijo</option>
+            <option value="percentage">Porcentaje</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div id="dictSection">
+        <h3>📊 Diccionarios de valores por nº de asegurados</h3>
+        <p style="font-size:13px; color:var(--muted); font-weight:600; margin-bottom:14px;">
+          Configura los valores en € para cada nº de asegurados (0 a 9). Puedes tener diferentes valores para "Go" y para el resto de productos, y con/sin dental.
+        </p>
+
+        <div class="field">
+          <div class="label" style="color:var(--brand); font-size:14px; font-weight:1000;">🔸 Producto GO — Sin Dental</div>
+          <div class="values-grid" id="gridGoSin"></div>
+        </div>
+
+        <div class="field">
+          <div class="label" style="color:var(--brand); font-size:14px; font-weight:1000;">🔸 Producto GO — Con Dental</div>
+          <div class="values-grid" id="gridGoCon"></div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="field">
+          <div class="label" style="color:#a33e85; font-size:14px; font-weight:1000;">🔹 Otros Productos — Sin Dental</div>
+          <div class="values-grid" id="gridOtrosSin"></div>
+        </div>
+
+        <div class="field">
+          <div class="label" style="color:#a33e85; font-size:14px; font-weight:1000;">🔹 Otros Productos — Con Dental</div>
+          <div class="values-grid" id="gridOtrosCon"></div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div style="display:flex; gap:12px; justify-content:flex-end;">
+        <button class="btn" id="btnCancelPromo" type="button">Cancelar</button>
+        <button class="btn success" id="btnSavePromo" type="button">💾 Guardar Promo</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // PROMOS STORAGE SYSTEM
+    // ============================================================
+    const PROMOS_KEY = "adeslas_promos_v1";
+
+    function loadPromos() {
+      try {
+        const raw = localStorage.getItem(PROMOS_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) { }
+      return [];
+    }
+
+    function savePromos(promos) {
+      localStorage.setItem(PROMOS_KEY, JSON.stringify(promos));
+    }
+
+    function generateId() {
+      return "promo_" + Date.now() + "_" + Math.random().toString(36).substr(2, 6);
+    }
+
+    // ============================================================
+    // FORM INITIALIZATION — build value grids
+    // ============================================================
+    const defaultGoSin = [0, 0, 50, 150, 200, 250, 300, 350, 400, 450, 500];
+    const defaultGoCon = [0, 0, 50, 200, 250, 350, 400, 450, 550, 600, 700];
+    const defaultOtrosSin = [0, 50, 100, 300, 400, 500, 600, 700, 800, 900, 1000];
+    const defaultOtrosCon = [0, 50, 150, 450, 600, 750, 900, 1050, 1200, 1350, 1500];
+
+    function buildGrid(containerId, defaults) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      for (let i = 0; i <= 10; i++) {
+        const cell = document.createElement("div");
+        cell.className = "val-cell";
+        cell.innerHTML = `
+          <label>${i} pers.</label>
+          <input type="number" min="0" step="1" value="${defaults[i] || 0}" data-idx="${i}" />
+        `;
+        container.appendChild(cell);
+      }
+    }
+
+    function getGridValues(containerId) {
+      const inputs = document.querySelectorAll(`#${containerId} input`);
+      const vals = [];
+      inputs.forEach(inp => {
+        vals.push(parseFloat(inp.value) || 0);
+      });
+      return vals;
+    }
+
+    function setGridValues(containerId, values) {
+      const inputs = document.querySelectorAll(`#${containerId} input`);
+      inputs.forEach((inp, i) => {
+        inp.value = (values && values[i] !== undefined) ? values[i] : 0;
+      });
+    }
+
+    // Initialize grids
+    buildGrid("gridGoSin", defaultGoSin);
+    buildGrid("gridGoCon", defaultGoCon);
+    buildGrid("gridOtrosSin", defaultOtrosSin);
+    buildGrid("gridOtrosCon", defaultOtrosCon);
+
+    // ============================================================
+    // PROMO LIST RENDERING
+    // ============================================================
+    function renderPromoList() {
+      const list = document.getElementById("promoList");
+      const promos = loadPromos();
+
+      if (!promos.length) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="emoji">📭</div>
+            <div>No hay promociones configuradas.</div>
+            <div style="margin-top:6px; font-size:13px;">Crea una nueva usando el formulario de abajo.</div>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = "";
+      promos.forEach((p, idx) => {
+        const item = document.createElement("div");
+        item.className = "promo-item";
+        item.innerHTML = `
+          <div class="promo-icon">${p.icon || "🎁"}</div>
+          <div class="promo-info">
+            <div class="promo-name">${escapeHtml(p.name)}</div>
+            <div class="promo-desc">${escapeHtml(p.description || "Sin descripción")}</div>
+            <div>
+              <span class="promo-badge ${p.active ? '' : 'inactive'}">
+                ${p.active ? '✅ Activa' : '⏸️ Inactiva'}
+              </span>
+              <span style="font-size:11px; color:var(--muted); font-weight:700; margin-left:8px;">
+                📍 ${p.location === 'above_desglose' ? 'Arriba de desglose' : p.location === 'below_prices' ? 'Debajo de precios' : 'Arriba de precios'}
+              </span>
+            </div>
+          </div>
+          <div class="promo-actions">
+            <button class="btn-toggle" title="${p.active ? 'Desactivar' : 'Activar'}" data-idx="${idx}">
+              ${p.active ? '⏸️' : '▶️'}
+            </button>
+            <button class="btn-del" title="Eliminar" data-idx="${idx}">🗑️</button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+
+      // Wire toggle buttons
+      list.querySelectorAll(".btn-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const i = parseInt(btn.dataset.idx);
+          const promos = loadPromos();
+          promos[i].active = !promos[i].active;
+          savePromos(promos);
+          renderPromoList();
+        });
+      });
+
+      // Wire delete buttons
+      list.querySelectorAll(".btn-del").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const i = parseInt(btn.dataset.idx);
+          if (!confirm("¿Seguro que quieres eliminar esta promo?")) return;
+          const promos = loadPromos();
+          promos.splice(i, 1);
+          savePromos(promos);
+          renderPromoList();
+        });
+      });
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement("div");
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    // ============================================================
+    // SAVE NEW PROMO
+    // ============================================================
+    document.getElementById("btnSavePromo").addEventListener("click", () => {
+      const name = document.getElementById("promoName").value.trim();
+      if (!name) {
+        alert("Escribe un nombre para la promo");
+        return;
+      }
+
+      const promo = {
+        id: generateId(),
+        name: name,
+        icon: document.getElementById("promoIcon").value.trim() || "🎁",
+        description: document.getElementById("promoDesc").value.trim(),
+        location: document.getElementById("promoLocation").value,
+        type: document.getElementById("promoType").value,
+        active: true,
+        createdAt: new Date().toISOString(),
+        values: {
+          go_sin_dental: getGridValues("gridGoSin"),
+          go_con_dental: getGridValues("gridGoCon"),
+          otros_sin_dental: getGridValues("gridOtrosSin"),
+          otros_con_dental: getGridValues("gridOtrosCon")
+        }
+      };
+
+      const promos = loadPromos();
+      promos.push(promo);
+      savePromos(promos);
+
+      // Reset form
+      document.getElementById("promoName").value = "";
+      document.getElementById("promoDesc").value = "";
+      document.getElementById("promoIcon").value = "🎁";
+      buildGrid("gridGoSin", defaultGoSin);
+      buildGrid("gridGoCon", defaultGoCon);
+      buildGrid("gridOtrosSin", defaultOtrosSin);
+      buildGrid("gridOtrosCon", defaultOtrosCon);
+
+      renderPromoList();
+      alert("✅ Promo guardada correctamente");
+    });
+
+    document.getElementById("btnCancelPromo").addEventListener("click", () => {
+      document.getElementById("promoName").value = "";
+      document.getElementById("promoDesc").value = "";
+    });
+
+    // ============================================================
+    // INITIAL RENDER
+    // ============================================================
+    renderPromoList();
+
+    // Check if "Promo Regalo" promo already exists, if not seed it
+    (function seedDefaultPromo() {
+      const promos = loadPromos();
+      const hasRegalo = promos.some(p => p.name.toLowerCase().includes("regalo"));
+      if (!hasRegalo) {
+        const defaultPromo = {
+          id: "promo_regalo_default",
+          name: "Tarjeta Regalo",
+          icon: "🎁",
+          description: "Tarjeta de regalo por contratación. Promoción válida hasta junio 2026.",
+          location: "above_desglose",
+          type: "per_insured",
+          active: true,
+          createdAt: new Date().toISOString(),
+          values: {
+            go_sin_dental: [0, 50, 150, 200, 250, 300, 350, 400, 450, 500],
+            go_con_dental: [0, 50, 200, 250, 350, 400, 450, 550, 600, 700],
+            otros_sin_dental: [50, 100, 300, 400, 500, 600, 700, 800, 900, 1000],
+            otros_con_dental: [50, 150, 450, 600, 750, 900, 1050, 1200, 1350, 1500]
+          }
+        };
+        promos.push(defaultPromo);
+        savePromos(promos);
+        renderPromoList();
+      }
+    })();
+
+    // ============================================================
+    // NAVIGATION
+    // ============================================================
+    function openToolPage(kind) {
+      if (kind === "cotizador") location.href = "cotizador_comercial_cp_edades.html";
+      else if (kind === "patologias") location.href = "buscador patologias/buscador_patologias_base_interna_v2.html";
+      else if (kind === "imc") location.href = "calculadoraIMC.html";
+      else if (kind === "admin") location.href = "buscador patologias/buscador_patologias_base_interna_v2.html#admin";
+      else if (kind === "promos") location.href = "promos.html";
+    }
+
+    document.getElementById("btnOpenCotizador").addEventListener("click", (e) => { e.preventDefault(); openToolPage("cotizador"); });
+    document.getElementById("btnOpenPatologias").addEventListener("click", (e) => { e.preventDefault(); openToolPage("patologias"); });
+    document.getElementById("btnOpenIMC").addEventListener("click", (e) => { e.preventDefault(); openToolPage("imc"); });
+    document.getElementById("btnOpenAdmin").addEventListener("click", (e) => { e.preventDefault(); openToolPage("admin"); });
+
+    // Chatbot opens the chatbot page
+    document.getElementById("btnOpenChatbot").addEventListener("click", (e) => {
+      e.preventDefault();
+      // Navigate to cotizador and open chatbot automatically
+      location.href = "cotizador_comercial_cp_edades.html?open_chatbot=1";
+    });
+
+    // Logout
+    document.getElementById("btnLogout").addEventListener("click", () => {
+      try {
+        localStorage.setItem("diblafe_admin_logged_v4", "false");
+        localStorage.removeItem("adeslas_user_role");
+      } catch (e) { }
+      location.replace("login.html");
+    });
+
+    // Auth check
+    (function checkAuth() {
+      let isLogged = false;
+      try {
+        const v = localStorage.getItem("diblafe_admin_logged_v4");
+        isLogged = (v === "true" || v === "1");
+      } catch (e) { }
+      if (!isLogged) {
+        location.replace("login.html");
+        return;
+      }
+      const role = localStorage.getItem("adeslas_user_role") || "user";
+      // Only admin can see Admin button
+      const btnAdmin = document.getElementById("btnOpenAdmin");
+      if (role !== "admin" && btnAdmin) btnAdmin.style.display = "none";
+      // Only admin can create/delete promos (form hidden for non-admin)
+      if (role !== "admin") {
+        const formPanel = document.getElementById("promoFormPanel");
+        if (formPanel) formPanel.style.display = "none";
+        // Also hide delete/toggle buttons
+        document.querySelectorAll(".promo-actions").forEach(el => el.style.display = "none");
+      }
+    })();
+  </script>
+
+</body>
+
+</html>
