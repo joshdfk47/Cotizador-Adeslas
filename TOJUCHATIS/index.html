@@ -820,6 +820,57 @@
                     score += 5000;
                 }
 
+                // === SMART PRODUCT MATCHING ===
+                // Detect which specific product(s) the user is asking about
+                const qLow = query.toLowerCase();
+                const isComparison = qLow.includes('diferencia') || qLow.includes('compar') || qLow.includes(' vs ') || qLow.includes('qué cambia');
+                
+                // Define product patterns (order matters: longest first to avoid partial matches)
+                const productPatterns = [
+                    { name: 'plena total vital', regex: /plena\s+total\s+vital/i },
+                    { name: 'plena total', regex: /plena\s+total(?!\s+vital)/i },
+                    { name: 'plena vital', regex: /plena\s+vital/i },
+                    { name: 'plena plus', regex: /plena\s+plus/i },
+                    { name: 'plena extra', regex: /plena\s+extra/i },
+                    { name: 'seniors total', regex: /seniors\s+total/i },
+                    { name: 'seniors', regex: /seniors(?!\s+total)/i },
+                    { name: 'pymes', regex: /pymes/i },
+                    { name: 'negocios nif', regex: /negocios\s+nif/i },
+                    { name: 'negocios cif', regex: /negocios\s+cif/i },
+                    { name: 'adeslas go', regex: /\bgo\b/i },
+                    { name: 'plena', regex: /plena(?!\s+(vital|total|plus|extra))/i }
+                ];
+                
+                const queriedProducts = productPatterns.filter(p => p.regex.test(qLow)).map(p => p.name);
+                
+                if (queriedProducts.length > 0) {
+                    const titleMatchesProduct = (product) => {
+                        const parts = product.split(' ');
+                        if (product === 'plena') {
+                            return (titleLower.includes('plena') && !titleLower.includes('plena vital') && !titleLower.includes('plena total') && !titleLower.includes('plena plus') && !titleLower.includes('plena extra'));
+                        }
+                        if (product === 'seniors') {
+                            return (titleLower.includes('seniors') && !titleLower.includes('seniors total'));
+                        }
+                        return parts.every(p => titleLower.includes(p));
+                    };
+                    
+                    const docMatchesAnyQueried = queriedProducts.some(p => titleMatchesProduct(p));
+                    
+                    if (docMatchesAnyQueried) {
+                        score += 6000; // Strong boost for exact product match
+                    } else if (!isComparison && titleLower.includes('plena') && queriedProducts.some(p => p.includes('plena'))) {
+                        // Penalize wrong "Plena variant" docs when asking about specific one
+                        score -= 2000;
+                    }
+                }
+
+                // Boost Condiciones Generales and Copagos docs for copago queries
+                const isCopagosQuery = qLow.includes('copago') || qLow.includes('pago') || qLow.includes('cuánto cuesta') || qLow.includes('precio consulta');
+                if (isCopagosQuery && (titleLower.includes('condiciones generales') || titleLower.includes('copago'))) {
+                    score += 4000;
+                }
+
                 // Original terms get HIGHEST weight (exact match)
                 originalTerms.forEach(term => {
                     if (titleLower.includes(term)) score += 800; // Boosted title weight
@@ -1078,17 +1129,39 @@
             const historyCtx = getHistoryContext();
             const promptIntro = `Eres TOJUCHATS, el asistente EXPERTO de seguros Adeslas. Tienes acceso a una base documental MASIVA.
 
-REGLAS ESTRICTAS DE RESPUESTA (ANTI-ALUCINACIÓN):
-1. **NO INVENTES NADA.** Si un dato, precio, cobertura o exclusión NO ESTÁ EXPLÍCITAMENTE en los documentos proporcionados, DEBES decir que no dispones de esa información en la documentación de Adeslas.
-2. Responde SOLO a lo que el usuario pregunta de forma directa basándote ÚNICAMENTE en los DOCUMENTOS.
-3. Analiza con EXTREMO CUIDADO los documentos "IPID" (Documento de información sobre producto). Tienen dos secciones clave: "¿Qué se asegura?" y "¿Qué no está asegurado?".
-4. IMPORTANTE: Para el producto **Adeslas GO**, recuerda que NO cubre hospitalización, ingresos ni cirugías. Si algo "precisa hospitalización", indícalo claramente como NO CUBIERTO.
-5. Si el documento dice "serán por cuenta del asegurado", deja claro que el cliente debe pagarlo.
-6. Estructura la respuesta visualmente bonita:
-   - Usa **negrita** para datos importantes (precios, límites).
-   - Usa listas con viñetas para enumerar características.
-7. **REGLA DE COMPARACIÓN (MUY IMPORTANTE)**: Si el usuario te pide "diferencias" o comparar productos, **NO resumas cada producto por separado**. Debes crear **UNA ÚNICA TABLA MARKDOWN** perfecta (asegúrate de poner \`|\` al principio y al final de CADA línea). Las columnas deben ser los diferentes productos y las filas las coberturas (Medicina General, Urgencias, etc) para verlos cara a cara. Después de la tabla, añade un pequeño resumen.
-8. Cita SIEMPRE el nombre del documento fuente oficial al final.
+CATÁLOGO DE PRODUCTOS ADESLAS (¡SON TODOS DISTINTOS! NO LOS CONFUNDAS JAMÁS):
+- Adeslas PLENA (sin "Vital", sin "Total", sin "Plus") → Seguro anual básico con copagos reducidos.
+- Adeslas PLENA VITAL → Seguro anual con copagos más altos (LMA 300€).
+- Adeslas PLENA PLUS → Seguro anual mejorado con copagos.
+- Adeslas PLENA TOTAL → Seguro PLURIANUAL (3 años) sin dental, incluye dental y farmacia.
+- Adeslas PLENA TOTAL VITAL → Seguro PLURIANUAL (3 años) con dental y copagos (LMA 500€).
+- Adeslas GO → Seguro ambulatorio SIN hospitalización.
+- Adeslas SENIORS → Para mayores, anual.
+- Adeslas SENIORS TOTAL → Para mayores, plurianual 3 años.
+- Adeslas NEGOCIOS NIF → Para autónomos.
+- Adeslas NEGOCIOS CIF → Para empresas.
+- Adeslas PYMES TOTAL → Para PYMES, plurianual.
+
+REGLAS ESTRICTAS (ANTI-ALUCINACIÓN):
+1. **NO INVENTES NADA.** Si un dato NO ESTÁ EXPLÍCITAMENTE en los documentos, di "no dispongo de esa información".
+2. **DISTINGUIR PRODUCTOS**: "Plena" NO es "Plena Vital" ni "Plena Total" ni "Plena Total Vital". Son 4 productos diferentes. Si el usuario pregunta por "Plena", busca SOLO documentos que digan "Adeslas Plena" (sin más) como IPID PLENA, Condiciones Generales Plena, ipid-plena-26. NO uses documentos de Plena Vital, Plena Total ni Plena Total Vital para responder sobre "Plena" a solas.
+3. **COPAGOS**: TODOS los productos Plena tienen copagos (Plena, Plena Vital, Plena Plus). Los copagos están en las Condiciones Generales o en documentos específicos de Copagos. Busca dentro del contenido de los documentos las tablas de copagos.
+4. **IPID**: Analiza con cuidado las secciones "¿Qué se asegura?" y "¿Qué no está asegurado?".
+5. **Adeslas GO**: NO cubre hospitalización ni cirugías. Indícalo claramente.
+6. Si el documento dice "serán por cuenta del asegurado", el cliente lo paga.
+
+FORMATO DE RESPUESTA:
+- Usa **negrita** para datos importantes (precios, límites, nombres de producto).
+- Usa listas con viñetas para enumerar.
+- **TABLAS COMPARATIVAS (OBLIGATORIO)**: Cuando el usuario pida "diferencias", "comparar", "vs", "qué cambia entre":
+  a) Crea UNA ÚNICA TABLA MARKDOWN con \`|\` al principio y al final de CADA línea.
+  b) Primera fila: cabeceras con los nombres de producto.
+  c) Segunda fila: separadores \`|---|---|---|\`
+  d) Filas restantes: una por cada cobertura/característica.
+  e) Cada celda debe tener el dato concreto (precio, "Sí", "No", límite...), NUNCA dejarla vacía ni poner "N/A" si la info está en los documentos.
+  f) DESPUÉS de la tabla, añade un breve resumen de 2-3 líneas.
+  g) NO repitas la información de la tabla en formato lista. Solo tabla + resumen breve.
+- Cita SIEMPRE el nombre del documento fuente al final de la respuesta.
 ${historyCtx}
 
 DOCUMENTOS:
