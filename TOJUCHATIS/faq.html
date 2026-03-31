@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Ayuda - TOJUCHATS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004d99;
+            --primary-light: #0073e6;
+            --accent: #00c2ff;
+            --bg-dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        header { text-align: center; margin-bottom: 50px; }
+        h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 10px; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .search-area {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 12px 24px;
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 40px -10px rgba(0,0,0,0.4);
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+        }
+
+        #search-box {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 15px;
+            width: 100%;
+            font-size: 1.2rem;
+            outline: none;
+        }
+        #search-box::placeholder { color: rgba(255,255,255,0.3); }
+
+        #back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1100;
+            background: var(--glass);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        #back-btn:hover { background: var(--primary); color: white; transform: translateX(-5px); }
+
+        #feedback-nav-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1100;
+            background: var(--glass);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        #feedback-nav-btn:hover { background: var(--primary); color: white; transform: scale(1.05); }
+
+        .category-section { margin-bottom: 60px; animation: slideUp 0.5s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .category-header { 
+            margin-bottom: 25px; 
+            font-size: 1.8rem; 
+            font-weight: 800;
+            display: flex; 
+            align-items: center; 
+            gap: 15px;
+            color: var(--accent);
+        }
+        .category-header span { width: 40px; height: 5px; background: var(--accent); border-radius: 10px; }
+
+        .qa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .qa-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        .qa-card:hover { 
+            transform: translateY(-8px) scale(1.02); 
+            background: rgba(255,255,255,0.08); 
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+        }
+        .qa-card::after {
+            content: "→";
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            font-size: 1.5rem;
+            color: var(--accent);
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .qa-card:hover::after { opacity: 1; transform: translateX(5px); }
+
+        .qa-q { font-weight: 600; font-size: 1.15rem; line-height: 1.4; color: #fff; }
+        .qa-doc { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
+        .no-results { text-align: center; padding: 100px; display: none; }
+
+        /* Icon Badge */
+        .icon-badge {
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 194, 255, 0.1);
+            border: 1px solid rgba(0, 194, 255, 0.3);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--accent);
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            .qa-grid { grid-template-columns: 1fr; }
+            #back-btn { position: relative; top: 0; left: 0; margin-bottom: 20px; display: inline-flex; }
+            .search-area { top: 10px; margin-bottom: 30px; }
+        }
+
+        /* Gatekeeper CSS */
+        #gatekeeper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1e293b, #0f172a);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            transition: opacity 0.5s ease;
+        }
+        .gate-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5);
+        }
+        .gate-input {
+            width: 100%;
+            padding: 15px;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: #fff;
+            text-align: center;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            outline: none;
+        }
+        .gate-btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+        .gate-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
+    </style>
+</head>
+<body style="overflow: hidden;">
+    <!-- Security Gate -->
+    <div id="gatekeeper">
+        <div class="gate-card">
+            <h2 style="margin-bottom: 10px;">ACCESO PRIVADO</h2>
+            <p style="color: var(--text-dim);">Introduce el código de seguridad para ver el Centro de Ayuda</p>
+            <input type="password" id="gate-pass" class="gate-input" placeholder="••••••••••••••">
+            <button onclick="checkAccess()" class="gate-btn">ENTRAR AL SISTEMA</button>
+            <p id="gate-error" style="color: #ff4d4d; margin-top: 15px; font-size: 0.85rem; display: none;">Código incorrecto. Acceso denegado.</p>
+        </div>
+    </div>
+    <a href="index.html" id="back-btn">← Volver al Chat</a>
+    <a href="feedback.html" id="feedback-nav-btn">💬 Feedback Plataforma</a>
+    <div class="container">
+        <header>
+            <h1>CENTRO DE CONOCIMIENTO</h1>
+            <p style="color: var(--text-dim); font-size: 1.1rem;">Explora el repositorio completo de consultas sobre Adeslas</p>
+        </header>
+
+        <div class="search-area">
+            <input type="text" id="search-box" placeholder="Busca síntomas, precios, ciudades (ej: 'Málaga') o productos..." autofocus>
+        </div>
+
+        <div id="faq-wrapper">
+            <!-- Render dinámico aquí -->
+        </div>
+
+        <div class="no-results" id="no-results">
+            <div style="font-size: 4rem; opacity: 0.3; margin-bottom: 20px;">🔍</div>
+            <h3>Sin resultados exactos</h3>
+            <p style="color: var(--text-dim)">Prueba con términos como "Copago", "Pymes", "Embarazo" o el nombre de una provincia.</p>
+        </div>
+    </div>
+
+    <script>
+        const faqs = [
+            // COPAGOS Y COSTES
+            { cat: "Dinero y Copagos", q: "¿Cuánto cuesta la medicina general en casa?", doc: "COPAGOS Plena Total Vital.pdf" },
+            { cat: "Dinero y Copagos", q: "¿Cual es el importe del copago para enfermería a domicilio?", doc: "COPAGOS Plena Total Vital.pdf" },
+            { cat: "Dinero y Copagos", q: "¿Cuál es el límite máximo de copagos al año?", doc: "COPAGOS Plena Total Vital.pdf" },
+            { cat: "Dinero y Copagos", q: "¿Qué precio tiene una sesión de fisioterapia?", doc: "_Tarifas de Salud 2026.pdf" },
+            { cat: "Dinero y Copagos", q: "¿Hay copago para las urgencias?", doc: "COPAGOS Plena Total Vital.pdf" },
+            { cat: "Dinero y Copagos", q: "¿Cuánto cuesta una consulta de podología?", doc: "_Tarifas de Salud 2026.pdf" },
+            { cat: "Dinero y Copagos", q: "¿Qué costo tiene la psicoterapia?", doc: "_Tarifas de Salud 2026.pdf" },
+            { cat: "Dinero y Copagos", q: "¿Cuánto se paga por una ecografía?", doc: "COPAGOS Plena Total Vital.pdf" },
+            
+            // PRODUCTOS Y SEGUROS
+            { cat: "Seguros y Planes", q: "¿Qué incluye el seguro Adeslas Plena?", doc: "IPID PLENA 2024.pdf" },
+            { cat: "Seguros y Planes", q: "¿Qué es Adeslas Go?", doc: "IPID GO 2026.pdf" },
+            { cat: "Seguros y Planes", q: "¿Qué cubre Adeslas Seniors Total?", doc: "IPID SENIORS TOTAL 2024.pdf" },
+            { cat: "Seguros y Planes", q: "¿Qué incluye Adeslas Pymes Total?", doc: "IPID PYMES TOTAL.pdf" },
+            { cat: "Seguros y Planes", q: "¿Qué es Adeslas Negocios NIF?", doc: "IPID NEGOCIOS NIF 2024.pdf" },
+            { cat: "Seguros y Planes", q: "¿Qué coberturas tiene Plena Plus (sin copagos)?", doc: "IPID PLENA PLUS 2026.pdf" },
+            { cat: "Seguros y Planes", q: "¿En que consiste el seguro Adeslas Dental Max?", doc: "IPID DENTAL MAX 2024.pdf" },
+            { cat: "Seguros y Planes", q: "¿Qué diferencia hay entre Plena y Plena Vital?", doc: "Manual de productos salud 2026.pdf" },
+            
+            // COBERTURAS MÉDICAS
+            { cat: "Salud y Coberturas", q: "¿La cirugía robótica está cubierta?", doc: "Cirugía Robótica Condiciones.pdf" },
+            { cat: "Salud y Coberturas", q: "¿El parto tiene carencia?", doc: "Manual de productos salud 2026.pdf" },
+            { cat: "Salud y Coberturas", q: "¿Hay cobertura para trasplantes?", doc: "Manual de productos salud 2026.pdf" },
+            { cat: "Salud y Coberturas", q: "¿Se cubren las prótesis quirúrgicas?", doc: "Manual de productos salud 2026.pdf" },
+            { cat: "Salud y Coberturas", q: "¿Hay asistencia en viaje al extranjero?", doc: "IPID-Adeslas-PLENA.pdf" },
+            { cat: "Salud y Coberturas", q: "¿Qué es el servicio de orientación médica 24h?", doc: "App Adeslas Salud y Bienestar.pdf" },
+            { cat: "Salud y Coberturas", q: "¿Esta cubierta la odontología preventiva?", doc: "IPID DENTAL TOTAL 2024.pdf" },
+            
+            // CUADRO MÉDICO TERRITORIAL
+            { cat: "Cuadros Médicos", q: "¿Cuadro médico de Madrid?", doc: "Cuadro Médico General - MADRID.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Dónde atienden en Barcelona?", doc: "Cuadro Médico General - BARCELONA.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Médicos en Valencia?", doc: "Cuadro Médico General - VALENCIA.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Centros en Sevilla?", doc: "Cuadro Médico General - SEVILLA.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Especialistas en Málaga?", doc: "Cuadro Médico General - MALAGA.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Cuadro médico de Soria?", doc: "Cuadro Médico General - SORIA.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Médicos en Vizcaya / Bilbao?", doc: "Cuadro Médico General - VIZCAYA.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Cuadro médico Baleares?", doc: "Cuadro Médico General - ISLAS BALEARES.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Dónde están los centros en Alicante?", doc: "Cuadro Médico General - ALICANTE.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Cuadro médico Coruña?", doc: "Cuadro Médico General - CORUNA, LA.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Médicos en Granada?", doc: "Cuadro Médico General - GRANADA.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Centros en Las Palmas?", doc: "Cuadro Médico General - LAS PALMAS.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Cuadro médico Zaragoza?", doc: "Cuadro Médico General - ZARAGOZA.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Médicos en Asturias?", doc: "Cuadro Médico General - ASTURIAS.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Especialistas en Murcia?", doc: "Cuadro Médico General - MURCIA.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Cuadro médico de Castellón?", doc: "Cuadro Médico General - CASTELLON.pdf" },
+            { cat: "Cuadros Médicos", q: "¿Centros en Almería?", doc: "Cuadro Médico General - ALMERIA.pdf" },
+
+            // GESTIÓN Y APP
+            { cat: "Gestión y App", q: "¿Cómo solicito una autorización?", doc: "App Adeslas Salud y Bienestar.pdf" },
+            { cat: "Gestión y App", q: "¿Cómo pido el reembolso?", doc: "App Adeslas Salud y Bienestar.pdf" },
+            { cat: "Gestión y App", q: "¿Dónde veo mi tarjeta digital?", doc: "App Adeslas Salud y Bienestar.pdf" },
+            { cat: "Gestión y App", q: "¿Cómo pido una cita médico online?", doc: "App Adeslas Salud y Bienestar.pdf" },
+            { cat: "Gestión y App", q: "¿Cómo activo mi cuenta de salud?", doc: "App Adeslas Salud y Bienestar.pdf" },
+            { cat: "Gestión y App", q: "¿Se pueden gestionar autorizaciones por web?", doc: "App Adeslas Salud y Bienestar.pdf" }
+        ];
+
+        // Access Logic (Gatekeeper)
+        const AUTH_KEY = 'adeslas2026';
+        
+        function checkAccess() {
+            const input = document.getElementById('gate-pass').value.trim();
+            const error = document.getElementById('gate-error');
+            if (input === AUTH_KEY) {
+                localStorage.setItem('tojuchatis_token', btoa(AUTH_KEY)); // Simple obfuscation
+                unlock();
+            } else {
+                error.style.display = 'block';
+                document.getElementById('gate-pass').value = '';
+            }
+        }
+
+        function unlock() {
+            document.getElementById('gatekeeper').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('gatekeeper').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }, 500);
+        }
+
+        function askChatbot(q, docTitle) {
+            const baseUrl = 'index.html';
+            const params = new URLSearchParams();
+            params.set('q', q);
+            if (docTitle) params.set('doc', docTitle);
+            window.location.href = baseUrl + '?' + params.toString();
+        }
+
+        function renderFAQs(filter = "") {
+            const wrapper = document.getElementById('faq-wrapper');
+            const noResults = document.getElementById('no-results');
+            const query = filter.toLowerCase().trim();
+            
+            wrapper.innerHTML = "";
+            
+            // Agrupar por categoría
+            const categories = {};
+            faqs.forEach(f => {
+                const combined = (f.q + " " + f.cat + " " + f.doc).toLowerCase();
+                if (!query || combined.includes(query)) {
+                    if (!categories[f.cat]) categories[f.cat] = [];
+                    categories[f.cat].push(f);
+                }
+            });
+
+            const catKeys = Object.keys(categories);
+            if (catKeys.length === 0) {
+                noResults.style.display = "block";
+                return;
+            }
+            noResults.style.display = "none";
+
+            catKeys.forEach(cat => {
+                const section = document.createElement('section');
+                section.className = 'category-section';
+                section.innerHTML = `<div class="category-header"><span></span> ${cat}</div>`;
+                
+                const grid = document.createElement('div');
+                grid.className = 'qa-grid';
+                
+                categories[cat].forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'qa-card';
+                    card.onclick = () => askChatbot(item.q, item.doc);
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div class="icon-badge">Q</div>
+                            <div class="qa-doc">${item.doc}</div>
+                        </div>
+                        <div class="qa-q">${item.q}</div>
+                    `;
+                    grid.appendChild(card);
+                });
+                
+                section.appendChild(grid);
+                wrapper.appendChild(section);
+            });
+        }
+
+        document.getElementById('search-box').addEventListener('input', (e) => {
+            renderFAQs(e.target.value);
+        });
+
+        // Inicialización
+        window.onload = () => {
+            if (localStorage.getItem('tojuchatis_token') === btoa(AUTH_KEY)) {
+                document.getElementById('gatekeeper').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            } else {
+                document.getElementById('gate-pass').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') checkAccess();
+                });
+            }
+            renderFAQs();
+        };
+    </script>
+</body>
+</html>

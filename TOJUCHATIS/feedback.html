@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Plataforma - TOJUCHATS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004d99;
+            --primary-light: #0073e6;
+            --accent: #00c2ff;
+            --bg-dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        p.subtitle { color: var(--text-dim); margin-top: 10px; font-size: 1.1rem; }
+
+        #back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1100;
+            background: var(--glass);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        #back-btn:hover { background: var(--primary); color: white; transform: translateX(-5px); }
+
+        .feedback-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 32px;
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
+        }
+
+        .form-group { margin-bottom: 24px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--accent); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        input, select, textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-light);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.2);
+        }
+
+        textarea { height: 150px; resize: vertical; }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 20px -5px rgba(0, 77, 153, 0.4);
+        }
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 15px 30px -10px rgba(0, 77, 153, 0.6); }
+        .btn-submit:active { transform: translateY(0); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .history-section { margin-top: 60px; }
+        .history-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); display: flex; align-items: center; gap: 12px; }
+        .history-title span { width: 30px; height: 4px; background: var(--accent); border-radius: 10px; }
+
+        .history-list { display: flex; flex-direction: column; gap: 16px; }
+        .history-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 16px;
+            animation: slideUp 0.4s ease-out;
+        }
+        .history-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.85rem; }
+        .history-type { color: var(--accent); font-weight: 700; text-transform: uppercase; }
+        .history-date { color: var(--text-dim); }
+        .history-desc { line-height: 1.6; color: var(--text-main); }
+
+        .no-history { text-align: center; padding: 40px; color: var(--text-dim); background: var(--glass); border-radius: 16px; border: 1px dashed var(--glass-border); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Notification Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            background: #fff;
+            color: #000;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        #gatekeeper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1e293b, #0f172a);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            transition: opacity 0.5s ease;
+        }
+        .gate-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5);
+        }
+        .gate-input { width: 100%; padding: 15px; margin: 20px 0; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; color: #fff; text-align: center; font-size: 1.2rem; outline: none; }
+        .gate-btn { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; padding: 15px 30px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.3s; }
+        .gate-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
+    </style>
+</head>
+<body>
+    <!-- Security Gate -->
+    <div id="gatekeeper">
+        <div class="gate-card">
+            <h2 style="margin-bottom: 10px;">ACCESO PRIVADO</h2>
+            <p style="color: var(--text-dim);">Introduce el código de seguridad para enviar feedback</p>
+            <input type="password" id="gate-pass" class="gate-input" placeholder="••••••••••••••">
+            <button onclick="checkAccess()" class="gate-btn">ENTRAR AL SISTEMA</button>
+            <p id="gate-error" style="color: #ff4d4d; margin-top: 15px; font-size: 0.85rem; display: none;">Código incorrecto. Acceso denegado.</p>
+        </div>
+    </div>
+
+    <a href="index.html" id="back-btn">← Volver al Chat</a>
+
+    <div class="container">
+        <header>
+            <h1>Feedback Plataforma</h1>
+            <p class="subtitle">Informa de errores, fallos o sugerencias de mejora para TOJUCHATS.</p>
+        </header>
+
+        <div class="feedback-card">
+            <form id="feedback-form">
+                <div class="form-group">
+                    <label for="type">Tipo de Incidencia</label>
+                    <select id="type" required>
+                        <option value="Error de IA">Error en la respuesta de la IA</option>
+                        <option value="Fallo de Interfaz">Fallo visual o de interfaz</option>
+                        <option value="Error de Documentos">Error en los datos de documentos</option>
+                        <option value="Sugerencia">Sugerencia de mejora</option>
+                        <option value="Otro">Otro fallo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="description">Descripción del fallo</label>
+                    <textarea id="description" placeholder="Explica detalladamente qué ha pasado..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="user">Nombre / Identificador (Opcional)</label>
+                    <input type="text" id="user" placeholder="Tu nombre para recibir respuesta">
+                </div>
+                <button type="submit" class="btn-submit" id="submit-btn">
+                    <span>Enviar Feedback</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
+        </div>
+
+        <div class="history-section">
+            <div class="history-title"><span></span> Historial de Feedback Enviado</div>
+            <div id="history-container" class="history-list">
+                <!-- Se llenará con JS -->
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        // Initialize EmailJS
+        // Note: The user should ideally provide their own PUBLIC_KEY, but I will prepare the structure
+        (function() {
+            emailjs.init("user_O7Z1v6M1u9I1kG5kZ"); // Placeholder/Generic Public Key structure
+        })();
+
+        // Access Logic (Gatekeeper)
+        const AUTH_KEY = 'adeslas2026';
+        
+        function checkAccess() {
+            const input = document.getElementById('gate-pass').value.trim();
+            const error = document.getElementById('gate-error');
+            if (input === AUTH_KEY) {
+                localStorage.setItem('tojuchatis_token', btoa(AUTH_KEY));
+                unlock();
+            } else {
+                error.style.display = 'block';
+                document.getElementById('gate-pass').value = '';
+            }
+        }
+
+        function unlock() {
+            document.getElementById('gatekeeper').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('gatekeeper').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }, 500);
+        }
+
+        // Feedback Logic
+        const form = document.getElementById('feedback-form');
+        const historyContainer = document.getElementById('history-container');
+        const submitBtn = document.getElementById('submit-btn');
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
+            toast.style.color = '#fff';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 4000);
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('tojuchatis_feedback') || '[]');
+            if (history.length === 0) {
+                historyContainer.innerHTML = '<div class="no-history">No has enviado ningún feedback todavía.</div>';
+                return;
+            }
+
+            historyContainer.innerHTML = history.reverse().map(item => `
+                <div class="history-item">
+                    <div class="history-header">
+                        <span class="history-type">${item.type}</span>
+                        <span class="history-date">${item.date}</span>
+                    </div>
+                    <div class="history-desc">${item.description}</div>
+                    ${item.user ? `<div style="margin-top:10px; font-size: 0.8rem; color: var(--text-dim);">Por: ${item.user}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const type = document.getElementById('type').value;
+            const description = document.getElementById('description').value;
+            const user = document.getElementById('user').value || 'Anónimo';
+            
+            submitBtn.disabled = true;
+            submitBtn.querySelector('span').innerText = 'Enviando...';
+
+            const newItem = {
+                type,
+                description,
+                user,
+                date: new Date().toLocaleString('es-ES')
+            };
+
+            // 1. Guardar en LocalStorage
+            const history = JSON.parse(localStorage.getItem('tojuchatis_feedback') || '[]');
+            history.push(newItem);
+            localStorage.setItem('tojuchatis_feedback', JSON.stringify(history));
+
+            // 2. Envío vía FormSubmit (Más fiable para envío directo a email)
+            try {
+                const formData = new FormData();
+                formData.append('Tipo de Error', type);
+                formData.append('Usuario', user);
+                formData.append('Descripción', description);
+                formData.append('Fecha', newItem.date);
+                formData.append('_subject', `[FEEDBACK TOJUCHATS] ${type} de ${user}`);
+                formData.append('_captcha', 'false'); // Desactivar captcha para mejor UX
+                formData.append('_template', 'table'); // Un formato más bonito para el mail
+
+                const response = await fetch('https://formsubmit.co/ajax/ayuso@startend.es', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success === "true") {
+                    showToast("¡Feedback enviado con éxito! Se ha mandado a ayuso@startend.es");
+                    form.reset();
+                    if (document.getElementById('manual-btn')) document.getElementById('manual-btn').remove();
+                } else {
+                    throw new Error("Error en el servidor");
+                }
+            } catch (err) {
+                showToast("Fallo en envío automático. Intenta reintentar o usar el envío manual.", 'error');
+                
+                // Botón de reintento manual (Mailto)
+                if (!document.getElementById('manual-btn')) {
+                    const mailtoLink = `mailto:ayuso@startend.es?subject=Feedback TOJUCHATS: ${type}&body=Tipo: ${type}%0D%0AUsuario: ${user}%0D%0A%0D%0ADescripción: ${description}`;
+                    const manualBtn = document.createElement('a');
+                    manualBtn.id = 'manual-btn';
+                    manualBtn.href = mailtoLink;
+                    manualBtn.className = 'btn-submit';
+                    manualBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+                    manualBtn.style.marginTop = '20px';
+                    manualBtn.style.textDecoration = 'none';
+                    manualBtn.innerHTML = '✉️ Enviar por Email Manual';
+                    form.appendChild(manualBtn);
+                }
+            }
+
+            loadHistory();
+            submitBtn.disabled = false;
+            submitBtn.querySelector('span').innerText = 'Enviar Feedback';
+        });
+
+        window.onload = () => {
+            if (localStorage.getItem('tojuchatis_token') === btoa(AUTH_KEY)) {
+                document.getElementById('gatekeeper').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            } else {
+                document.getElementById('gate-pass').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') checkAccess();
+                });
+            }
+            loadHistory();
+        };
+    </script>
+</body>
+</html>
