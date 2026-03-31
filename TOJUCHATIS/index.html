@@ -1080,13 +1080,32 @@
             }
             msgDiv.appendChild(contentDiv);
             
-            // FEATURE 6: Source with preview popup
-            if (source && sourcePath) {
+            // FEATURE 6: Source with preview popup - supports multiple sources
+            if (Array.isArray(source)) {
+                const srcContainer = document.createElement('div');
+                srcContainer.style.cssText = 'margin-top: 15px; display: flex; flex-wrap: wrap; gap: 8px;';
+                const usedTitles = new Set();
+                source.forEach(s => {
+                    const baseTitle = s.title.replace(/\s*\(Pág\..*?\)/, '');
+                    if (usedTitles.has(baseTitle)) return;
+                    usedTitles.add(baseTitle);
+                    const srcLink = document.createElement('a');
+                    srcLink.className = 'source-tag';
+                    srcLink.href = '#';
+                    srcLink.innerText = `📄 ${baseTitle}`;
+                    srcLink.onclick = (e) => {
+                        e.preventDefault();
+                        showSourcePreview(s.title, s.path);
+                    };
+                    srcContainer.appendChild(srcLink);
+                });
+                msgDiv.appendChild(srcContainer);
+            } else if (source && sourcePath) {
                 const srcLink = document.createElement('a');
                 srcLink.className = 'source-tag';
                 srcLink.href = '#';
                 srcLink.style.marginTop = '15px';
-                srcLink.innerText = `📄 Fuente Oficial: ${source}`;
+                srcLink.innerText = `📄 ${source}`;
                 srcLink.onclick = (e) => {
                     e.preventDefault();
                     showSourcePreview(source, sourcePath);
@@ -1161,7 +1180,7 @@ FORMATO DE RESPUESTA:
   e) Cada celda debe tener el dato concreto (precio, "Sí", "No", límite...), NUNCA dejarla vacía ni poner "N/A" si la info está en los documentos.
   f) DESPUÉS de la tabla, añade un breve resumen de 2-3 líneas.
   g) NO repitas la información de la tabla en formato lista. Solo tabla + resumen breve.
-- Cita SIEMPRE el nombre del documento fuente al final de la respuesta.
+- **CITAS DE FUENTES (MUY IMPORTANTE)**: Al final de tu respuesta, cita los documentos que usaste con su NOMBRE COMPLETO REAL (ejemplo: "IPID PLENA 2024.pdf", "Condiciones Generales Plena.pdf", "Manual de productos salud 2026.pdf"). NUNCA cites como "FUENTE #1" o "FUENTE #5". Usa siempre el nombre del documento tal cual aparece en el título. Formato: 📄 **Fuentes:** nombre1.pdf, nombre2.pdf
 ${historyCtx}
 
 DOCUMENTOS:
@@ -1262,7 +1281,7 @@ DOCUMENTOS:
             const aiResponse = await chatWithGemini(query, matches);
             typing.remove();
             if (aiResponse) {
-                addMessage(aiResponse, 'bot', matches[0].title, matches[0].path);
+                addMessage(aiResponse, 'bot', matches.slice(0, 8));
                 addToHistory('model', aiResponse); // MEMORY: Store AI response
             } else {
                 let errorHelp = lastAiError ? `\n\n**Detalles técnicos:** ${lastAiError}` : "";
