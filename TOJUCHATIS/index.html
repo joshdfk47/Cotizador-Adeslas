@@ -37,19 +37,17 @@
         }
 
         #app-container {
-            width: 95%;
+            width: 100%;
             max-width: 1200px;
-            height: auto;
-            min-height: 95vh;
+            height: 100vh;
             background: var(--glass);
             backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
             display: flex;
             flex-direction: column;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             position: relative;
-            margin-bottom: 20px;
+            overflow: hidden;
         }
 
         /* Header */
@@ -127,11 +125,12 @@
         /* Chat Area */
         #chat-window {
             flex: 1;
-            overflow: visible;
+            overflow-y: auto;
             padding: 32px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            scroll-behavior: smooth;
         }
 
         #chat-window::-webkit-scrollbar {
@@ -749,37 +748,102 @@
         // ====================================================================
         // FEATURE 2: ENHANCED SEMANTIC SEARCH with synonym expansion
         // ====================================================================
-        const SYNONYM_MAP = {
-            'precio': ['coste', 'importe', 'tarifa', 'cuanto', 'cuánto', 'cuesta', 'vale', 'pagar', 'pago', 'euros', 'copago'],
-            'copago': ['precio', 'coste', 'importe', 'pago', 'abonar'],
-            'medico': ['médico', 'doctor', 'facultativo', 'especialista', 'profesional'],
-            'hospital': ['hospitalización', 'ingreso', 'clínica', 'centro'],
-            'urgencia': ['urgencias', 'emergencia', 'emergencias', 'urgente'],
-            'embarazo': ['parto', 'maternidad', 'obstetricia', 'gestación', 'embarazada'],
-            'dental': ['diente', 'dientes', 'odontología', 'ortodoncia', 'endodoncia', 'implante', 'bucal', 'bucodental'],
-            'niño': ['niños', 'infantil', 'pediátrico', 'pediatría', 'menor', 'menores', 'hijo', 'hijos'],
-            'operacion': ['operación', 'cirugía', 'cirugía', 'quirúrgico', 'intervención'],
-            'psicologia': ['psicología', 'psicólogo', 'psicológico', 'terapia', 'psicoterapia', 'salud mental'],
-            'rehabilitacion': ['rehabilitación', 'fisioterapia', 'fisio', 'recuperación'],
-            'viaje': ['viajes', 'extranjero', 'internacional', 'desplazamiento', 'repatriación'],
-            'cancer': ['cáncer', 'oncología', 'oncológico', 'quimioterapia', 'radioterapia', 'tumor'],
-            'cubre': ['cobertura', 'coberturas', 'cubierto', 'incluye', 'incluido', 'asegurado'],
-            'carencia': ['carencias', 'espera', 'periodo', 'meses'],
-            'empresa': ['empresas', 'pymes', 'autónomo', 'autónomos', 'negocio', 'negocios', 'cif', 'nif'],
-            'senior': ['seniors', 'mayor', 'mayores', 'tercera edad', 'jubilado'],
-            'reembolso': ['rembolso', 'devolver', 'devolución', 'reintegro'],
-            'vacuna': ['vacunas', 'inyectable', 'vacunación', 'preventivo', 'exclusión', 'excluido', 'no cubre', 'por mi cuenta', 'pagar yo', 'ipid'],
+        // FEATURE 2: ENHANCED SEMANTIC SEARCH with synonym expansion and normalization
+        // ====================================================================
+        const STOP_WORDS = new Set(['que', 'como', 'cuando', 'donde', 'quien', 'cual', 'cuanto', 'para', 'este', 'esta', 'estos', 'estas', 'pero', 'mas', 'menos', 'los', 'las', 'del', 'con', 'una', 'uno', 'unos', 'unas', 'sobre', 'entre', 'ante', 'bajo', 'cabe', 'con', 'contra', 'desde', 'hacia', 'hasta', 'desde', 'para', 'por', 'segun', 'sin', 'sobe', 'tras', 'mediante', 'durante', 'quiero', 'saber', 'informatme', 'dime', 'sobre', 'relativo', 'tema', 'pregunta']);
+
+        // Intensified topics for higher intent detection
+        const TOPIC_MAP = {
+            'precio': [/cuanto/i, /cuánto/i, /precio/i, /cuesta/i, /pago/i, /paga/i, /importe/i, /tarifa/i, /valor/i, /dinero/i, /euros/i, /recibo/i, /prima/i, /mensualidad/i],
+            'cobertura': [/cubre/i, /incluye/i, /tiene/i, /cobertura/i, /prestacion/i, /garantia/i, /incluido/i, /proteccion/i],
+            'carencia': [/espera/i, /carencia/i, /meses/i, /tiempo/i, /antigüedad/i, /desde cuando/i],
+            'exclusión': [/no cubre/i, /excluye/i, /no entra/i, /fuera de/i, /limite/i, /restriccion/i, /exclu/i],
+            'copago': [/copago/i, /franquicia/i, /cuota/i, /paga por consulta/i],
+            'baja': [/baja/i, /anular/i, /cancelar/i, /quitar/i, /terminar/i, /fin/i, /vence/i],
+            'alta': [/alta/i, /contratar/i, /empezar/i, /inicio/i, /efecto/i, /comienzo/i]
         };
 
+        function normalizeString(str) {
+            if (!str) return '';
+            // Optimization: Minimal operations
+            return str.toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[¿?¡!.,;:]/g, " ")
+                .replace(/\s+/g, " ")
+                .trim();
+        }
+
+        const SYNONYM_MAP = {
+            'embarazo': ['parto', 'gestacion', 'maternidad', 'obstetricia', 'preparacion al parto'],
+            'precio': ['cuanto', 'cuánto', 'coste', 'costo', 'valor', 'cuota', 'tarifa', 'importe', 'mensualidad', 'prima', 'pagar'],
+            'copago': ['franquicia', 'pago extra', 'pago visita'],
+            'carencia': ['espera', 'periodo de espera', 'tiempo inicial', 'antiguedad'],
+            'exclusiones': ['que no cubre', 'fura de cobertura', 'limites', 'restricciones', 'no entra'],
+            'pymes': ['pyme', 'empresa', 'negocio', 'sociedad', 'autonomo', 'cif', 'nif'],
+            'dental': ['dientes', 'boca', 'dentista', 'odontologia', 'muela', 'estomatologo'],
+            'medicina general': ['medico de cabecera', 'medicina primaria', 'familia'],
+            'urgencias': ['emergencia', 'socorro', 'hospital de urgencia']
+        };
+
+        const PRODUCT_PATTERNS = [
+            { name: 'plena total vital', regex: /plena\s+total\s+vital|plena-total-vital/i },
+            { name: 'plena total', regex: /plena\s+total(?!\s+vital)/i },
+            { name: 'plena vital', regex: /plena\s+vital/i },
+            { name: 'plena plus', regex: /plena\s+plus/i },
+            { name: 'plena extra', regex: /plena-extra/i },
+            { name: 'seniors total', regex: /seniors\s+total/i },
+            { name: 'seniors', regex: /seniors(?!\s+total)/i },
+            { name: 'accidentes pymes', regex: /accidente/i },
+            { name: 'pymes', regex: /pymes|empresa|negocio/i },
+            { name: 'negocios nif', regex: /negocios\s+nif/i },
+            { name: 'negocios cif', regex: /negocios\s+cif/i },
+            { name: 'adeslas go', regex: /\bgo\b/i },
+            { name: 'dental', regex: /dental|diente|dentista/i },
+            { name: 'plena', regex: /plena(?!\s+(vital|total|plus|extra|go))/i }
+        ];
+
+        function getDocProduct(titleNorm) {
+            const match = PRODUCT_PATTERNS.find(p => {
+                const pNorm = p.name;
+                if (pNorm === 'plena') {
+                    const isSpecific = titleNorm.includes('plena vital') || titleNorm.includes('plena total') || titleNorm.includes('plena plus') || titleNorm.includes('plena extra');
+                    return titleNorm.includes('plena') && !isSpecific;
+                }
+                return pNorm.split(' ').every(part => titleNorm.includes(part));
+            });
+            return match ? match.name : null;
+        }
+
+        // ONE-TIME BOOTSTRAP: Normalize and classify all documents on startup
+        function preProcessData() {
+            if (typeof PDF_DATA === 'undefined') return;
+            const start = performance.now();
+            console.log("Iniciando pre-procesamiento de " + PDF_DATA.length + " documentos...");
+            
+            PDF_DATA.forEach(doc => {
+                doc.titleNorm = normalizeString(doc.title);
+                doc.contentNorm = normalizeString(doc.content);
+                doc.product = getDocProduct(doc.titleNorm);
+            });
+            
+            const end = performance.now();
+            console.log("Pre-procesamiento completado en " + (end - start).toFixed(2) + "ms. Clasificación de productos lista.");
+        }
+
         function expandQuery(query) {
-            const words = query.toLowerCase().split(' ').filter(t => t.length > 2);
+            const normalizedQuery = normalizeString(query);
+            const words = normalizedQuery.split(/\s+/).filter(t => t.length > 2 && !STOP_WORDS.has(t));
             const expanded = new Set(words);
+            
             words.forEach(word => {
-                // Check direct match
+                const qWord = normalizeString(word);
                 Object.entries(SYNONYM_MAP).forEach(([key, synonyms]) => {
-                    if (key === word || synonyms.includes(word)) {
-                        expanded.add(key);
-                        synonyms.forEach(s => expanded.add(s));
+                    const normKey = normalizeString(key);
+                    const normSyns = synonyms.map(normalizeString);
+                    if (normKey === qWord || normSyns.includes(qWord)) {
+                        expanded.add(normKey);
+                        normSyns.forEach(s => expanded.add(s));
                     }
                 });
             });
@@ -788,131 +852,114 @@
 
         function searchDocs(query, forcedDoc = null) {
             if (!query) return null;
-            const originalTerms = query.toLowerCase().split(' ').filter(t => t.length > 2);
-            const expandedTerms = expandQuery(query);
-            const isCostQuery = query.includes('cuanto') || query.includes('cuánto') || query.includes('precio') || query.includes('copago') || query.includes('tarifa') || query.includes('importe') || query.includes('cuesta');
+            const qNorm = normalizeString(query);
+            const originalTerms = qNorm.split(/\s+/).filter(t => t.length > 2);
+            const expandedTerms = expandQuery(query).map(normalizeString);
+            const isCostQuery = qNorm.includes('cuanto') || qNorm.includes('precio') || qNorm.includes('copago') || qNorm.includes('tarifa') || qNorm.includes('importe') || qNorm.includes('cuesta');
             
-            // FEATURE 1 Enhancement: If this looks like a follow-up, extract context from history
+            const detectedTopics = Object.entries(TOPIC_MAP)
+                .filter(([topic, patterns]) => patterns.some(p => p.test(qNorm)))
+                .map(([topic]) => topic);
+
+            const queriedProducts = PRODUCT_PATTERNS.filter(p => p.regex.test(qNorm)).map(p => p.name);
+            const queryWords = originalTerms.filter(w => !STOP_WORDS.has(w));
+            
             let historyTerms = [];
             if (originalTerms.length <= 3 && conversationHistory.length > 0) {
-                // Short questions might be follow-ups, extract key terms from last exchange
-                const lastBot = conversationHistory.filter(m => m.role === 'model').slice(-1)[0];
                 const lastUser = conversationHistory.filter(m => m.role === 'user').slice(-1)[0];
                 if (lastUser) {
-                    historyTerms = lastUser.text.toLowerCase().split(' ').filter(t => t.length > 3);
+                    historyTerms = normalizeString(lastUser.text).split(/\s+/).filter(t => t.length > 3);
                 }
             }
-            
+
+            // Pre-calculate normalized products for fast comparison
+            const normTopics = detectedTopics.map(t => normalizeString(t));
+            const normQueryProducts = queriedProducts.map(p => normalizeString(p));
+
             let matches = [];
             
             PDF_DATA.forEach(doc => {
                 let score = 0;
-                const contentLower = doc.content.toLowerCase();
-                const titleLower = doc.title.toLowerCase();
+                const titleNorm = doc.titleNorm; 
+                const contentNorm = doc.contentNorm; 
 
-                if (forcedDoc && titleLower.includes(forcedDoc.toLowerCase())) {
+                if (!titleNorm || !contentNorm) return;
+
+                if (forcedDoc && titleNorm.includes(normalizeString(forcedDoc))) {
                     score += 10000;
                 }
 
-                // FEATURE Enhancement: Boost IPID documents for exclusion/critical queries
-                const isExclusionQuery = query.toLowerCase().includes('vacun') || query.toLowerCase().includes('no cub') || query.toLowerCase().includes('exclu') || query.toLowerCase().includes('paga');
-                if (isExclusionQuery && (titleLower.includes('ipid') || contentLower.includes('documento de información sobre producto'))) {
+                if (normQueryProducts.length > 0) {
+                    if (normQueryProducts.includes(doc.product)) {
+                        score += 20000;
+                    } else if (doc.product && !normQueryProducts.includes(doc.product)) {
+                        score -= 10000;
+                    }
+                }
+
+                // TOPICS BOOST (Efficient)
+                normTopics.forEach((tNorm, idx) => {
+                    const topic = detectedTopics[idx];
+                    if (titleNorm.includes(tNorm)) score += 2000;
+                    if (topic === 'precio' && (titleNorm.includes('tarifa') || titleNorm.includes('copago'))) score += 3000;
+                    if (topic === 'exclusión' && (titleNorm.includes('ipid') || titleNorm.includes('condiciones'))) score += 3000;
+                });
+                let uniqueWordsMatched = 0;
+
+                queryWords.forEach(word => {
+                    let wordMatched = false;
+                    if (titleNorm.includes(word)) {
+                        score += 1500;
+                        wordMatched = true;
+                    }
+                    if (contentNorm.includes(word)) {
+                        const count = contentNorm.split(word).length - 1;
+                        score += 200 + (Math.min(count, 10) * 20);
+                        wordMatched = true;
+                    }
+                    if (wordMatched) uniqueWordsMatched++;
+                });
+
+                if (queryWords.length > 1 && uniqueWordsMatched === queryWords.length) {
                     score += 5000;
+                } else if (uniqueWordsMatched > 1) {
+                    score += uniqueWordsMatched * 1000;
                 }
 
-                // === SMART PRODUCT MATCHING ===
-                // Detect which specific product(s) the user is asking about
-                const qLow = query.toLowerCase();
-                const isComparison = qLow.includes('diferencia') || qLow.includes('compar') || qLow.includes(' vs ') || qLow.includes('qué cambia');
-                
-                // Define product patterns (order matters: longest first to avoid partial matches)
-                const productPatterns = [
-                    { name: 'plena total vital', regex: /plena\s+total\s+vital/i },
-                    { name: 'plena total', regex: /plena\s+total(?!\s+vital)/i },
-                    { name: 'plena vital', regex: /plena\s+vital/i },
-                    { name: 'plena plus', regex: /plena\s+plus/i },
-                    { name: 'plena extra', regex: /plena\s+extra/i },
-                    { name: 'seniors total', regex: /seniors\s+total/i },
-                    { name: 'seniors', regex: /seniors(?!\s+total)/i },
-                    { name: 'pymes', regex: /pymes/i },
-                    { name: 'negocios nif', regex: /negocios\s+nif/i },
-                    { name: 'negocios cif', regex: /negocios\s+cif/i },
-                    { name: 'adeslas go', regex: /\bgo\b/i },
-                    { name: 'plena', regex: /plena(?!\s+(vital|total|plus|extra))/i }
-                ];
-                
-                const queriedProducts = productPatterns.filter(p => p.regex.test(qLow)).map(p => p.name);
-                
-                if (queriedProducts.length > 0) {
-                    const titleMatchesProduct = (product) => {
-                        const parts = product.split(' ');
-                        if (product === 'plena') {
-                            return (titleLower.includes('plena') && !titleLower.includes('plena vital') && !titleLower.includes('plena total') && !titleLower.includes('plena plus') && !titleLower.includes('plena extra'));
-                        }
-                        if (product === 'seniors') {
-                            return (titleLower.includes('seniors') && !titleLower.includes('seniors total'));
-                        }
-                        return parts.every(p => titleLower.includes(p));
-                    };
-                    
-                    const docMatchesAnyQueried = queriedProducts.some(p => titleMatchesProduct(p));
-                    
-                    if (docMatchesAnyQueried) {
-                        score += 6000; // Strong boost for exact product match
-                    } else if (!isComparison && titleLower.includes('plena') && queriedProducts.some(p => p.includes('plena'))) {
-                        // Penalize wrong "Plena variant" docs when asking about specific one
-                        score -= 2000;
-                    }
-                }
-
-                // Boost Condiciones Generales and Copagos docs for copago queries
-                const isCopagosQuery = qLow.includes('copago') || qLow.includes('pago') || qLow.includes('cuánto cuesta') || qLow.includes('precio consulta');
-                if (isCopagosQuery && (titleLower.includes('condiciones generales') || titleLower.includes('copago'))) {
-                    score += 4000;
-                }
-
-                // Original terms get HIGHEST weight (exact match)
-                originalTerms.forEach(term => {
-                    if (titleLower.includes(term)) score += 800; // Boosted title weight
-                });
-
-                originalTerms.forEach(term => {
-                    if (contentLower.includes(term)) {
-                        const count = contentLower.split(term).length - 1;
-                        score += count * 8; // Boosted content weight
-                    }
-                });
-
-                // Expanded synonyms get MEDIUM weight
                 expandedTerms.forEach(term => {
-                    if (!originalTerms.includes(term)) { // Only new synonyms
-                        if (titleLower.includes(term)) score += 200;
-                        if (contentLower.includes(term)) {
-                            const count = Math.min(contentLower.split(term).length - 1, 10);
-                            score += count * 3;
+                    if (!originalTerms.includes(term)) {
+                        if (titleNorm.includes(term)) score += 500;
+                        if (contentNorm.includes(term)) {
+                            const count = Math.min(contentNorm.split(term).length - 1, 10);
+                            score += 100 + (count * 10);
                         }
                     }
                 });
 
-                // History terms get LOW weight (for follow-up context)
                 historyTerms.forEach(term => {
-                    if (titleLower.includes(term)) score += 100;
-                    if (contentLower.includes(term)) score += 2;
+                    if (titleNorm.includes(term)) score += 100;
+                    if (contentNorm.includes(term)) score += 2;
                 });
 
-                if (isCostQuery && (titleLower.includes('copago') || titleLower.includes('tarifa') || titleLower.includes('precio'))) {
+                if (isCostQuery && (titleNorm.includes('copago') || titleNorm.includes('tarifa') || titleNorm.includes('precio'))) {
                     score += 3000;
                 }
 
                 if (score > 10) {
-                    const cleanContent = doc.content.replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F]/g, ' '); // Limpiar nulos/basura oculta del PDF
-                    const snippet = cleanContent.length > 20000 ? cleanContent.substring(0, 20000) + "\n\n[...]" : cleanContent;
-                    matches.push({ ...doc, content: snippet, score });
+                    matches.push({ ...doc, score });
                 }
             });
 
+            // PERFORMANCE: Sort and slice BEFORE generation snippets or cleaning content
             matches.sort((a, b) => b.score - a.score);
-            return matches.slice(0, 15); // Bajamos de 30 a 15 para estabilizar el Payload JSON
+            const topMatches = matches.slice(0, 8);
+            
+            // Only clean and snippet the final 8 results
+            return topMatches.map(m => {
+                const cleanContent = m.content.replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F]/g, ' '); 
+                const snippet = cleanContent.length > 6000 ? cleanContent.substring(0, 6000) + "\n\n[...]" : cleanContent;
+                return { ...m, content: snippet };
+            });
         }
 
         // ====================================================================
@@ -994,10 +1041,12 @@
         // FEATURE 5: ENHANCED FORMATTER (Tables, Lists, Cards)
         // ====================================================================
         function formatBotMessage(text) {
-            let html = text;
+            // First, escape HTML to avoid < being treated as a tag (which truncates the message!)
+            let html = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-            // STEP 1: Detect and render markdown tables (| col | col |)
-            html = html.replace(/((?:^\|.+\|\s*\n?)+)/gm, function(tableBlock) {
+            // STEP 1: Detect and render markdown tables
+            // Matches contiguous lines starting with |
+            html = html.replace(/((?:^\|.*\n?)+)/gm, function(tableBlock) {
                 const rows = tableBlock.trim().split('\n').filter(r => r.trim().length > 0);
                 if (rows.length < 2) return tableBlock;
 
@@ -1013,7 +1062,12 @@
                     dataRows = rows;
                 }
 
-                const parseCells = (row) => row.split('|').filter((c, i, arr) => i > 0 && i < arr.length - 1).map(c => c.trim());
+                const parseCells = (row) => {
+                    let c = row.trim();
+                    if (c.startsWith('|')) c = c.substring(1);
+                    if (c.endsWith('|')) c = c.substring(0, c.length - 1);
+                    return c.split('|').map(x => x.trim());
+                };
 
                 let tableHtml = '<table>';
                 if (headerRow) {
@@ -1135,11 +1189,37 @@
             return div;
         }
 
+        // ====================================================================
+        // FEATURE 3: ROBUST AI ADAPTATION
+        // ====================================================================
         let lastAiError = "";
+        let ACTIVE_MODEL = "gemini-2.5-flash"; // Default to newest fast model
 
-        // ====================================================================
-        // DIRECT AI CALL — gemini-2.5-flash-lite (verified working model)
-        // ====================================================================
+        async function tryFetchResult(modelId, key, promptParts) {
+            const resp = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${key}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: promptParts }],
+                        generationConfig: { 
+                            temperature: 0.2, 
+                            maxOutputTokens: 4096,
+                            topP: 0.95,
+                            topK: 40
+                        }
+                    })
+                }
+            );
+            if (!resp.ok) {
+                const data = await resp.json();
+                throw new Error(data.error?.message || `HTTP ${resp.status}`);
+            }
+            const data = await resp.json();
+            return data.candidates[0].content.parts[0].text;
+        }
+
         async function chatWithGemini(query, matches) {
             const key = apiKeyInput.value.trim() || localStorage.getItem('google_api_key');
             if (!key) return null;
@@ -1188,32 +1268,34 @@ DOCUMENTOS:
 
             const promptParts = [
                 { text: promptIntro },
-                ...matches.map((m, idx) => ({ text: `### FUENTE #${idx+1}: ${m.title}\nCONTENIDO:\n${m.content.replace(/[\uD800-\uDFFF]/g, '')}\n\n` })),
+                ...matches.slice(0, 6).map((m, idx) => ({ text: `### FUENTE #${idx+1}: ${m.title}\nCONTENIDO:\n${m.content.replace(/[\uD800-\uDFFF]/g, '')}\n\n` })),
                 { text: `PREGUNTA: ${query}` }
             ];
 
-            try {
-                const resp = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${key}`,
-                    {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: promptParts }],
-                            generationConfig: { temperature: 0, maxOutputTokens: 8192 }
-                        })
-                    }
-                );
-                const data = await resp.json();
-                if (resp.ok && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-                    return data.candidates[0].content.parts[0].text;
+            // Auto-detection loop: try best models first
+            const candidates = [
+                ACTIVE_MODEL, 
+                "gemini-2.5-flash", 
+                "gemini-2.5-pro", 
+                "gemini-2.0-flash",
+                "gemini-1.5-flash", 
+                "gemini-1.5-pro", 
+                "gemini-pro"
+            ];
+            const uniqueCandidates = [...new Set(candidates)].filter(Boolean);
+
+            for (const modelId of uniqueCandidates) {
+                try {
+                    const result = await tryFetchResult(modelId, key, promptParts);
+                    ACTIVE_MODEL = modelId; // Save successful model for next time
+                    return result;
+                } catch (e) {
+                    console.warn(`Model ${modelId} failed:`, e.message);
+                    lastAiError = e.message;
+                    // Continue to next model
                 }
-                if (data.error) {
-                    lastAiError = data.error.message || JSON.stringify(data.error);
-                }
-            } catch (e) {
-                lastAiError = e.message;
             }
+
             return null;
         }
 
@@ -1248,7 +1330,7 @@ DOCUMENTOS:
         }
 
         // ====================================================================
-        // MAIN SEND HANDLER (with memory integration)
+        // MAIN SEND HANDLER (with UI-Commit separation)
         // ====================================================================
         async function handleSend(forcedDoc = null) {
             const queryRaw = userInput.value.trim();
@@ -1257,53 +1339,56 @@ DOCUMENTOS:
             
             document.getElementById('app-container').classList.add('chat-active');
             addMessage(queryRaw, 'user');
-            addToHistory('user', queryRaw); // MEMORY: Store user message
+            addToHistory('user', queryRaw); 
             userInput.value = '';
             const typing = showTyping();
 
-            // 1. Mandatory IA Key check
-            const key = apiKeyInput.value || localStorage.getItem('google_api_key');
-            if (!key) {
-                typing.remove();
-                addMessage("🚫 **Sistema en pausa.** Introduce tu API Key en ajustes ⚙️ para usar la inteligencia de Adeslas.", 'bot');
-                return;
-            }
+            // Mandamos el procesamiento al siguiente tick para que el navegador pinte la burbuja de "..."
+            setTimeout(async () => {
+                try {
+                    const key = apiKeyInput.value || localStorage.getItem('google_api_key');
+                    if (!key) {
+                        typing.remove();
+                        addMessage("🚫 **Sistema en pausa.** Introduce tu API Key en ajustes ⚙️ para usar la inteligencia de Adeslas.", 'bot');
+                        return;
+                    }
 
-            // 2. Search matches (Top 5 fragments) - Enhanced Semantic Search
-            const matches = searchDocs(query, forcedDoc);
-            if (!matches || matches.length === 0) {
-                typing.remove();
-                addMessage("No he encontrado información específica en los documentos sobre eso. Intenta con palabras clave como 'Copagos', 'Dental' o 'Cuadro Médico'.", 'bot');
-                return;
-            }
+                    const matches = searchDocs(query, forcedDoc);
+                    if (!matches || matches.length === 0) {
+                        typing.remove();
+                        addMessage("No he encontrado información específica en los documentos sobre eso.", 'bot');
+                        return;
+                    }
 
-            // 3. AI Response based on Multiple Fragments + Conversation Memory
-            const aiResponse = await chatWithGemini(query, matches);
-            typing.remove();
-            if (aiResponse) {
-                addMessage(aiResponse, 'bot', matches.slice(0, 8));
-                addToHistory('model', aiResponse); // MEMORY: Store AI response
-            } else {
-                let errorHelp = lastAiError ? `\n\n**Detalles técnicos:** ${lastAiError}` : "";
-                if (lastAiError.includes("API key not valid") || lastAiError.includes("403") || lastAiError.includes("401")) {
-                    errorHelp += "\n\n⚠️ **Parece que hay un problema con tu clave.** Verifica que has copiado la clave completa de Google AI Studio y que tienes activado el pago (si usas límites) o que es una clave activa.";
+                    const aiResponse = await chatWithGemini(queryRaw, matches);
+                    typing.remove();
+
+                    if (aiResponse) {
+                        addMessage(aiResponse, 'bot', matches);
+                        addToHistory('model', aiResponse);
+                    } else {
+                        let errorHelp = lastAiError ? `\n\n**Error:** ${lastAiError}` : "";
+                        addMessage("Lo siento, no he podido conectar con la Inteligencia Artificial." + errorHelp, 'bot');
+                    }
+                } catch (err) {
+                    console.error("Critical error in handleSend flux:", err);
+                    typing.remove();
+                    addMessage("Hubo un error técnico interno en el buscador. Por favor, recarga la página. 🛠️", 'bot');
                 }
-                addMessage("Lo siento, no he podido conectar con la Inteligencia Artificial." + errorHelp, 'bot');
-            }
+            }, 50);
         }
 
-        // ====================================================================
-        // INITIALIZATION
-        // ====================================================================
+
         window.addEventListener('load', () => {
-            // Document count
             if (typeof PDF_DATA !== 'undefined' && docCountEl) {
                 docCountEl.innerText = PDF_DATA.length;
+                preProcessData();
             }
             
-            // API Key
+            // API Key: Priority localStorage > CONFIG_LOCAL
             const savedKey = localStorage.getItem('google_api_key');
-            if (savedKey && apiKeyInput) apiKeyInput.value = savedKey;
+            const localKey = (typeof CONFIG_LOCAL !== 'undefined') ? CONFIG_LOCAL.gemini_api_key : "";
+            if (apiKeyInput) apiKeyInput.value = savedKey || localKey;
 
             // Render suggestion chips
             renderChips();
