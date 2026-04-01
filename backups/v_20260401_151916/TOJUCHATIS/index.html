@@ -945,10 +945,6 @@
                     score += 3000;
                 }
 
-                if (titleNorm.includes(normalizeString("preguntas y respuestas frecuentes"))) {
-                    score += 15000;
-                }
-
                 if (score > 10) {
                     matches.push({ ...doc, score });
                 }
@@ -1111,8 +1107,8 @@
                 .replace(/\*\*(.*?)\*\*/g, '<strong style="color: var(--accent); font-weight: 700; border-bottom: 1px solid rgba(0, 194, 255, 0.2);">$1</strong>')
                 .replace(/^[*•] (.*)/gm, '<div style="background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: 12px; margin: 10px 0; border-left: 3px solid var(--accent);">$1</div>')
                 .replace(/(\d{3} \d{3} \d{3})/g, '<span style="color: var(--accent); font-weight: 600; text-decoration: underline;">$1</span>')
-            // Hide the system tag [USED_DOCS: ...] from visible output
-            html = html.replace(/\[USED_DOCS:\s*.*?\]/g, '');
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>');
 
             return html;
         }
@@ -1138,32 +1134,13 @@
             }
             msgDiv.appendChild(contentDiv);
             
-            // NEW: Filtering logic - ONLY show tags that the AI says it used
+            // FEATURE 6: Source with preview popup - supports multiple sources
             if (Array.isArray(source)) {
-                // Try to extract [USED_DOCS: ...] from text
-                const usedDocsMatch = text.match(/\[USED_DOCS:\s*(.*?)\]/);
-                let explicitlyUsed = [];
-                if (usedDocsMatch) {
-                    explicitlyUsed = usedDocsMatch[1].split(',').map(s => s.trim().toLowerCase());
-                }
-
                 const srcContainer = document.createElement('div');
                 srcContainer.style.cssText = 'margin-top: 15px; display: flex; flex-wrap: wrap; gap: 8px;';
                 const usedTitles = new Set();
-                
                 source.forEach(s => {
                     const baseTitle = s.title.replace(/\s*\(Pág\..*?\)/, '');
-                    const baseTitleLower = baseTitle.toLowerCase();
-                    
-                    // IF we have explicit sources from AI, use those as filter. 
-                    // ELSE fallback to top search result if it's high score (optional, but requested only what's used)
-                    if (explicitlyUsed.length > 0) {
-                        if (!explicitlyUsed.some(u => baseTitleLower.includes(u) || u.includes(baseTitleLower))) return;
-                    } else {
-                        // If no explicit tags, only show the first one (most relevant)
-                        if (usedTitles.size >= 1) return;
-                    }
-
                     if (usedTitles.has(baseTitle)) return;
                     usedTitles.add(baseTitle);
                     const srcLink = document.createElement('a');
@@ -1176,8 +1153,19 @@
                     };
                     srcContainer.appendChild(srcLink);
                 });
-                if (usedTitles.size > 0) msgDiv.appendChild(srcContainer);
-            } 
+                msgDiv.appendChild(srcContainer);
+            } else if (source && sourcePath) {
+                const srcLink = document.createElement('a');
+                srcLink.className = 'source-tag';
+                srcLink.href = '#';
+                srcLink.style.marginTop = '15px';
+                srcLink.innerText = `📄 ${source}`;
+                srcLink.onclick = (e) => {
+                    e.preventDefault();
+                    showSourcePreview(source, sourcePath);
+                };
+                msgDiv.appendChild(srcLink);
+            }
             
             chatWindow.appendChild(msgDiv);
             
@@ -1272,13 +1260,7 @@ FORMATO DE RESPUESTA:
   e) Cada celda debe tener el dato concreto (precio, "Sí", "No", límite...), NUNCA dejarla vacía ni poner "N/A" si la info está en los documentos.
   f) DESPUÉS de la tabla, añade un breve resumen de 2-3 líneas.
   g) NO repitas la información de la tabla en formato lista. Solo tabla + resumen breve.
-- **CITAS DE FUENTES (SISTEMA DE VERIFICACIÓN)**: 
-  a) Al final de tu respuesta, añade el bloque exacto: [USED_DOCS: nombre1.pdf, nombre2.pdf]
-  b) Solo incluye en esa lista los nombres de los documentos de los que REALMENTE hayas extraído información para esta respuesta específica.
-  c) Usa el NOMBRE COMPLETO REAL del documento (ejemplo: "Manual de productos salud 2026.pdf").
-  d) No inventes nombres de fuentes ni los abreves.
-  e) El bloque [USED_DOCS: ...] debe estar en la última línea.
-¹ Formato: 📄 **Fuentes:** nombre1.pdf, nombre2.pdf
+- **CITAS DE FUENTES (MUY IMPORTANTE)**: Al final de tu respuesta, cita los documentos que usaste con su NOMBRE COMPLETO REAL (ejemplo: "IPID PLENA 2024.pdf", "Condiciones Generales Plena.pdf", "Manual de productos salud 2026.pdf"). NUNCA cites como "FUENTE #1" o "FUENTE #5". Usa siempre el nombre del documento tal cual aparece en el título. Formato: 📄 **Fuentes:** nombre1.pdf, nombre2.pdf
 ${historyCtx}
 
 DOCUMENTOS:
