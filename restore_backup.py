@@ -12,7 +12,7 @@ BACKUP_DIR = "backups"
 
 def create_restore_point(description="No description"):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    version_dir = os.path.join(BACKUP_DIR, f"v_{timestamp}")
+    version_dir = os.path.join(BACKUP_DIR, f"restore_point_{timestamp}")
     
     if not os.path.exists(version_dir):
         os.makedirs(version_dir, exist_ok=True)
@@ -33,11 +33,11 @@ def create_restore_point(description="No description"):
         f.write(f"Timestamp: {timestamp}\n")
         f.write(f"Description: {description}\n")
 
-    # Update global log
-    with open("restore_log.txt", "a") as log:
-        log.write(f"{timestamp} | {description} | path: {version_dir}\n")
+    # Update VERSION_LOG.txt - keeping it simple for the user log
+    with open("VERSION_LOG.md", "a") as log:
+        log.write(f"\n*   `backups/restore_point_{timestamp}` ({description})\n")
 
-    print(f"\nRestore point 'v_{timestamp}' created successfully at {version_dir}")
+    print(f"\nRestore point 'restore_point_{timestamp}' created successfully at {version_dir}")
 
 def list_restore_points():
     if not os.path.exists("restore_log.txt"):

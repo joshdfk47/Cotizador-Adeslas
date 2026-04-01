@@ -13,7 +13,7 @@ def list_backups():
         print(f"No existe el directorio de backups: {BACKUP_DIR}")
         return []
     
-    backups = sorted([d for d in os.listdir(BACKUP_DIR) if d.startswith("v_")])
+    backups = sorted([d for d in os.listdir(BACKUP_DIR) if d.startswith("restore_point_")])
     if not backups:
         print("No se encontraron puntos de restauración.")
         return []
