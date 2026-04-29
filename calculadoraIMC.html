@@ -715,25 +715,7 @@
 
 <body>
 
-  <!-- ==========================
-       CHATBOT PANEL (IFRAME)
-       ========================== -->
-  <div id="chatbotOverlay" class="cbOverlay" aria-hidden="true"></div>
-
-  <aside id="chatbotPanel" class="cbPanel" aria-hidden="true" role="dialog" aria-label="TOJUCHATIS">
-    <div class="cbHeader">
-      <div class="cbTitle">
-        <b>TOJUCHATIS</b>
-        <small>Especialista en Seguros Médicos</small>
-      </div>
-      <button id="btnCloseChatbot" class="cbClose" type="button" aria-label="Cerrar">×</button>
-    </div>
-
-    <div class="cbBody">
-      <iframe id="chatbotFrame" class="cbFrame" src="TOJUCHATIS/index.html" title="TOJUCHATIS" loading="lazy"
-        referrerpolicy="no-referrer"></iframe>
-    </div>
-  </aside>
+  <!-- TOJUCHATIS deshabilitado (sin acceso, sin token, sin conexión) -->
 
   <!-- ==========================
        TOPBAR CORPORATIVA (UNIFICADA)
@@ -748,7 +730,6 @@
         <a class="btn-nav cotizador" href="#" id="btnOpenCotizador">Cotizador</a>
         <a class="btn-nav patologias" href="#" id="btnOpenPatologias">Buscador Patologías</a>
         <a class="btn-nav imc active" href="#" id="btnOpenIMC">Calculadora IMC</a>
-        <a class="btn-nav chatbot" href="#" id="btnOpenChatbot">TOJUCHATIS</a>
         <a class="btn-nav promo-btn" href="#" id="btnOpenPromos">🎁 Promos</a>
         <a class="btn-nav admin" href="#" id="btnOpenAdmin">Admin</a>
       </nav>
@@ -771,8 +752,6 @@
         <a class="routeLink" href="#" id="btnGoCotizadorTop">Cotizador</a>
         <span class="routeSep">›</span>
         <a class="routeLink" href="#" id="btnOpenPatologiasTop">Buscador Patologías</a>
-        <span class="routeSep">›</span>
-        <a class="routeLink" href="#" id="btnOpenChatbotTop">TOJUCHATIS</a>
         <span class="routeSep">›</span>
         <a class="routeLink" href="#" id="btnOpenAdminTop">Admin</a>
       </nav>
@@ -936,55 +915,8 @@
 
   <script>
 
-    /* ==========================
-       CHATBOT PANEL (open/close) - ÚNICO Y ROBUSTO
-       - Abre: botón topbar
-       - Cierra: X, overlay, ESC
-       ========================== */
-    (function initChatbotPanel() {
-      const btnHeader = document.getElementById('btnOpenChatbot');
-      const btnTopOpen = document.getElementById('btnOpenChatbotTop');
-      const btnClose = document.getElementById('btnCloseChatbot');
-      const overlay = document.getElementById('chatbotOverlay');
-      const panel = document.getElementById('chatbotPanel');
-
-      if (!btnClose || !overlay || !panel) return;
-
-      function toggleChatbot(forceState) {
-        const isOpen = document.body.classList.contains('cbOpen');
-        const nextState = (typeof forceState === 'boolean') ? forceState : !isOpen;
-
-        document.body.classList.toggle('cbOpen', nextState);
-        overlay.setAttribute('aria-hidden', !nextState);
-        panel.setAttribute('aria-hidden', !nextState);
-
-        // Pasar rol al iframe cuando se abre
-        if (nextState) {
-          const iframe = document.getElementById('chatbotFrame');
-          const role = localStorage.getItem('adeslas_user_role') || 'user';
-          if (iframe) {
-            let baseSrc = iframe.getAttribute('src').split('?')[0];
-            iframe.setAttribute('src', baseSrc + '?role=' + role);
-          }
-        }
-      }
-
-      if (btnHeader) btnHeader.addEventListener('click', (e) => { e.preventDefault(); toggleChatbot(); });
-      if (btnTopOpen) btnTopOpen.addEventListener('click', (e) => { e.preventDefault(); toggleChatbot(); });
-
-      btnClose.addEventListener('click', function (e) {
-        e.preventDefault();
-        toggleChatbot(false);
-      });
-
-      overlay.addEventListener('click', function () {
-        toggleChatbot(false);
-      });
-
-      document.addEventListener('keydown', function (ev) {
-        if (ev.key === 'Escape') toggleChatbot(false);
-      });
-    })();
+    // TOJUCHATIS deshabilitado: sin panel, sin iframe, sin tokens.
+    try { localStorage.removeItem('tojuchatis_token'); localStorage.removeItem('tojuchatis_feedback'); } catch (e) {}
 
     // ==========================
     // CALCULADORA IMC (JS puro)
@@ -1178,12 +1110,6 @@
         btnAdmin.style.display = "none";
       }
 
-      // Pasar rol al chatbot
-      const iframe = document.getElementById("chatbotFrame");
-      if (iframe) {
-        let baseSrc = iframe.getAttribute("src").split("?")[0];
-        iframe.setAttribute("src", baseSrc + "?role=" + role);
-      }
     })();
 
     // -- Botón Salir del header --
