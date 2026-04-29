@@ -516,7 +516,6 @@
         <a class="btn-nav cotizador" href="#" id="btnOpenCotizador">Cotizador</a>
         <a class="btn-nav patologias" href="#" id="btnOpenPatologias">Buscador Patologías</a>
         <a class="btn-nav imc" href="#" id="btnOpenIMC">Calculadora IMC</a>
-        <a class="btn-nav chatbot" href="#" id="btnOpenChatbot">TOJUCHATIS</a>
         <a class="btn-nav promo-btn active" href="#" id="btnOpenPromos">🎁 Promos</a>
         <a class="btn-nav admin" href="#" id="btnOpenAdmin">Admin</a>
       </nav>
@@ -858,12 +857,8 @@
     document.getElementById("btnOpenIMC").addEventListener("click", (e) => { e.preventDefault(); openToolPage("imc"); });
     document.getElementById("btnOpenAdmin").addEventListener("click", (e) => { e.preventDefault(); openToolPage("admin"); });
 
-    // Chatbot opens the chatbot page
-    document.getElementById("btnOpenChatbot").addEventListener("click", (e) => {
-      e.preventDefault();
-      // Navigate to cotizador and open chatbot automatically
-      location.href = "cotizador_comercial_cp_edades.html?open_chatbot=1";
-    });
+    // TOJUCHATIS deshabilitado: sin acceso, sin token, sin conexión.
+    try { localStorage.removeItem('tojuchatis_token'); localStorage.removeItem('tojuchatis_feedback'); } catch (e) {}
 
     // Logout
     document.getElementById("btnLogout").addEventListener("click", () => {
