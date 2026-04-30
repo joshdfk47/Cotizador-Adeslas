@@ -3910,6 +3910,10 @@ const DATA = {
       "user": {
         "pass": "adeslas2026",
         "role": "user"
+      },
+      "asesor": {
+        "pass": "adeslas2026",
+        "role": "user"
       }
     },
     "gemini_api_key": "",
