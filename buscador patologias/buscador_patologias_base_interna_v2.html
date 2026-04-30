@@ -1130,7 +1130,6 @@
         <a class="btn-nav cotizador" href="#" id="btnOpenCotizador">Cotizador</a>
         <a class="btn-nav patologias active" href="#" id="btnOpenPatologias">Buscador Patologías</a>
         <a class="btn-nav imc" href="#" id="btnOpenIMC">Calculadora IMC</a>
-        <a class="btn-nav chatbot" href="#" id="btnOpenChatbot">TOJUCHATIS</a>
         <a class="btn-nav promo-btn" href="#" id="btnOpenPromos">🎁 Promos</a>
         <a class="btn-nav admin" href="#" id="btnOpenAdmin">Admin</a>
       </nav>
@@ -2755,19 +2754,8 @@
         const btnPromos = document.getElementById("btnOpenPromos");
         if (btnPromos) btnPromos.onclick = (e) => { e.preventDefault(); location.href = "../promos.html"; };
 
-        // --- CHATBOT PANEL (TOJUCHATIS) ---
-        const btnChatbot = document.getElementById("btnOpenChatbot");
-        const btnCloseChatbot = document.getElementById("btnCloseChatbot");
-        const overlayChatbot = document.getElementById("chatbotOverlay");
-
-        if (btnChatbot) btnChatbot.onclick = (e) => { 
-            e.preventDefault(); 
-            document.body.classList.add("cbOpen"); 
-        };
-        
-        const closeCb = () => document.body.classList.remove("cbOpen");
-        if (btnCloseChatbot) btnCloseChatbot.onclick = closeCb;
-        if (overlayChatbot) overlayChatbot.onclick = closeCb;
+        // TOJUCHATIS deshabilitado: sin acceso, sin token, sin conexión.
+        try { localStorage.removeItem('tojuchatis_token'); localStorage.removeItem('tojuchatis_feedback'); } catch (e) {}
 
         // Botones de Admin Tools: XLSX / JSON / Subir
         if (document.getElementById("btnExportJSON")) document.getElementById("btnExportJSON").onclick = downloadJSON;
@@ -2780,82 +2768,7 @@
 
     window.addEventListener('DOMContentLoaded', init);
 </script>
-  <!-- ==========================
-     PANEL CHATBOT (IFRAME)
-     ========================== -->
-  <div id="chatbotOverlay" class="cbOverlay" aria-hidden="true"></div>
-
-  <aside id="chatbotPanel" class="cbPanel" aria-hidden="true" role="dialog" aria-label="TOJUCHATIS">
-    <div class="cbHeader">
-      <div class="cbTitle">
-        <b>TOJUCHATIS</b>
-        <small>Especialista en Seguros Médicos</small>
-      </div>
-      <button id="btnCloseChatbot" class="cbClose" type="button" aria-label="Cerrar">×</button>
-    </div>
-
-    <div class="cbBody">
-      <!-- Botón de expansión flotante (Arrow) -->
-      <button id="btnExpandChatbot" class="cbExpandBtn" title="Expandir/Reducir">◀</button>
-      
-      <!-- Patologías suele estar en subcarpeta: por eso ../TOJUCHATIS/index.html -->
-      <iframe id="chatbotFrame" class="cbFrame" src="../TOJUCHATIS/index.html" title="TOJUCHATIS" loading="lazy"
-        referrerpolicy="no-referrer"></iframe>
-    </div>
-  </aside>
-
-
-  <script>
-    // --- REDIMENSIONADOR Y EXPANSOR DEL PANEL DEL CHATBOT ---
-    window.addEventListener("DOMContentLoaded", () => {
-      const cbPanel = document.getElementById("chatbotPanel");
-      const chatbotOverlay = document.getElementById("chatbotOverlay");
-      const btnExpand = document.getElementById("btnExpandChatbot");
-      if (!cbPanel || !btnExpand) return;
-      
-      const resizer = document.createElement("div");
-      resizer.style.cssText = "position:absolute; left:0; top:0; bottom:0; width:12px; cursor:ew-resize; z-index:99999; background: transparent;";
-      resizer.onmouseenter = () => resizer.style.background = "rgba(0, 194, 255, 0.15)";
-      resizer.onmouseleave = () => { if(!window.isResizingCB) resizer.style.background = "transparent"; };
-      cbPanel.appendChild(resizer);
-      
-      window.isResizingCB = false;
-
-      btnExpand.addEventListener("click", () => {
-        document.body.classList.toggle("cbExpanded");
-        btnExpand.innerText = document.body.classList.contains("cbExpanded") ? "▶" : "◀";
-      });
-
-      resizer.addEventListener("mousedown", (e) => {
-        window.isResizingCB = true;
-        document.body.style.userSelect = "none";
-        document.body.style.cursor = "ew-resize";
-        resizer.style.background = "rgba(0, 194, 255, 0.3)";
-        const frame = document.getElementById("chatbotFrame");
-        if(frame) frame.style.pointerEvents = "none";
-      });
-      
-      document.addEventListener("mousemove", (e) => {
-        if (!window.isResizingCB) return;
-        const newWidth = Math.max(320, Math.min(window.innerWidth - e.clientX, window.innerWidth * 0.95));
-        cbPanel.style.width = newWidth + "px";
-        // Si redimensionamos manualmente, quitamos el modo expandido automático
-        document.body.classList.remove("cbExpanded");
-        btnExpand.innerText = "◀";
-      });
-      
-      document.addEventListener("mouseup", () => {
-        if(window.isResizingCB) {
-          window.isResizingCB = false;
-          document.body.style.userSelect = "";
-          document.body.style.cursor = "";
-          resizer.style.background = "transparent";
-          const frame = document.getElementById("chatbotFrame");
-          if(frame) frame.style.pointerEvents = "auto";
-        }
-      });
-    });
-  </script>
+  <!-- TOJUCHATIS deshabilitado (sin acceso, sin token, sin conexión) -->
 </body>
 
 </html>
