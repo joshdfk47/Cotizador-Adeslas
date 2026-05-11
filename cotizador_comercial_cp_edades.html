@@ -1441,7 +1441,7 @@
       return (idx < arr.length) ? arr[idx] : arr[arr.length - 1];
     }
 
-    function buildPromoSection(promos, productName, numInsured) {
+    function buildPromoSection(promos, productName, numInsured, isOnlyConDental) {
       if (!promos || !promos.length) return null;
 
       // PYMES TOTAL no tiene esta promoción
@@ -1475,26 +1475,28 @@
       }
       det.appendChild(summary);
 
-      if (!isSeniors) {
-        const content = document.createElement('div');
-        content.style.padding = "4px 0 10px 0";
+      const content = document.createElement('div');
+      content.style.padding = "4px 0 10px 0";
 
-        for (const p of aboveDesglosePromos) {
-          const valSin = getPromoValue(p, productName, numInsured, false);
-          const valCon = getPromoValue(p, productName, numInsured, true);
+      for (const p of aboveDesglosePromos) {
+        const valSin = getPromoValue(p, productName, numInsured, false);
+        const valCon = getPromoValue(p, productName, numInsured, true);
 
+        // Productos TOTALES (only_con_dental): SIEMPRE van con dental,
+        // no se muestra la línea "Sin Dental".
+        if (!isOnlyConDental) {
           const rowSin = document.createElement('div');
           rowSin.className = 'promo-row-simple';
           rowSin.innerHTML = `<span>Sin Dental</span><b>+${valSin.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} €</b>`;
           content.appendChild(rowSin);
-
-          const rowCon = document.createElement('div');
-          rowCon.className = 'promo-row-simple';
-          rowCon.innerHTML = `<span>Con Dental</span><b>+${valCon.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} €</b>`;
-          content.appendChild(rowCon);
         }
-        det.appendChild(content);
+
+        const rowCon = document.createElement('div');
+        rowCon.className = 'promo-row-simple';
+        rowCon.innerHTML = `<span>Con Dental</span><b>+${valCon.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} €</b>`;
+        content.appendChild(rowCon);
       }
+      det.appendChild(content);
 
       return det;
     }
@@ -1842,9 +1844,11 @@
         return { ok: false, reason: allowedCheck.reason || "No cumple las reglas de contratación", product, constraints };
       }
 
+      let anyInsurable = false;
       for (const age of state.ages) {
         const basePrice = getPrice(productLookup, state.zona, age);
         const base = (basePrice === "No asegurable") ? 0 : basePrice;
+        if (basePrice !== "No asegurable") anyInsurable = true;
 
         // Precio individual con descuentos
         const discounted = base * multiFactor * pensFactor * k6Factor;
@@ -1855,6 +1859,11 @@
         totalSinVal += sinLine;
         totalConVal += conLine;
         breakdown.push({ age, base, multi: multiFactor, pens: pensFactor, k6: k6Factor });
+      }
+
+      // Si ninguna edad tiene precio base, el producto no es contratable para esas edades.
+      if (!anyInsurable) {
+        return { ok: false, reason: "No hay asegurables en este rango de edad", product, constraints };
       }
 
       // Añadir dental al total (no por persona) para modos per_person_inherited y per_person_direct
@@ -1996,12 +2005,18 @@
         if (!allowedSet.has(x.product)) return false;
 
         const normalizedName = x.product.toLowerCase();
-        // Filtros estrictos de visualización (por descuento/tipo)
-        if ((x.isGO || isGOProduct(x.product)) && state.discount > 0) return false;
+        // GO con descuento: NO se oculta, se marca como no contratable con mensaje rojo
+        if ((x.isGO || isGOProduct(x.product)) && state.discount > 0) {
+          x.ok = false;
+          x.reason = "No se puede vender con descuento.";
+        }
 
-        // Productos trianuales (isOnlyConDental: Plena Total Vital, Plena Total, Seniors Total, Pymes Total)
-        // solo permiten pago MENSUAL.
-        if (x.isOnlyConDental && state.pay !== "mensual") return false;
+        // Productos trianuales (isOnlyConDental) con pago no mensual:
+        // NO se ocultan, se marcan como no contratables con mensaje.
+        if (x.isOnlyConDental && state.pay !== "mensual") {
+          x.ok = false;
+          x.reason = "Solo se puede vender con pago mensual.";
+        }
 
         return true;
       });
@@ -2160,7 +2175,7 @@
 
           // === PROMO SECTION (above desglose) ===
           const activePromos = loadActivePromos();
-          const promoEl = buildPromoSection(activePromos, r.product, r.numAseguradosTotal);
+          const promoEl = buildPromoSection(activePromos, r.product, r.numAseguradosTotal, r.isOnlyConDental);
           if (promoEl) {
             content.appendChild(promoEl);
           }
