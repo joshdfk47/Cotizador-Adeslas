@@ -2021,11 +2021,8 @@
         return true;
       });
 
-      // SEPARAR OK de ERROR para agrupar los errores al final
-      const okList = computed.filter(x => x.ok);
-      const errList = computed.filter(x => !x.ok);
-      computed = [...okList, ...errList];
-
+      // Respetar el orden por defecto (allowedOrder) o el orden que el usuario haya
+      // establecido arrastrando tarjetas. Los productos sin precio NO se mueven.
       const byName = new Map(computed.map(x => [x.product, x]));
       for (const r of computed) {
         if (!state.productOrder.includes(r.product)) state.productOrder.push(r.product);
@@ -2037,10 +2034,7 @@
         if (item) ordered.push(item);
       }
 
-      // RE-ORDENAR FINAL: Forzar que los que NO están OK vayan al final de la lista visual
-      const finalOk = ordered.filter(x => x.ok);
-      const finalErr = ordered.filter(x => !x.ok);
-      computed = [...finalOk, ...finalErr];
+      computed = ordered;
 
       setStatus(`Tarificación lista: ${computed.length}/${computed.length} productos con precio`, "warn");
 
