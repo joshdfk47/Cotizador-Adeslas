@@ -1441,7 +1441,7 @@
       return (idx < arr.length) ? arr[idx] : arr[arr.length - 1];
     }
 
-    function buildPromoSection(promos, productName, numInsured, isOnlyConDental) {
+    function buildPromoSection(promos, productName, numInsured) {
       if (!promos || !promos.length) return null;
 
       // PYMES TOTAL no tiene esta promoción
@@ -1475,28 +1475,29 @@
       }
       det.appendChild(summary);
 
-      const content = document.createElement('div');
-      content.style.padding = "4px 0 10px 0";
+      {
+        const isOnlyConDentalProd = !!(getProductConstraints(productName) && getProductConstraints(productName).rawRules && getProductConstraints(productName).rawRules.only_con_dental);
+        const content = document.createElement('div');
+        content.style.padding = "4px 0 10px 0";
 
-      for (const p of aboveDesglosePromos) {
-        const valSin = getPromoValue(p, productName, numInsured, false);
-        const valCon = getPromoValue(p, productName, numInsured, true);
+        for (const p of aboveDesglosePromos) {
+          const valSin = getPromoValue(p, productName, numInsured, false);
+          const valCon = getPromoValue(p, productName, numInsured, true);
 
-        // Productos TOTALES (only_con_dental): SIEMPRE van con dental,
-        // no se muestra la línea "Sin Dental".
-        if (!isOnlyConDental) {
-          const rowSin = document.createElement('div');
-          rowSin.className = 'promo-row-simple';
-          rowSin.innerHTML = `<span>Sin Dental</span><b>+${valSin.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} €</b>`;
-          content.appendChild(rowSin);
+          if (!isOnlyConDentalProd) {
+            const rowSin = document.createElement('div');
+            rowSin.className = 'promo-row-simple';
+            rowSin.innerHTML = `<span>Sin Dental</span><b>+${valSin.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} €</b>`;
+            content.appendChild(rowSin);
+          }
+
+          const rowCon = document.createElement('div');
+          rowCon.className = 'promo-row-simple';
+          rowCon.innerHTML = `<span>Con Dental</span><b>+${valCon.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} €</b>`;
+          content.appendChild(rowCon);
         }
-
-        const rowCon = document.createElement('div');
-        rowCon.className = 'promo-row-simple';
-        rowCon.innerHTML = `<span>Con Dental</span><b>+${valCon.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2})} €</b>`;
-        content.appendChild(rowCon);
+        det.appendChild(content);
       }
-      det.appendChild(content);
 
       return det;
     }
@@ -1844,11 +1845,9 @@
         return { ok: false, reason: allowedCheck.reason || "No cumple las reglas de contratación", product, constraints };
       }
 
-      let anyInsurable = false;
       for (const age of state.ages) {
         const basePrice = getPrice(productLookup, state.zona, age);
         const base = (basePrice === "No asegurable") ? 0 : basePrice;
-        if (basePrice !== "No asegurable") anyInsurable = true;
 
         // Precio individual con descuentos
         const discounted = base * multiFactor * pensFactor * k6Factor;
@@ -1861,18 +1860,13 @@
         breakdown.push({ age, base, multi: multiFactor, pens: pensFactor, k6: k6Factor });
       }
 
-      // Si ninguna edad tiene precio base, el producto no es contratable para esas edades.
-      if (!anyInsurable) {
+      if (totalSinVal === 0) {
         return { ok: false, reason: "No hay asegurables en este rango de edad", product, constraints };
       }
 
       // Añadir dental al total (no por persona) para modos per_person_inherited y per_person_direct
       if (rules.dental_mode === "per_person_inherited" || rules.dental_mode === "per_person_direct") {
         totalConVal += dental_total_for_group;
-      }
-
-      if (totalSinVal === 0 && totalConVal === 0) {
-        return { ok: false, reason: "No hay asegurables en este rango de edad", product, constraints };
       }
 
       // 3. DESCUENTOS AL TOTAL
@@ -2005,14 +1999,14 @@
         if (!allowedSet.has(x.product)) return false;
 
         const normalizedName = x.product.toLowerCase();
-        // GO con descuento: NO se oculta, se marca como no contratable con mensaje rojo
+        // Filtros estrictos de visualización (por descuento/tipo)
         if ((x.isGO || isGOProduct(x.product)) && state.discount > 0) {
           x.ok = false;
           x.reason = "No se puede vender con descuento.";
         }
 
-        // Productos trianuales (isOnlyConDental) con pago no mensual:
-        // NO se ocultan, se marcan como no contratables con mensaje.
+        // Productos trianuales (isOnlyConDental: Plena Total Vital, Plena Total, Seniors Total, Pymes Total)
+        // solo permiten pago MENSUAL.
         if (x.isOnlyConDental && state.pay !== "mensual") {
           x.ok = false;
           x.reason = "Solo se puede vender con pago mensual.";
@@ -2021,8 +2015,11 @@
         return true;
       });
 
-      // Respetar el orden por defecto (allowedOrder) o el orden que el usuario haya
-      // establecido arrastrando tarjetas. Los productos sin precio NO se mueven.
+      // SEPARAR OK de ERROR para agrupar los errores al final
+      const okList = computed.filter(x => x.ok);
+      const errList = computed.filter(x => !x.ok);
+      computed = [...okList, ...errList];
+
       const byName = new Map(computed.map(x => [x.product, x]));
       for (const r of computed) {
         if (!state.productOrder.includes(r.product)) state.productOrder.push(r.product);
@@ -2034,7 +2031,10 @@
         if (item) ordered.push(item);
       }
 
-      computed = ordered;
+      // RE-ORDENAR FINAL: Forzar que los que NO están OK vayan al final de la lista visual
+      const finalOk = ordered.filter(x => x.ok);
+      const finalErr = ordered.filter(x => !x.ok);
+      computed = [...finalOk, ...finalErr];
 
       setStatus(`Tarificación lista: ${computed.length}/${computed.length} productos con precio`, "warn");
 
@@ -2169,7 +2169,7 @@
 
           // === PROMO SECTION (above desglose) ===
           const activePromos = loadActivePromos();
-          const promoEl = buildPromoSection(activePromos, r.product, r.numAseguradosTotal, r.isOnlyConDental);
+          const promoEl = buildPromoSection(activePromos, r.product, r.numAseguradosTotal);
           if (promoEl) {
             content.appendChild(promoEl);
           }
