@@ -2005,6 +2005,7 @@
         if ((x.isGO || isGOProduct(x.product)) && state.discount > 0) {
           x.ok = false;
           x.reason = "No se puede vender con descuento.";
+          x.keepPosition = true;
         }
 
         // Productos trianuales (isOnlyConDental: Plena Total Vital, Plena Total, Seniors Total, Pymes Total)
@@ -2012,14 +2013,15 @@
         if (x.isOnlyConDental && state.pay !== "mensual") {
           x.ok = false;
           x.reason = "Solo se puede vender con pago mensual.";
+          x.keepPosition = true;
         }
 
         return true;
       });
 
-      // SEPARAR OK de ERROR para agrupar los errores al final
-      const okList = computed.filter(x => x.ok);
-      const errList = computed.filter(x => !x.ok);
+      // SEPARAR OK de ERROR para agrupar los errores al final (los keepPosition se tratan como ok)
+      const okList = computed.filter(x => x.ok || x.keepPosition);
+      const errList = computed.filter(x => !x.ok && !x.keepPosition);
       computed = [...okList, ...errList];
 
       const byName = new Map(computed.map(x => [x.product, x]));
@@ -2034,8 +2036,8 @@
       }
 
       // RE-ORDENAR FINAL: Forzar que los que NO están OK vayan al final de la lista visual
-      const finalOk = ordered.filter(x => x.ok);
-      const finalErr = ordered.filter(x => !x.ok);
+      const finalOk = ordered.filter(x => x.ok || x.keepPosition);
+      const finalErr = ordered.filter(x => !x.ok && !x.keepPosition);
       computed = [...finalOk, ...finalErr];
 
       setStatus(`Tarificación lista: ${computed.length}/${computed.length} productos con precio`, "warn");
