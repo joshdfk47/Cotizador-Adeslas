@@ -1482,7 +1482,9 @@
 
         for (const p of aboveDesglosePromos) {
           const valSin = getPromoValue(p, productName, numInsured, false);
-          const valCon = getPromoValue(p, productName, numInsured, true);
+          let valCon = getPromoValue(p, productName, numInsured, true);
+          // Ingreso en Cuenta (Seniors / Seniors Total): la fila "Con Dental" es 1.5x la base
+          if (isSeniors) valCon = valSin * 1.5;
 
           if (!isOnlyConDentalProd) {
             const rowSin = document.createElement('div');
