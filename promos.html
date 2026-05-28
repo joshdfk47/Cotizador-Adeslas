@@ -392,6 +392,141 @@
       margin-bottom: 8px;
     }
 
+    /* Promo expandable detail */
+    .promo-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .promo-wrap:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    }
+    .promo-wrap .promo-item {
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      margin: 0;
+      box-shadow: none;
+      cursor: pointer;
+      user-select: none;
+    }
+    .promo-wrap .promo-item:hover {
+      transform: none;
+      box-shadow: none;
+      background: rgba(15,23,42,0.02);
+    }
+    .promo-chevron {
+      font-size: 18px;
+      color: var(--muted);
+      margin-left: 6px;
+      transition: transform .2s ease;
+      flex-shrink: 0;
+    }
+    .promo-wrap.open .promo-chevron {
+      transform: rotate(180deg);
+    }
+    .promo-detail {
+      display: none;
+      padding: 6px 22px 22px;
+      border-top: 1px dashed var(--border);
+      background: #fafbfc;
+    }
+    .promo-wrap.open .promo-detail {
+      display: block;
+    }
+    .pd-section {
+      margin-top: 14px;
+    }
+    .pd-section h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      font-weight: 1000;
+      color: var(--brand);
+      letter-spacing: .3px;
+      text-transform: uppercase;
+    }
+    .pd-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .pd-kv {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .pd-kv b {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+    .pd-kv span {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 900;
+    }
+    .pd-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .pd-table th, .pd-table td {
+      padding: 8px 10px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .pd-table th {
+      background: #f1f5f9;
+      font-weight: 1000;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+    .pd-table td.cat {
+      text-align: left;
+      font-weight: 900;
+      color: var(--text);
+      background: #fafbfc;
+    }
+    .pd-table tr:last-child td { border-bottom: none; }
+    .pd-table .v-months {
+      color: #1d4ed8;
+      font-weight: 1000;
+    }
+    .pd-table .v-disc {
+      color: #16a34a;
+      font-weight: 1000;
+    }
+    .pd-table .v-zero { color: #cbd5e1; font-weight: 700; }
+    .pd-note {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      background: #fff;
+      border-left: 3px solid var(--brand2);
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 6px;
+    }
+
     /* Form grid for promo values */
     .values-grid {
       display: grid;
@@ -501,6 +636,61 @@
       font-weight: 800;
       color: var(--text);
     }
+
+    /* Campaign grid */
+    .camp-cat {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 14px 10px;
+      margin-bottom: 12px;
+    }
+    .camp-cat .cat-title {
+      font-size: 14px;
+      font-weight: 1000;
+      color: var(--brand);
+      margin-bottom: 10px;
+    }
+    .camp-cells {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .camp-cell {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+    }
+    .camp-cell .cell-h {
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .camp-cell .cell-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .camp-cell .cell-row label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+      width: 56px;
+    }
+    .camp-cell .cell-row input {
+      flex: 1;
+      padding: 6px 8px;
+      font-size: 13px;
+      text-align: center;
+      font-weight: 700;
+    }
+    @media (max-width: 600px) {
+      .camp-cells { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 
@@ -573,6 +763,7 @@
           <div class="label">Tipo de valor</div>
           <select id="promoType">
             <option value="per_insured">Por nº de asegurados (diccionario)</option>
+            <option value="campaign">🌅 Campaña (meses gratis + puntos + dto %)</option>
             <option value="fixed">Valor fijo</option>
             <option value="percentage">Porcentaje</option>
           </select>
@@ -580,6 +771,46 @@
       </div>
 
       <hr class="divider">
+
+      <!-- CAMPAIGN SECTION (meses gratis + puntos + descuentos) -->
+      <div id="campaignSection" style="display:none;">
+        <h3>🌅 Configuración de Campaña</h3>
+        <p style="font-size:13px; color:var(--muted); font-weight:600; margin-bottom:14px;">
+          Define meses gratis y % de descuento por categoría de producto y nº de asegurados.
+          Esta promo se SUMA a las demás activas (los precios reflejan el descuento; los puntos se acumulan a las Tarjetas Regalo).
+        </p>
+
+        <div class="form-row">
+          <div class="field">
+            <div class="label">Puntos por asegurado</div>
+            <input type="number" id="campPoints" min="0" step="1" value="250" />
+          </div>
+          <div class="field">
+            <div class="label">€ por punto (canje en cheques)</div>
+            <input type="number" id="campEurPerPoint" min="0" step="0.01" value="0.10" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <div class="label">Umbral mínimo para tarjeta regalo (puntos)</div>
+            <input type="number" id="campMinCardPoints" min="0" step="50" value="500" />
+          </div>
+          <div class="field">
+            <div class="label">Aviso (banner)</div>
+            <input type="text" id="campNotice" value="Válido solo en Junio. Se suma a la promo de Tarjetas Regalo." />
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <h3 style="color:#2563eb;">📋 Tabla por categoría × nº asegurados</h3>
+        <p style="font-size:12px; color:var(--muted); font-weight:600; margin-bottom:10px;">
+          Cada celda admite <b>meses gratis</b> y <b>% de descuento</b>. Si pones %, se aplica al precio. Si pones meses, se calcula el precio medio año 1 / año 2.
+        </p>
+
+        <div id="campaignGrid"></div>
+      </div>
 
       <div id="dictSection">
         <h3>📊 Diccionarios de valores por nº de asegurados</h3>
@@ -686,6 +917,89 @@
     buildGrid("gridOtrosCon", defaultOtrosCon);
 
     // ============================================================
+    // CAMPAIGN — Categorías y grid (meses gratis + dto %)
+    // ============================================================
+    const CAMP_CATEGORIES = [
+      { key: "plena_total",         label: "Adeslas Plena Total / Plena Total Vital" },
+      { key: "plena_total_seniors", label: "Adeslas Plena Total Seniors" },
+      { key: "gama_con_dental",     label: "Gama Plena y Adeslas Seniors + cobertura dental" },
+      { key: "gama_sin_dental",     label: "Gama Plena, Adeslas Seniors y Adeslas Dental Max" },
+      { key: "pymes_total",         label: "Adeslas Pymes Total (empresas)" },
+      { key: "anuales",             label: "Pólizas Anuales (resto de productos en pago anual)" }
+    ];
+    const CAMP_BUCKETS = ["1", "2", "3+"];
+
+    // Valores por defecto según la campaña Junio 2026 que pidió el usuario
+    const DEFAULT_CAMPAIGN_RULES = {
+      plena_total:         { "1": { months: 2, discount: 0  }, "2": { months: 3, discount: 0  }, "3+": { months: 0, discount: 25 } },
+      plena_total_seniors: { "1": { months: 2, discount: 0  }, "2": { months: 3, discount: 0  }, "3+": { months: 3, discount: 0  } },
+      gama_con_dental:     { "1": { months: 2, discount: 0  }, "2": { months: 3, discount: 0  }, "3+": { months: 3, discount: 0  } },
+      gama_sin_dental:     { "1": { months: 2, discount: 0  }, "2": { months: 2, discount: 0  }, "3+": { months: 2, discount: 0  } },
+      pymes_total:         { "1": { months: 0, discount: 5  }, "2": { months: 0, discount: 5  }, "3+": { months: 0, discount: 15 } },
+      anuales:             { "1": { months: 0, discount: 5  }, "2": { months: 0, discount: 5  }, "3+": { months: 0, discount: 10 } }
+    };
+
+    function buildCampaignGrid(rules) {
+      const cont = document.getElementById("campaignGrid");
+      cont.innerHTML = "";
+      for (const cat of CAMP_CATEGORIES) {
+        const block = document.createElement("div");
+        block.className = "camp-cat";
+        let cellsHtml = '<div class="camp-cells">';
+        for (const b of CAMP_BUCKETS) {
+          const r = (rules && rules[cat.key] && rules[cat.key][b]) || { months: 0, discount: 0 };
+          const headerLabel = b === "3+" ? "3 o más aseg." : (b + (b === "1" ? " asegurado" : " asegurados"));
+          cellsHtml += `
+            <div class="camp-cell" data-cat="${cat.key}" data-bucket="${b}">
+              <div class="cell-h">${headerLabel}</div>
+              <div class="cell-row">
+                <label>Meses</label>
+                <input type="number" min="0" step="1" value="${r.months || 0}" data-field="months" />
+              </div>
+              <div class="cell-row">
+                <label>% Dto</label>
+                <input type="number" min="0" max="100" step="1" value="${r.discount || 0}" data-field="discount" />
+              </div>
+            </div>
+          `;
+        }
+        cellsHtml += "</div>";
+        block.innerHTML = `<div class="cat-title">${cat.label}</div>` + cellsHtml;
+        cont.appendChild(block);
+      }
+    }
+
+    function getCampaignRulesFromGrid() {
+      const rules = {};
+      document.querySelectorAll("#campaignGrid .camp-cell").forEach(cell => {
+        const cat = cell.dataset.cat;
+        const bucket = cell.dataset.bucket;
+        const inputs = cell.querySelectorAll("input");
+        let months = 0, discount = 0;
+        inputs.forEach(inp => {
+          const v = parseFloat(inp.value) || 0;
+          if (inp.dataset.field === "months") months = v;
+          else if (inp.dataset.field === "discount") discount = v;
+        });
+        rules[cat] = rules[cat] || {};
+        rules[cat][bucket] = { months, discount };
+      });
+      return rules;
+    }
+
+    buildCampaignGrid(DEFAULT_CAMPAIGN_RULES);
+
+    // Mostrar / ocultar bloques según tipo de promo
+    const promoTypeSel = document.getElementById("promoType");
+    function toggleTypeSections() {
+      const t = promoTypeSel.value;
+      document.getElementById("campaignSection").style.display = (t === "campaign") ? "" : "none";
+      document.getElementById("dictSection").style.display = (t === "per_insured") ? "" : "none";
+    }
+    promoTypeSel.addEventListener("change", toggleTypeSections);
+    toggleTypeSections();
+
+    // ============================================================
     // PROMO LIST RENDERING
     // ============================================================
     function renderPromoList() {
@@ -705,35 +1019,56 @@
 
       list.innerHTML = "";
       promos.forEach((p, idx) => {
-        const item = document.createElement("div");
-        item.className = "promo-item";
-        item.innerHTML = `
-          <div class="promo-icon">${p.icon || "🎁"}</div>
-          <div class="promo-info">
-            <div class="promo-name">${escapeHtml(p.name)}</div>
-            <div class="promo-desc">${escapeHtml(p.description || "Sin descripción")}</div>
-            <div>
-              <span class="promo-badge ${p.active ? '' : 'inactive'}">
-                ${p.active ? '✅ Activa' : '⏸️ Inactiva'}
-              </span>
-              <span style="font-size:11px; color:var(--muted); font-weight:700; margin-left:8px;">
-                📍 ${p.location === 'above_desglose' ? 'Arriba de desglose' : p.location === 'below_prices' ? 'Debajo de precios' : 'Arriba de precios'}
-              </span>
+        const wrap = document.createElement("div");
+        wrap.className = "promo-wrap";
+        wrap.dataset.idx = idx;
+
+        const typeChip = (p.type === "campaign")
+          ? `<span style="font-size:11px; font-weight:800; padding:3px 8px; border-radius:999px; background:rgba(37,99,235,0.10); color:#2563eb; border:1px solid rgba(37,99,235,0.20); margin-left:8px;">🌅 Campaña</span>`
+          : `<span style="font-size:11px; font-weight:800; padding:3px 8px; border-radius:999px; background:rgba(245,158,11,0.10); color:#b45309; border:1px solid rgba(245,158,11,0.20); margin-left:8px;">🎁 Regalo / Puntos</span>`;
+
+        wrap.innerHTML = `
+          <div class="promo-item">
+            <div class="promo-icon">${p.icon || "🎁"}</div>
+            <div class="promo-info">
+              <div class="promo-name">${escapeHtml(p.name)}</div>
+              <div class="promo-desc">${escapeHtml(p.description || "Sin descripción")}</div>
+              <div>
+                <span class="promo-badge ${p.active ? '' : 'inactive'}">
+                  ${p.active ? '✅ Activa' : '⏸️ Inactiva'}
+                </span>
+                <span style="font-size:11px; color:var(--muted); font-weight:700; margin-left:8px;">
+                  📍 ${p.location === 'above_desglose' ? 'Arriba de desglose' : p.location === 'below_prices' ? 'Debajo de precios' : 'Arriba de precios'}
+                </span>
+                ${typeChip}
+              </div>
             </div>
+            <div class="promo-actions">
+              <button class="btn-toggle" title="${p.active ? 'Desactivar' : 'Activar'}" data-idx="${idx}">
+                ${p.active ? '⏸️' : '▶️'}
+              </button>
+              <button class="btn-del" title="Eliminar" data-idx="${idx}">🗑️</button>
+            </div>
+            <div class="promo-chevron" aria-hidden="true">⌄</div>
           </div>
-          <div class="promo-actions">
-            <button class="btn-toggle" title="${p.active ? 'Desactivar' : 'Activar'}" data-idx="${idx}">
-              ${p.active ? '⏸️' : '▶️'}
-            </button>
-            <button class="btn-del" title="Eliminar" data-idx="${idx}">🗑️</button>
-          </div>
+          <div class="promo-detail">${renderPromoDetail(p)}</div>
         `;
-        list.appendChild(item);
+        list.appendChild(wrap);
+      });
+
+      // Toggle expand on click (excluding action buttons)
+      list.querySelectorAll(".promo-wrap").forEach(wrap => {
+        const head = wrap.querySelector(".promo-item");
+        head.addEventListener("click", (e) => {
+          if (e.target.closest(".promo-actions")) return;
+          wrap.classList.toggle("open");
+        });
       });
 
       // Wire toggle buttons
       list.querySelectorAll(".btn-toggle").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
           const i = parseInt(btn.dataset.idx);
           const promos = loadPromos();
           promos[i].active = !promos[i].active;
@@ -744,7 +1079,8 @@
 
       // Wire delete buttons
       list.querySelectorAll(".btn-del").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
           const i = parseInt(btn.dataset.idx);
           if (!confirm("¿Seguro que quieres eliminar esta promo?")) return;
           const promos = loadPromos();
@@ -753,6 +1089,146 @@
           renderPromoList();
         });
       });
+    }
+
+    // ============================================================
+    // PROMO DETAIL (expandible) — explica qué hace la promo
+    // ============================================================
+    function renderPromoDetail(p) {
+      if (p.type === "campaign" && p.campaign) {
+        return renderCampaignDetail(p);
+      }
+      if (p.type === "per_insured" && p.values) {
+        return renderPerInsuredDetail(p);
+      }
+      return `<div class="pd-note">Sin detalles configurables para este tipo de promo.</div>`;
+    }
+
+    function renderCampaignDetail(p) {
+      const c = p.campaign;
+      const fmtEur = v => (v == null ? "—" : Number(v).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €");
+
+      // KPIs
+      let html = `
+        <div class="pd-section">
+          <h4>Cómo funciona esta promo</h4>
+          <div class="pd-note">
+            Esta campaña <b>se suma</b> al resto de promos activas. En el cotizador se aplica al precio
+            (los descuentos % bajan el importe mostrado) y se muestra un bloque con <b>meses gratis</b>,
+            <b>precio medio Año 1 / Año 2</b> y los <b>puntos extra</b> por asegurado.
+          </div>
+        </div>
+
+        <div class="pd-section">
+          <h4>Parámetros generales</h4>
+          <div class="pd-grid">
+            <div class="pd-kv"><b>Puntos por asegurado</b><span>${c.points_per_insured || 0} pts</span></div>
+            <div class="pd-kv"><b>Equivalencia en cheques</b><span>1 pt = ${fmtEur(c.eur_per_point)}</span></div>
+            <div class="pd-kv"><b>Mínimo para Tarjeta Regalo</b><span>${c.min_card_points || 0} pts</span></div>
+            <div class="pd-kv"><b>Por debajo del mínimo</b><span>Solo cheques</span></div>
+          </div>
+        </div>
+
+        <div class="pd-section">
+          <h4>Distribución de meses gratis (regla fija)</h4>
+          <div class="pd-grid">
+            <div class="pd-kv"><b>1 mes gratis</b><span>Año 1: 1 · Año 2: 0</span></div>
+            <div class="pd-kv"><b>2 meses gratis</b><span>Año 1: 1 · Año 2: 1</span></div>
+            <div class="pd-kv"><b>3 meses gratis</b><span>Año 1: 2 · Año 2: 1</span></div>
+          </div>
+        </div>
+
+        <div class="pd-section">
+          <h4>Tabla por categoría × nº asegurados</h4>
+          <table class="pd-table">
+            <thead>
+              <tr>
+                <th style="text-align:left;">Categoría de producto</th>
+                <th>1 aseg.</th>
+                <th>2 aseg.</th>
+                <th>3 o más aseg.</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      const rules = c.rules || {};
+      for (const cat of CAMP_CATEGORIES) {
+        const row = rules[cat.key] || {};
+        const cellHtml = (bucket) => {
+          const r = row[bucket] || { months: 0, discount: 0 };
+          const m = r.months || 0;
+          const d = r.discount || 0;
+          if (m === 0 && d === 0) return `<span class="v-zero">—</span>`;
+          const parts = [];
+          if (m > 0) parts.push(`<span class="v-months">${m} ${m === 1 ? "mes" : "meses"} gratis</span>`);
+          if (d > 0) parts.push(`<span class="v-disc">-${d}%</span>`);
+          return parts.join('<br>');
+        };
+        html += `
+          <tr>
+            <td class="cat">${escapeHtml(cat.label)}</td>
+            <td>${cellHtml("1")}</td>
+            <td>${cellHtml("2")}</td>
+            <td>${cellHtml("3+")}</td>
+          </tr>
+        `;
+      }
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      if (c.notice) {
+        html += `
+          <div class="pd-section">
+            <h4>Aviso al asesor</h4>
+            <div class="pd-note">ℹ️ ${escapeHtml(c.notice)}</div>
+          </div>
+        `;
+      }
+      return html;
+    }
+
+    function renderPerInsuredDetail(p) {
+      const v = p.values || {};
+      const fmtEur = x => (Number(x) || 0).toLocaleString("es-ES", { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + " €";
+
+      const rowHtml = (label, arr) => {
+        const cells = (arr || []).map(x => `<td>${fmtEur(x)}</td>`).join("");
+        return `<tr><td class="cat">${label}</td>${cells}</tr>`;
+      };
+
+      const headerCells = Array.from({ length: 11 }, (_, i) => `<th>${i}</th>`).join("");
+
+      return `
+        <div class="pd-section">
+          <h4>Cómo funciona esta promo</h4>
+          <div class="pd-note">
+            Tarjeta / cheque regalo según <b>nº de asegurados</b>. El importe se muestra en el cotizador
+            como bloque "🎁 Tarjetas Regalo" debajo del precio de cada producto. Se acumula con la
+            campaña de Junio.
+          </div>
+        </div>
+
+        <div class="pd-section">
+          <h4>Valores en € por nº de asegurados</h4>
+          <table class="pd-table">
+            <thead>
+              <tr>
+                <th style="text-align:left;">Producto / Cobertura</th>
+                ${headerCells}
+              </tr>
+            </thead>
+            <tbody>
+              ${rowHtml("Go — Sin Dental",    v.go_sin_dental)}
+              ${rowHtml("Go — Con Dental",    v.go_con_dental)}
+              ${rowHtml("Otros — Sin Dental", v.otros_sin_dental)}
+              ${rowHtml("Otros — Con Dental", v.otros_con_dental)}
+            </tbody>
+          </table>
+        </div>
+      `;
     }
 
     function escapeHtml(str) {
@@ -771,22 +1247,34 @@
         return;
       }
 
+      const type = document.getElementById("promoType").value;
       const promo = {
         id: generateId(),
         name: name,
         icon: document.getElementById("promoIcon").value.trim() || "🎁",
         description: document.getElementById("promoDesc").value.trim(),
         location: document.getElementById("promoLocation").value,
-        type: document.getElementById("promoType").value,
+        type: type,
         active: true,
-        createdAt: new Date().toISOString(),
-        values: {
+        createdAt: new Date().toISOString()
+      };
+
+      if (type === "campaign") {
+        promo.campaign = {
+          points_per_insured: parseFloat(document.getElementById("campPoints").value) || 0,
+          eur_per_point: parseFloat(document.getElementById("campEurPerPoint").value) || 0,
+          min_card_points: parseFloat(document.getElementById("campMinCardPoints").value) || 0,
+          notice: document.getElementById("campNotice").value.trim(),
+          rules: getCampaignRulesFromGrid()
+        };
+      } else {
+        promo.values = {
           go_sin_dental: getGridValues("gridGoSin"),
           go_con_dental: getGridValues("gridGoCon"),
           otros_sin_dental: getGridValues("gridOtrosSin"),
           otros_con_dental: getGridValues("gridOtrosCon")
-        }
-      };
+        };
+      }
 
       const promos = loadPromos();
       promos.push(promo);
@@ -800,6 +1288,7 @@
       buildGrid("gridGoCon", defaultGoCon);
       buildGrid("gridOtrosSin", defaultOtrosSin);
       buildGrid("gridOtrosCon", defaultOtrosCon);
+      buildCampaignGrid(DEFAULT_CAMPAIGN_RULES);
 
       renderPromoList();
       alert("✅ Promo guardada correctamente");
@@ -837,6 +1326,34 @@
           }
         };
         promos.push(defaultPromo);
+        savePromos(promos);
+        renderPromoList();
+      }
+    })();
+
+    // Seed campaña "Promoción Junio 2026" (no destructivo — coexiste con la promo de Tarjetas Regalo)
+    (function seedJuneCampaign() {
+      const promos = loadPromos();
+      const hasCampaign = promos.some(p => p.type === "campaign" || (p.name || "").toLowerCase().includes("junio"));
+      if (!hasCampaign) {
+        const juneCampaign = {
+          id: "promo_campaign_junio_2026",
+          name: "Promoción Junio 2026",
+          icon: "🌅",
+          description: "Meses gratis + 250 puntos/asegurado. Solo durante Junio. Se suma a la promo de Tarjetas Regalo.",
+          location: "below_prices",
+          type: "campaign",
+          active: true,
+          createdAt: new Date().toISOString(),
+          campaign: {
+            points_per_insured: 250,
+            eur_per_point: 0.10,
+            min_card_points: 500,
+            notice: "Solo durante Junio. Se suma a la promo de Tarjetas Regalo.",
+            rules: JSON.parse(JSON.stringify(DEFAULT_CAMPAIGN_RULES))
+          }
+        };
+        promos.push(juneCampaign);
         savePromos(promos);
         renderPromoList();
       }

@@ -1054,6 +1054,13 @@
             <option value="anual">Anual (-6%)</option>
           </select>
         </div>
+
+        <div class="field">
+          <div class="label">
+            <span>Fecha de Efecto</span>
+          </div>
+          <input id="effectiveDateInput" type="date" style="padding: 12px 10px;" />
+        </div>
       </div>
 
       <!-- Chips de edades: fila propia bajo los controles -->
@@ -1098,7 +1105,8 @@
     function getEmptyState() {
       return {
         cp: "", provCode: "", provincia: "", zona: null, zonaRaw: null,
-        ages: [], discount: 0, pay: "mensual", filter: "", productOrder: []
+        ages: [], discount: 0, pay: "mensual", filter: "", productOrder: [],
+        effectiveDate: ""
       };
     }
 
@@ -1167,7 +1175,9 @@
       if (elDiscount) elDiscount.value = state.discount.toString();
       if (elPay) elPay.value = state.pay || "mensual";
       if (elFilter) elFilter.value = state.filter || "";
-      
+      const elEff = document.getElementById("effectiveDateInput");
+      if (elEff) elEff.value = state.effectiveDate || "";
+
       renderAll();
     }
 
@@ -1428,6 +1438,99 @@
       return [];
     }
 
+    // ==========================
+    // CAMPAIGN PROMO (meses gratis + puntos + dto %)
+    // ==========================
+    function loadActiveCampaign() {
+      const promos = loadActivePromos();
+      return promos.find(p => p.type === "campaign" && p.campaign) || null;
+    }
+
+    function mapProductToCampaignCategory(product, withDental, payMode) {
+      const p = (product || "").toLowerCase();
+      // Pymes TOTAL → categoría empresarial específica
+      if (p.includes("pymes total")) return "pymes_total";
+      // Plena Total Seniors
+      if (p.includes("plena total seniors")) return "plena_total_seniors";
+      // Plena Total / Plena Total Vital (no Seniors — ya cazada arriba)
+      if (p.includes("plena total")) return "plena_total";
+      // NIF / empresarial-no-pymes-total pagado anual → "Anuales"
+      if (payMode === "anual" && (p.includes("nif") || p.includes("cif"))) return "anuales";
+      // Gama Plena / Seniors / Dental Max — depende de dental
+      return withDental ? "gama_con_dental" : "gama_sin_dental";
+    }
+
+    function getCampaignBucket(n) {
+      if (n <= 1) return "1";
+      if (n === 2) return "2";
+      return "3+";
+    }
+
+    function getCampaignRule(campaign, product, numInsured, withDental, payMode) {
+      if (!campaign || !campaign.campaign || !campaign.campaign.rules) return null;
+      const cat = mapProductToCampaignCategory(product, withDental, payMode);
+      const rules = campaign.campaign.rules[cat];
+      if (!rules) return null;
+      const bucket = getCampaignBucket(numInsured);
+      const r = rules[bucket] || { months: 0, discount: 0 };
+      return { category: cat, bucket, months: r.months || 0, discount: r.discount || 0 };
+    }
+
+    // Distribución meses gratis (regla del usuario):
+    //   1 mes → año1=1, año2=0
+    //   2 meses → año1=1, año2=1
+    //   3 meses → año1=2, año2=1
+    //   4+ meses (futuro) → reparto alterno empezando por año1
+    function distributeFreeMonths(total) {
+      if (!total || total <= 0) return { y1: 0, y2: 0 };
+      if (total === 1) return { y1: 1, y2: 0 };
+      if (total === 2) return { y1: 1, y2: 1 };
+      if (total === 3) return { y1: 2, y2: 1 };
+      // fallback genérico para >3
+      const y1 = Math.ceil(total / 2);
+      return { y1, y2: total - y1 };
+    }
+
+    // Offsets de meses gratis (en meses desde fecha efecto) por categoría × nº aseg × año
+    // Reglas actualizadas (campaña Junio 2026).
+    function getFreeMonthOffsets(category, numAseg, year) {
+      const bucket = numAseg <= 1 ? 1 : 2;
+      const table = {
+        plena_total: {
+          1: { 1: [10], 2: [21] },
+          2: { 1: [10, 12], 2: [21] }
+        },
+        plena_total_seniors: {
+          1: { 1: [7], 2: [16] },
+          2: { 1: [7, 10], 2: [16] }
+        },
+        gama_con_dental: {
+          1: { 1: [7], 2: [16] },
+          2: { 1: [7, 10], 2: [16] }
+        },
+        gama_sin_dental: {
+          1: { 1: [7], 2: [16] },
+          2: { 1: [7], 2: [16] }
+        }
+      };
+      return (table[category] && table[category][bucket] && table[category][bucket][year]) || [];
+    }
+
+    const MONTH_NAMES_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+    function addMonthsToDate(isoDate, offsetMonths) {
+      if (!isoDate) return null;
+      const d = new Date(isoDate + "T00:00:00");
+      if (isNaN(d.getTime())) return null;
+      d.setMonth(d.getMonth() + offsetMonths);
+      return d;
+    }
+
+    function formatMonthYearEs(d) {
+      if (!d) return "";
+      return `${MONTH_NAMES_ES[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
     function getPromoValue(promo, productName, numInsured, withDental) {
       if (!promo || !promo.values) return 0;
       const isGo = isGOProduct(productName);
@@ -1440,6 +1543,212 @@
       }
       if (!arr || !arr.length) return 0;
       return (idx < arr.length) ? arr[idx] : arr[arr.length - 1];
+    }
+
+    function fmtEUR2(v) {
+      const n = (v === null || v === undefined || isNaN(v)) ? 0 : v;
+      return n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    }
+
+    function buildCampaignSection(r) {
+      if (!r || !r.campaign || !r.campaign.campaign) return null;
+      const camp = r.campaign.campaign;
+      const ruleSin = r.campaignRuleSin;
+      const ruleCon = r.campaignRuleCon;
+      const hasContent = (ruleSin && (ruleSin.months > 0 || ruleSin.discount > 0)) ||
+                        (ruleCon && (ruleCon.months > 0 || ruleCon.discount > 0));
+      if (!hasContent) return null;
+
+      const pnCheck = (r.product || "").toLowerCase();
+      const isPymesTotal = pnCheck.includes("pymes total");
+      const isNIF = pnCheck.includes("nif");
+      const isSeniorsForGift = pnCheck.includes("seniors");
+      const isTotalProduct = pnCheck.includes("total"); // Plena Total, Plena Total Vital, Plena Total Seniors, Pymes Total
+      // La nueva campaña NO genera puntos para Pymes Total ni NIF. Seniors/SeniorsTotal SÍ generan.
+      const newCampaignGeneratesPoints = !(isPymesTotal || isNIF);
+
+      // Tarjeta Regalo (promo per_insured activa)
+      const activePromos = loadActivePromos();
+      const regaloPromo = activePromos.find(p => p.type === "per_insured" && p.location === "above_desglose") || null;
+      const regaloAplica = regaloPromo && !isPymesTotal;
+      let regaloSinBase = 0, regaloConBase = 0;
+      if (regaloAplica) {
+        regaloSinBase = getPromoValue(regaloPromo, r.product, r.numAseguradosTotal, false);
+        regaloConBase = getPromoValue(regaloPromo, r.product, r.numAseguradosTotal, true);
+        if (isSeniorsForGift) regaloConBase = regaloSinBase * 1.5; // Seniors: ingreso en cuenta con dental = 1.5×
+      }
+
+      // Puntos nuevos campaña (sólo si aplica)
+      const newPoints = newCampaignGeneratesPoints ? (camp.points_per_insured || 0) * r.numAseguradosTotal : 0;
+      const eurPerPoint = camp.eur_per_point || 0;
+      const minCard = camp.min_card_points || 0;
+
+      // Conversión puntos nuevos a euros (1 pt = 0.10€)
+      const truncateTo50 = v => Math.floor((v || 0) / 50) * 50;
+      const newPointsEur = newPoints * eurPerPoint;
+      // Para Seniors/SeniorsTotal: conversión directa, NO se trunca a 50€
+      // Para el resto: cheque base + puntos, truncado a múltiplos de 50€
+      const regaloSinTotal = (regaloSinBase || 0) + newPointsEur;
+      const regaloConTotal = (regaloConBase || 0) + newPointsEur;
+      const regaloSin = isSeniorsForGift ? regaloSinTotal : truncateTo50(regaloSinTotal);
+      const regaloCon = isSeniorsForGift ? regaloConTotal : truncateTo50(regaloConTotal);
+      const regaloLabel = isSeniorsForGift ? "💳 Ingreso en Cuenta" : "🎁 Cheque Regalo";
+
+      const det = document.createElement('details');
+      det.className = 'promo-details';
+
+      const summary = document.createElement('summary');
+      summary.innerHTML = `
+        <div class="sumRow">
+          <span>🌅 ${escapeHtmlSafe(r.campaign.name || 'Promoción Junio 2026')}</span>
+          <span class="pm" aria-hidden="true"></span>
+        </div>
+      `;
+      det.appendChild(summary);
+
+      const content = document.createElement('div');
+      content.style.padding = "8px 0 4px 0";
+
+      const cardStyle = `background:#fafbfc; border:1px solid rgba(15,23,42,0.08); border-radius:10px; padding:12px 14px; margin-bottom:10px;`;
+      const headerStyle = `font-size:13px; font-weight:1000; color:#1e293b; letter-spacing:.3px; text-transform:uppercase; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid rgba(15,23,42,0.08);`;
+      const rowStyle = `display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:5px 0; font-size:14px; font-weight:700; color:var(--muted);`;
+      const valueStyle = `color:#b45309; font-weight:900; white-space:nowrap;`;
+      const subRowStyle = `display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:3px 0 3px 16px; font-size:13px; font-weight:600; color:var(--muted);`;
+      const dividerStyle = `border:none; border-top:1px dashed rgba(15,23,42,0.10); margin:10px 0 8px;`;
+
+      const row = (label, value, opts = {}) => `
+        <div style="${opts.sub ? subRowStyle : rowStyle}">
+          <span>${label}</span>
+          <b style="${valueStyle}">${value}</b>
+        </div>
+      `;
+
+      const blueRow = (label, value) => `
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:9px 12px; margin:0 0 10px; background:rgba(37,99,235,0.07); border:1px solid rgba(37,99,235,0.20); border-radius:8px; font-size:14px; font-weight:900; color:#1e3a8a;">
+          <span>${label}</span>
+          <b style="color:#1d4ed8; font-weight:1000; white-space:nowrap;">${value}</b>
+        </div>
+      `;
+
+      const effectiveDate = state.effectiveDate || "";
+
+      // Formatea texto de meses gratis para un año: lista de meses concretos o conteo genérico
+      const monthsTextForYear = (category, numAseg, year) => {
+        const offsets = getFreeMonthOffsets(category, numAseg, year);
+        const count = offsets.length;
+        if (count === 0) return "—";
+        if (effectiveDate) {
+          const months = offsets
+            .map(off => formatMonthYearEs(addMonthsToDate(effectiveDate, off)))
+            .filter(Boolean);
+          if (months.length) return months.join(" · ");
+        }
+        return `${count} ${count === 1 ? 'mes' : 'meses'} gratis`;
+      };
+
+      const variantBlock = (label, rule, monthlyPrice, regalo) => {
+        if (!rule) return "";
+        if (rule.months <= 0 && rule.discount <= 0 && !(regalo > 0)) return "";
+        let inner = "";
+
+        // 1) Cheque Regalo / Ingreso en Cuenta — primero, destacado en azul
+        if (regalo > 0) {
+          inner += blueRow(`${regaloLabel} (Año 1)`, fmtEUR2(regalo));
+        }
+
+        // Regla: si hay descuento adicional (p.ej. 25% en Plena Total 3+ aseg), NO se muestran
+        // meses gratis ni prorrata — y viceversa.
+        if (rule.discount > 0) {
+          inner += row("Descuento adicional", `-${rule.discount}%`);
+        } else if (monthlyPrice && monthlyPrice > 0) {
+          const category = rule.category;
+          const offsY1 = getFreeMonthOffsets(category, r.numAseguradosTotal, 1);
+          const offsY2 = getFreeMonthOffsets(category, r.numAseguradosTotal, 2);
+          const m1 = offsY1.length, m2 = offsY2.length;
+          const totalGratis = m1 + m2;
+
+          if (totalGratis > 0) {
+            // 2) Meses gratis (con detalle por año si tenemos fecha de efecto)
+            inner += row("Meses gratis", `${totalGratis}`);
+            if (m1 > 0) inner += row("Año 1", monthsTextForYear(category, r.numAseguradosTotal, 1), { sub: true });
+            if (m2 > 0) inner += row("Año 2", monthsTextForYear(category, r.numAseguradosTotal, 2), { sub: true });
+
+            // 3) Prorrata:
+            //    - Productos TOTAL: prorrata Año 1-3 (sobre 24 meses, abarca año 1+2)
+            //    - Resto: prorrata Año (sobre 12 meses, sólo año 1)
+            inner += `<hr style="${dividerStyle}">`;
+            if (isTotalProduct) {
+              const prorrata = monthlyPrice * (24 - totalGratis) / 24;
+              inner += row("Prorrata Año 1-3", fmtEUR2(prorrata));
+            } else {
+              const prorrata = monthlyPrice * (12 - m1) / 12;
+              inner += row("Prorrata Año", fmtEUR2(prorrata));
+            }
+          }
+        }
+
+        return `
+          <div style="${cardStyle}">
+            <div style="${headerStyle}">${label}</div>
+            ${inner}
+          </div>
+        `;
+      };
+
+      const monthlySin = (r.monthly && r.monthly.sin !== null) ? r.monthly.sin : null;
+      const monthlyCon = (r.monthly && r.monthly.con !== null) ? r.monthly.con : null;
+
+      if (monthlySin !== null && ruleSin) content.innerHTML += variantBlock("Sin Dental", ruleSin, monthlySin, regaloSin);
+      if (monthlyCon !== null && ruleCon) content.innerHTML += variantBlock("Con Dental", ruleCon, monthlyCon, regaloCon);
+
+      // Bloque PUNTOS CAMPAÑA: sólo para productos que generan puntos en la nueva campaña
+      if (newPoints > 0) {
+        const newPointsRawEur = newPoints * eurPerPoint;
+        // Seniors/SeniorsTotal: conversión directa, sin truncar
+        // Resto: equivalente en tarjeta regalo, truncado a 50€
+        const eqValue = isSeniorsForGift ? newPointsRawEur : truncateTo50(newPointsRawEur);
+        const eqLabel = isSeniorsForGift ? "Equivalente en ingreso en cuenta" : "Equivalente en tarjeta regalo";
+        let puntosInner = row(`${camp.points_per_insured} pts × ${r.numAseguradosTotal} aseg.`, `${newPoints} pts`);
+        puntosInner += row(eqLabel, fmtEUR2(eqValue));
+        // El aviso de "Alcanza Tarjeta Regalo" sólo aplica a no-Seniors
+        if (!isSeniorsForGift && minCard > 0) {
+          const ok = newPoints >= minCard;
+          const txt = ok
+            ? `Alcanza el mínimo para Tarjeta Regalo (${minCard} pts)`
+            : `No alcanza Tarjeta Regalo · faltan ${minCard - newPoints} pts`;
+          puntosInner += `
+            <div style="margin-top:8px; padding:8px 10px; border-radius:8px; font-size:12px; font-weight:800;
+                        background:${ok ? '#f0fdf4' : '#fffbeb'};
+                        color:${ok ? '#15803d' : '#92400e'};
+                        border:1px solid ${ok ? '#bbf7d0' : '#fde68a'};">
+              ${ok ? '✓ ' : '⚠ '}${txt}
+            </div>
+          `;
+        }
+        content.innerHTML += `
+          <div style="${cardStyle}">
+            <div style="${headerStyle}">Puntos campaña</div>
+            ${puntosInner}
+          </div>
+        `;
+      }
+
+      if (camp.notice) {
+        content.innerHTML += `
+          <div style="font-size:12px; font-weight:600; color:var(--muted); margin-top:4px; padding:8px 12px; background:#fafbfc; border-left:3px solid var(--brand2); border-radius:4px;">
+            ${escapeHtmlSafe(camp.notice)}
+          </div>
+        `;
+      }
+
+      det.appendChild(content);
+      return det;
+    }
+
+    function escapeHtmlSafe(str) {
+      const d = document.createElement('div');
+      d.textContent = str == null ? '' : String(str);
+      return d.innerHTML;
     }
 
     function buildPromoSection(promos, productName, numInsured) {
@@ -1626,7 +1935,10 @@
 
       const n = state.ages.length;
       let dTotal = 0;
-      if (rules.multi_discount) {
+      // Regla campaña Junio: Plena Total / Plena Total Vital con 3+ aseg → no descontar por nº aseg
+      const _pnLow2 = (product || "").toLowerCase();
+      const _skipMulti = _pnLow2.includes("plena total") && !_pnLow2.includes("seniors") && n >= 3;
+      if (rules.multi_discount && !_skipMulti) {
         if (rules.multi_discount.threshold) {
           if (n >= rules.multi_discount.threshold) {
             dTotal = Math.round((1 - rules.multi_discount.factor) * 100);
@@ -1811,7 +2123,12 @@
 
       // 1. FACTOR MULTI-ASEGURADO (calco Excel)
       let multiFactor = 1.0;
-      if (rules.multi_discount) {
+      // Regla campaña Junio 2026: Plena Total / Plena Total Vital con 3+ aseg.
+      // NO se aplica el descuento por nº de asegurados (queda anulado por el 25% de la campaña)
+      const _pnLow = (product || "").toLowerCase();
+      const _isPlenaTotalNoSeniors = _pnLow.includes("plena total") && !_pnLow.includes("seniors");
+      const _skipMultiForCampaign = _isPlenaTotalNoSeniors && numAseguradosTotal >= 3;
+      if (rules.multi_discount && !_skipMultiForCampaign) {
         if (rules.multi_discount.threshold && numAseguradosTotal >= rules.multi_discount.threshold) {
           multiFactor = rules.multi_discount.factor;
         } else if (rules.multi_discount.graduated) {
@@ -1928,6 +2245,18 @@
         finalCon = finalSin + dental_total_for_group;
       }
 
+      // === CAMPAÑA (Promo Junio 2026) — descuento adicional aplicado al precio ===
+      const campaign = loadActiveCampaign();
+      let campaignDiscSin = 0, campaignDiscCon = 0, campaignRuleSin = null, campaignRuleCon = null;
+      if (campaign) {
+        campaignRuleSin = getCampaignRule(campaign, product, numAseguradosTotal, false, state.pay);
+        campaignRuleCon = getCampaignRule(campaign, product, numAseguradosTotal, true,  state.pay);
+        campaignDiscSin = (campaignRuleSin && campaignRuleSin.discount) || 0;
+        campaignDiscCon = (campaignRuleCon && campaignRuleCon.discount) || 0;
+        if (campaignDiscSin > 0) finalSin = applyDiscount(finalSin, campaignDiscSin);
+        if (campaignDiscCon > 0) finalCon = applyDiscount(finalCon, campaignDiscCon);
+      }
+
       const hasDental = (rules.dental_mode !== null && rules.dental_mode !== "none") || isOnlyConDental;
 
       let monthsPerPeriod = 1;
@@ -1967,7 +2296,12 @@
         manualDiscApplied: effectiveDiscount,
         dentalPer: (rules.dental_mode && rules.dental_mode.includes("per_person")) ? dental_pp : null,
         isGO: isGOProduct(product),
-        annualLoss: roundPrice(annualLoss)
+        annualLoss: roundPrice(annualLoss),
+        campaign: campaign,
+        campaignRuleSin,
+        campaignRuleCon,
+        campaignDiscSin,
+        campaignDiscCon
       };
     }
 
@@ -2172,11 +2506,17 @@
 
           content.appendChild(prices);
 
-          // === PROMO SECTION (above desglose) ===
-          const activePromos = loadActivePromos();
-          const promoEl = buildPromoSection(activePromos, r.product, r.numAseguradosTotal);
-          if (promoEl) {
-            content.appendChild(promoEl);
+          // === CAMPAIGN SECTION (Promo Junio 2026 — ya incluye Tarjetas Regalo dentro) ===
+          const campaignEl = buildCampaignSection(r);
+          if (campaignEl) {
+            content.appendChild(campaignEl);
+          } else {
+            // Fallback: si no aplica campaña para este producto, mostramos el bloque clásico de Tarjetas Regalo
+            const activePromos = loadActivePromos();
+            const promoEl = buildPromoSection(activePromos, r.product, r.numAseguradosTotal);
+            if (promoEl) {
+              content.appendChild(promoEl);
+            }
           }
 
           const det = document.createElement("details");
@@ -2196,10 +2536,11 @@
             const rowA = document.createElement("div");
             rowA.className = "priceLine";
             rowA.style.marginBottom = "8px";
-            // Aplicamos todos los factores individuales del breakdown + descuento de pago
+            // Aplicamos todos los factores individuales del breakdown + descuento de pago + campaña
             let finalAgePrice = b.base * b.multi * b.pens * b.k6;
             finalAgePrice = applyDiscount(finalAgePrice, r.payDisc);
             finalAgePrice = applyDiscount(finalAgePrice, r.manualDiscApplied);
+            if (r.campaignDiscSin) finalAgePrice = applyDiscount(finalAgePrice, r.campaignDiscSin);
 
             rowA.innerHTML = `
               <div style="width:100%;">
@@ -2273,6 +2614,24 @@
               </div>
             `;
             box.appendChild(prow2);
+          }
+
+          const campDiscShown = Math.max(r.campaignDiscSin || 0, r.campaignDiscCon || 0);
+          if (campDiscShown > 0) {
+            const prowC = document.createElement("div");
+            prowC.className = "priceLine";
+            prowC.style.marginBottom = "8px";
+            prowC.style.background = "#eff6ff";
+            prowC.style.borderColor = "#bfdbfe";
+            prowC.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:15px; color:#1e293b;">🌅 Promo Junio</b>
+                  <span class="val" style="font-size:15px; color:#1d4ed8;">-${campDiscShown}%</span>
+                </div>
+              </div>
+            `;
+            box.appendChild(prowC);
           }
 
           det.appendChild(box);
@@ -2520,6 +2879,14 @@
       state.pay = elPay.value || "mensual";
       renderAll();
     });
+
+    const elEffectiveDate = document.getElementById("effectiveDateInput");
+    if (elEffectiveDate) {
+      elEffectiveDate.addEventListener("change", () => {
+        state.effectiveDate = elEffectiveDate.value || "";
+        renderAll();
+      });
+    }
 
     const btnResetAll = document.getElementById("btnResetAllQuotes");
     if (btnResetAll) btnResetAll.addEventListener("click", resetAllQuotes);
