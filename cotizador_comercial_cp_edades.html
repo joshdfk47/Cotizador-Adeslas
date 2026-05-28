@@ -1448,14 +1448,16 @@
 
     function mapProductToCampaignCategory(product, withDental, payMode) {
       const p = (product || "").toLowerCase();
+      // GO no entra en la campaña
+      if (p === "go" || p.startsWith("go ")) return null;
+      // NIF — categoría propia (sólo descuento, sin meses ni puntos)
+      if (p.includes("nif")) return "nif";
       // Pymes TOTAL → categoría empresarial específica
       if (p.includes("pymes total")) return "pymes_total";
       // Plena Total Seniors
       if (p.includes("plena total seniors")) return "plena_total_seniors";
       // Plena Total / Plena Total Vital (no Seniors — ya cazada arriba)
       if (p.includes("plena total")) return "plena_total";
-      // NIF / empresarial-no-pymes-total pagado anual → "Anuales"
-      if (payMode === "anual" && (p.includes("nif") || p.includes("cif"))) return "anuales";
       // Gama Plena / Seniors / Dental Max — depende de dental
       return withDental ? "gama_con_dental" : "gama_sin_dental";
     }
@@ -1469,6 +1471,16 @@
     function getCampaignRule(campaign, product, numInsured, withDental, payMode) {
       if (!campaign || !campaign.campaign || !campaign.campaign.rules) return null;
       const cat = mapProductToCampaignCategory(product, withDental, payMode);
+      if (!cat) return null;
+      // Reglas hardcoded para NIF y Pymes Total (corte 1-3 / 4+, sin meses)
+      if (cat === "nif") {
+        const discount = numInsured <= 3 ? 5 : 10;
+        return { category: "nif", bucket: numInsured <= 3 ? "1-3" : "4+", months: 0, discount };
+      }
+      if (cat === "pymes_total") {
+        const discount = numInsured <= 3 ? 5 : 15;
+        return { category: "pymes_total", bucket: numInsured <= 3 ? "1-3" : "4+", months: 0, discount };
+      }
       const rules = campaign.campaign.rules[cat];
       if (!rules) return null;
       const bucket = getCampaignBucket(numInsured);
@@ -1560,12 +1572,13 @@
       if (!hasContent) return null;
 
       const pnCheck = (r.product || "").toLowerCase();
+      const isGO = pnCheck === "go" || pnCheck.startsWith("go ");
       const isPymesTotal = pnCheck.includes("pymes total");
       const isNIF = pnCheck.includes("nif");
       const isSeniorsForGift = pnCheck.includes("seniors");
       const isTotalProduct = pnCheck.includes("total"); // Plena Total, Plena Total Vital, Plena Total Seniors, Pymes Total
-      // La nueva campaña NO genera puntos para Pymes Total ni NIF. Seniors/SeniorsTotal SÍ generan.
-      const newCampaignGeneratesPoints = !(isPymesTotal || isNIF);
+      // La nueva campaña NO genera puntos para GO, Pymes Total ni NIF. Seniors/SeniorsTotal SÍ generan.
+      const newCampaignGeneratesPoints = !(isGO || isPymesTotal || isNIF);
 
       // Tarjeta Regalo (promo per_insured activa)
       const activePromos = loadActivePromos();
