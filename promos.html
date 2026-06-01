@@ -934,7 +934,7 @@
       plena_total:         { "1": { months: 2, discount: 0  }, "2": { months: 3, discount: 0  }, "3+": { months: 0, discount: 25 } },
       plena_total_seniors: { "1": { months: 2, discount: 0  }, "2": { months: 3, discount: 0  }, "3+": { months: 3, discount: 0  } },
       gama_con_dental:     { "1": { months: 2, discount: 0  }, "2": { months: 3, discount: 0  }, "3+": { months: 3, discount: 0  } },
-      gama_sin_dental:     { "1": { months: 2, discount: 0  }, "2": { months: 2, discount: 0  }, "3+": { months: 2, discount: 0  } },
+      gama_sin_dental:     { "1": { months: 1, discount: 0  }, "2": { months: 2, discount: 0  }, "3+": { months: 2, discount: 0  } },
       pymes_total:         { "1": { months: 0, discount: 5  }, "2": { months: 0, discount: 5  }, "3+": { months: 0, discount: 15 } },
       anuales:             { "1": { months: 0, discount: 5  }, "2": { months: 0, discount: 5  }, "3+": { months: 0, discount: 10 } }
     };
@@ -1329,6 +1329,24 @@
         savePromos(promos);
         renderPromoList();
       }
+    })();
+
+    // Migración: ajustar valor antiguo gama_sin_dental "1" de 2 → 1 mes
+    (function migrateGamaSinDental1() {
+      try {
+        const all = loadPromos();
+        let changed = false;
+        for (const p of all) {
+          if (p.type === "campaign" && p.campaign && p.campaign.rules) {
+            const cell = p.campaign.rules.gama_sin_dental && p.campaign.rules.gama_sin_dental["1"];
+            if (cell && cell.months === 2 && cell.discount === 0) {
+              cell.months = 1;
+              changed = true;
+            }
+          }
+        }
+        if (changed) savePromos(all);
+      } catch (e) {}
     })();
 
     // Seed campaña "Promoción Junio 2026" (no destructivo — coexiste con la promo de Tarjetas Regalo)
