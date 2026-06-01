@@ -2671,18 +2671,31 @@
           const needsVentaFactor = !r.isGO && (!r.isOnlyConDental || r.product.toLowerCase().includes("pymes total"));
           const ventaFactor = needsVentaFactor ? (ventaFactorTable[state.discount] || 1.0) : 1.0;
 
-          const createBlock = (title, val, valNoDisc) => {
+          const createBlock = (title, val, valNoDisc, campDisc) => {
             if (val === null || val === undefined) return "";
-            if (discPct > 0) {
-              // Si tenemos el valor pre-calculado sin descuento, lo usamos. 
-              // Si no, lo estimamos dividiendo (fallback).
-              const sinDesc = (valNoDisc !== undefined && valNoDisc !== null) ? roundPrice(valNoDisc) : roundPrice(val / (1 - (discPct / 100)));
+            const campaignDisc = campDisc || 0;
+            const hasAnyDiscount = discPct > 0 || campaignDisc > 0;
+            if (hasAnyDiscount) {
+              // valNoDisc viene pre-calculado SIN descuento manual y SIN descuento campaña
+              const sinDesc = (valNoDisc !== undefined && valNoDisc !== null)
+                ? roundPrice(valNoDisc)
+                : roundPrice(val / (1 - (discPct / 100)) / (1 - (campaignDisc / 100)));
               const valorVenta = roundPrice(val * ventaFactor);
               const loss = roundPrice(sinDesc - valorVenta);
+              // Etiqueta de descuentos aplicados (mostrar Promo Junio + Dto)
+              const tags = [];
+              if (discPct > 0) tags.push(`Dto -${discPct}%`);
+              if (campaignDisc > 0) tags.push(`🌅 Promo Junio -${campaignDisc}%`);
+              const tagsHtml = tags.length
+                ? `<div style="font-size:10.5px; font-weight:800; color:#1d4ed8; margin-top:2px;">${tags.join(' · ')}</div>`
+                : '';
               return `
-                <div class="detailRow" style="border-radius:8px 8px 0 0; margin-top:10px; background:#d1d5db; border:1px solid #9ca3af;">
-                  <span style="font-size:13px; font-weight:1000;">${title}</span>
-                  <span style="font-weight:1000; font-size:15px;">${fmtEUR(val)}</span>
+                <div class="detailRow" style="border-radius:8px 8px 0 0; margin-top:10px; background:#d1d5db; border:1px solid #9ca3af; flex-direction:column; align-items:stretch; gap:0;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:13px; font-weight:1000;">${title}</span>
+                    <span style="font-weight:1000; font-size:15px;">${fmtEUR(val)}</span>
+                  </div>
+                  ${tagsHtml}
                 </div>
                 <div class="detailRow yellow" style="border-radius:0; border-top:none; margin-top:0;">
                   <span style="font-size:13px; font-weight:1000; font-style: italic;">SIN DESCUENTO</span>
@@ -2713,10 +2726,11 @@
 
           if (isTotal) {
              const label = r.isOnlyConDental ? "CON DENTAL" : "TOTAL SALUD";
-             boxAnual.innerHTML = createBlock(label, r.annual.sin || r.annual.con, r.annualNoDisc.sin || r.annualNoDisc.con);
+             const cDisc = r.isOnlyConDental ? (r.campaignDiscCon || 0) : (r.campaignDiscSin || 0);
+             boxAnual.innerHTML = createBlock(label, r.annual.sin || r.annual.con, r.annualNoDisc.sin || r.annualNoDisc.con, cDisc);
           } else {
-             boxAnual.innerHTML = createBlock("SIN DENTAL", r.annual.sin, r.annualNoDisc.sin);
-             boxAnual.innerHTML += createBlock("CON DENTAL", r.annual.con, r.annualNoDisc.con);
+             boxAnual.innerHTML = createBlock("SIN DENTAL", r.annual.sin, r.annualNoDisc.sin, r.campaignDiscSin);
+             boxAnual.innerHTML += createBlock("CON DENTAL", r.annual.con, r.annualNoDisc.con, r.campaignDiscCon);
           }
 
           detAnual.appendChild(boxAnual);

@@ -1331,7 +1331,7 @@
       }
     })();
 
-    // Migración: ajustar valor antiguo gama_sin_dental "1" de 2 → 1 mes
+    // Migración: gama_sin_dental "1" debe ser 1 mes (no 2)
     (function migrateGamaSinDental1() {
       try {
         const all = loadPromos();
@@ -1339,8 +1339,9 @@
         for (const p of all) {
           if (p.type === "campaign" && p.campaign && p.campaign.rules) {
             const cell = p.campaign.rules.gama_sin_dental && p.campaign.rules.gama_sin_dental["1"];
-            if (cell && cell.months === 2 && cell.discount === 0) {
+            if (cell && cell.months !== 1) {
               cell.months = 1;
+              cell.discount = cell.discount || 0;
               changed = true;
             }
           }
