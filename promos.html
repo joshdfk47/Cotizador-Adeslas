@@ -1363,8 +1363,8 @@
           type: "per_insured",
           active: true,
           createdAt: new Date().toISOString(),
-          startDate: "2026-01-01",
-          endDate: "2026-12-31",
+          startDate: "2026-03-01",
+          endDate: "2026-06-30",
           values: {
             go_sin_dental: [0, 50, 150, 200, 250, 300, 350, 400, 450, 500],
             go_con_dental: [0, 50, 200, 250, 350, 400, 450, 550, 600, 700],
@@ -1397,24 +1397,21 @@
       } catch (e) {}
     })();
 
-    // Migración: añadir startDate/endDate por defecto a promos antiguas
+    // Fechas oficiales de cada promo (forzadas, sobrescriben las antiguas)
+    const PROMO_DATES = {
+      campaign_junio:  { startDate: "2026-06-01", endDate: "2026-12-31" },
+      tarjeta_regalo:  { startDate: "2026-03-01", endDate: "2026-06-30" }
+    };
+
     (function migratePromoDates() {
       try {
         const all = loadPromos();
         let changed = false;
         for (const p of all) {
-          if (typeof p.startDate === "undefined") {
-            // Defaults razonables por tipo
-            if (p.type === "campaign" || (p.name || "").toLowerCase().includes("junio")) {
-              p.startDate = "2026-06-01";
-              p.endDate = "2026-06-30";
-            } else {
-              // Tarjeta Regalo histórica: válida todo el año
-              p.startDate = "2026-01-01";
-              p.endDate = "2026-12-31";
-            }
-            changed = true;
-          }
+          const isCampaignJunio = p.type === "campaign" || (p.name || "").toLowerCase().includes("junio");
+          const target = isCampaignJunio ? PROMO_DATES.campaign_junio : PROMO_DATES.tarjeta_regalo;
+          if (p.startDate !== target.startDate) { p.startDate = target.startDate; changed = true; }
+          if (p.endDate !== target.endDate) { p.endDate = target.endDate; changed = true; }
         }
         if (changed) savePromos(all);
       } catch (e) {}
@@ -1435,7 +1432,7 @@
           active: true,
           createdAt: new Date().toISOString(),
           startDate: "2026-06-01",
-          endDate: "2026-06-30",
+          endDate: "2026-12-31",
           campaign: {
             points_per_insured: 250,
             eur_per_point: 0.10,

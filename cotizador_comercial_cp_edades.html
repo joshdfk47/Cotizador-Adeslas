@@ -1427,6 +1427,29 @@
       } catch (e) { }
     })();
 
+    // Migración: forzar fechas oficiales de las promos en cada carga del cotizador.
+    // Si el admin abrió promos.html alguna vez, las fechas ya estarán bien; este código
+    // solo asegura que el cotizador no use fechas obsoletas guardadas en localStorage.
+    const PROMO_DATES_COT = {
+      campaign_junio:  { startDate: "2026-06-01", endDate: "2026-12-31" },
+      tarjeta_regalo:  { startDate: "2026-03-01", endDate: "2026-06-30" }
+    };
+    (function migratePromoDatesInCotizador() {
+      try {
+        const raw = localStorage.getItem("adeslas_promos_v1");
+        if (!raw) return;
+        const all = JSON.parse(raw);
+        let changed = false;
+        for (const p of all) {
+          const isCampaignJunio = p.type === "campaign" || (p.name || "").toLowerCase().includes("junio");
+          const target = isCampaignJunio ? PROMO_DATES_COT.campaign_junio : PROMO_DATES_COT.tarjeta_regalo;
+          if (p.startDate !== target.startDate) { p.startDate = target.startDate; changed = true; }
+          if (p.endDate !== target.endDate) { p.endDate = target.endDate; changed = true; }
+        }
+        if (changed) localStorage.setItem("adeslas_promos_v1", JSON.stringify(all));
+      } catch (e) {}
+    })();
+
     function loadActivePromos() {
       try {
         const raw = localStorage.getItem("adeslas_promos_v1");
