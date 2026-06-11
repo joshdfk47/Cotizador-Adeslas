@@ -2259,7 +2259,8 @@
       }
 
       // === CAMPAÑA (Promo Junio 2026) — descuento adicional aplicado al precio ===
-      const campaign = loadActiveCampaign();
+      // SOLO se aplica en pago MENSUAL. Trimestral / Semestral / Anual NO tienen promo ni regalos.
+      const campaign = (state.pay === "mensual") ? loadActiveCampaign() : null;
       let campaignDiscSin = 0, campaignDiscCon = 0, campaignRuleSin = null, campaignRuleCon = null;
       if (campaign) {
         campaignRuleSin = getCampaignRule(campaign, product, numAseguradosTotal, false, state.pay);
@@ -2519,16 +2520,18 @@
 
           content.appendChild(prices);
 
-          // === CAMPAIGN SECTION (Promo Junio 2026 — ya incluye Tarjetas Regalo dentro) ===
-          const campaignEl = buildCampaignSection(r);
-          if (campaignEl) {
-            content.appendChild(campaignEl);
-          } else {
-            // Fallback: si no aplica campaña para este producto, mostramos el bloque clásico de Tarjetas Regalo
-            const activePromos = loadActivePromos();
-            const promoEl = buildPromoSection(activePromos, r.product, r.numAseguradosTotal);
-            if (promoEl) {
-              content.appendChild(promoEl);
+          // === PROMOS — sólo en pago mensual ===
+          if (state.pay === "mensual") {
+            const campaignEl = buildCampaignSection(r);
+            if (campaignEl) {
+              content.appendChild(campaignEl);
+            } else {
+              // Fallback: si no aplica campaña para este producto, mostramos el bloque clásico de Tarjetas Regalo
+              const activePromos = loadActivePromos();
+              const promoEl = buildPromoSection(activePromos, r.product, r.numAseguradosTotal);
+              if (promoEl) {
+                content.appendChild(promoEl);
+              }
             }
           }
 
