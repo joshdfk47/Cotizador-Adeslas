@@ -1438,11 +1438,29 @@
       return [];
     }
 
+    // Comprueba si la Fecha de Efecto del cliente cae dentro del rango de la promo.
+    // Si la promo no tiene fechas configuradas, se considera siempre válida.
+    // Si no hay Fecha de Efecto introducida, también se considera válida (mostrar por defecto).
+    function isPromoValidForEffectiveDate(promo, effectiveDateStr) {
+      if (!promo) return false;
+      const start = promo.startDate || "";
+      const end = promo.endDate || "";
+      if (!start && !end) return true;
+      if (!effectiveDateStr) return true;
+      if (start && effectiveDateStr < start) return false;
+      if (end && effectiveDateStr > end) return false;
+      return true;
+    }
+
+    function loadActivePromosFiltered(effectiveDateStr) {
+      return loadActivePromos().filter(p => isPromoValidForEffectiveDate(p, effectiveDateStr));
+    }
+
     // ==========================
     // CAMPAIGN PROMO (meses gratis + puntos + dto %)
     // ==========================
     function loadActiveCampaign() {
-      const promos = loadActivePromos();
+      const promos = loadActivePromosFiltered(state.effectiveDate);
       return promos.find(p => p.type === "campaign" && p.campaign) || null;
     }
 
@@ -1580,8 +1598,8 @@
       // La nueva campaña NO genera puntos para GO, Pymes Total ni NIF. Seniors/SeniorsTotal SÍ generan.
       const newCampaignGeneratesPoints = !(isGO || isPymesTotal || isNIF);
 
-      // Tarjeta Regalo (promo per_insured activa)
-      const activePromos = loadActivePromos();
+      // Tarjeta Regalo (promo per_insured activa Y vigente para la Fecha de Efecto)
+      const activePromos = loadActivePromosFiltered(state.effectiveDate);
       const regaloPromo = activePromos.find(p => p.type === "per_insured" && p.location === "above_desglose") || null;
       const regaloAplica = regaloPromo && !isPymesTotal;
       let regaloSinBase = 0, regaloConBase = 0;
@@ -2520,14 +2538,14 @@
 
           content.appendChild(prices);
 
-          // === PROMOS — sólo en pago mensual ===
+          // === PROMOS — sólo en pago mensual y dentro del rango de la promo ===
           if (state.pay === "mensual") {
             const campaignEl = buildCampaignSection(r);
             if (campaignEl) {
               content.appendChild(campaignEl);
             } else {
               // Fallback: si no aplica campaña para este producto, mostramos el bloque clásico de Tarjetas Regalo
-              const activePromos = loadActivePromos();
+              const activePromos = loadActivePromosFiltered(state.effectiveDate);
               const promoEl = buildPromoSection(activePromos, r.product, r.numAseguradosTotal);
               if (promoEl) {
                 content.appendChild(promoEl);

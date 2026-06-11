@@ -755,6 +755,20 @@
 
       <div class="form-row">
         <div class="field">
+          <div class="label">Fecha Inicio de la promo</div>
+          <input id="promoStartDate" type="date" />
+        </div>
+        <div class="field">
+          <div class="label">Fecha Fin de la promo</div>
+          <input id="promoEndDate" type="date" />
+        </div>
+      </div>
+      <div style="font-size:12px; color:var(--muted); font-weight:600; margin-top:-8px; margin-bottom:16px;">
+        La promoción solo se aplicará si la <b>Fecha de Efecto</b> del cliente cae dentro de este rango.
+      </div>
+
+      <div class="form-row">
+        <div class="field">
           <div class="label">Ubicación en el cotizador</div>
           <select id="promoLocation">
             <option value="above_desglose">Arriba de "Ver desglose por edad"</option>
@@ -1030,6 +1044,10 @@
           ? `<span style="font-size:11px; font-weight:800; padding:3px 8px; border-radius:999px; background:rgba(37,99,235,0.10); color:#2563eb; border:1px solid rgba(37,99,235,0.20); margin-left:8px;">🌅 Campaña</span>`
           : `<span style="font-size:11px; font-weight:800; padding:3px 8px; border-radius:999px; background:rgba(245,158,11,0.10); color:#b45309; border:1px solid rgba(245,158,11,0.20); margin-left:8px;">🎁 Regalo / Puntos</span>`;
 
+        const datesChip = (p.startDate || p.endDate)
+          ? `<span style="font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px; background:rgba(15,23,42,0.05); color:var(--muted); border:1px solid var(--border); margin-left:8px;">📅 ${formatDateEs(p.startDate)} → ${formatDateEs(p.endDate)}</span>`
+          : "";
+
         wrap.innerHTML = `
           <div class="promo-item">
             <div class="promo-icon">${p.icon || "🎁"}</div>
@@ -1044,6 +1062,7 @@
                   📍 ${p.location === 'above_desglose' ? 'Arriba de desglose' : p.location === 'below_prices' ? 'Debajo de precios' : 'Arriba de precios'}
                 </span>
                 ${typeChip}
+                ${datesChip}
               </div>
             </div>
             <div class="promo-actions">
@@ -1098,13 +1117,25 @@
     // PROMO DETAIL (expandible) — explica qué hace la promo
     // ============================================================
     function renderPromoDetail(p) {
-      if (p.type === "campaign" && p.campaign) {
-        return renderCampaignDetail(p);
-      }
-      if (p.type === "per_insured" && p.values) {
-        return renderPerInsuredDetail(p);
-      }
-      return `<div class="pd-note">Sin detalles configurables para este tipo de promo.</div>`;
+      let body = "";
+      if (p.type === "campaign" && p.campaign) body = renderCampaignDetail(p);
+      else if (p.type === "per_insured" && p.values) body = renderPerInsuredDetail(p);
+      else body = `<div class="pd-note">Sin detalles configurables para este tipo de promo.</div>`;
+
+      // Bloque de vigencia (común a todas)
+      const vig = `
+        <div class="pd-section">
+          <h4>Vigencia</h4>
+          <div class="pd-grid">
+            <div class="pd-kv"><b>Fecha inicio</b><span>${formatDateEs(p.startDate)}</span></div>
+            <div class="pd-kv"><b>Fecha fin</b><span>${formatDateEs(p.endDate)}</span></div>
+          </div>
+          <div class="pd-note" style="margin-top:8px;">
+            Solo se aplicará en el cotizador si la <b>Fecha de Efecto</b> del cliente cae dentro de este rango.
+          </div>
+        </div>
+      `;
+      return vig + body;
     }
 
     function renderCampaignDetail(p) {
@@ -1240,6 +1271,13 @@
       return d.innerHTML;
     }
 
+    function formatDateEs(iso) {
+      if (!iso) return "—";
+      const parts = iso.split("-");
+      if (parts.length !== 3) return iso;
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
     // ============================================================
     // SAVE NEW PROMO
     // ============================================================
@@ -1259,7 +1297,9 @@
         location: document.getElementById("promoLocation").value,
         type: type,
         active: true,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        startDate: document.getElementById("promoStartDate").value || "",
+        endDate: document.getElementById("promoEndDate").value || ""
       };
 
       if (type === "campaign") {
@@ -1287,6 +1327,8 @@
       document.getElementById("promoName").value = "";
       document.getElementById("promoDesc").value = "";
       document.getElementById("promoIcon").value = "🎁";
+      document.getElementById("promoStartDate").value = "";
+      document.getElementById("promoEndDate").value = "";
       buildGrid("gridGoSin", defaultGoSin);
       buildGrid("gridGoCon", defaultGoCon);
       buildGrid("gridOtrosSin", defaultOtrosSin);
@@ -1321,6 +1363,8 @@
           type: "per_insured",
           active: true,
           createdAt: new Date().toISOString(),
+          startDate: "2026-01-01",
+          endDate: "2026-12-31",
           values: {
             go_sin_dental: [0, 50, 150, 200, 250, 300, 350, 400, 450, 500],
             go_con_dental: [0, 50, 200, 250, 350, 400, 450, 550, 600, 700],
@@ -1353,6 +1397,29 @@
       } catch (e) {}
     })();
 
+    // Migración: añadir startDate/endDate por defecto a promos antiguas
+    (function migratePromoDates() {
+      try {
+        const all = loadPromos();
+        let changed = false;
+        for (const p of all) {
+          if (typeof p.startDate === "undefined") {
+            // Defaults razonables por tipo
+            if (p.type === "campaign" || (p.name || "").toLowerCase().includes("junio")) {
+              p.startDate = "2026-06-01";
+              p.endDate = "2026-06-30";
+            } else {
+              // Tarjeta Regalo histórica: válida todo el año
+              p.startDate = "2026-01-01";
+              p.endDate = "2026-12-31";
+            }
+            changed = true;
+          }
+        }
+        if (changed) savePromos(all);
+      } catch (e) {}
+    })();
+
     // Seed campaña "Promoción Junio 2026" (no destructivo — coexiste con la promo de Tarjetas Regalo)
     (function seedJuneCampaign() {
       const promos = loadPromos();
@@ -1367,6 +1434,8 @@
           type: "campaign",
           active: true,
           createdAt: new Date().toISOString(),
+          startDate: "2026-06-01",
+          endDate: "2026-06-30",
           campaign: {
             points_per_insured: 250,
             eur_per_point: 0.10,
