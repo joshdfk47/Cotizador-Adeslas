@@ -1727,15 +1727,16 @@
             if (m1 > 0) inner += row("Año 1", monthsTextForYear(category, r.numAseguradosTotal, 1), { sub: true });
             if (m2 > 0) inner += row("Año 2", monthsTextForYear(category, r.numAseguradosTotal, 2), { sub: true });
 
-            // 3) Prorrata:
-            //    - Productos TOTAL: prorrata Año 1-3 (sobre 24 meses, abarca año 1+2)
-            //    - Resto: prorrata Año (sobre 12 meses, sólo año 1)
+            // 3) Prorrata (descontando meses gratis y el importe del Cheque Regalo / Ingreso en Cuenta):
+            //    - Productos TOTAL: prorrata Año 1-3 sobre 24 meses
+            //    - Resto: prorrata Año sobre 12 meses (solo año 1)
             inner += `<hr style="${dividerStyle}">`;
+            const tarjeta = regalo || 0;
             if (isTotalProduct) {
-              const prorrata = monthlyPrice * (24 - totalGratis) / 24;
+              const prorrata = ((monthlyPrice * 24) - (monthlyPrice * totalGratis) - tarjeta) / 24;
               inner += row("Prorrata Año 1-3", fmtEUR2(prorrata));
             } else {
-              const prorrata = monthlyPrice * (12 - m1) / 12;
+              const prorrata = ((monthlyPrice * 12) - (monthlyPrice * m1) - tarjeta) / 12;
               inner += row("Prorrata Año", fmtEUR2(prorrata));
             }
           }
