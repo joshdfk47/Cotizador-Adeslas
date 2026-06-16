@@ -1603,6 +1603,63 @@
       return n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
     }
 
+    // Helper: calcula cheque regalo (Año 1) y prorrata para una variante (Sin/Con Dental).
+    // Devuelve null si no aplica la campaña o no hay precio.
+    function computeCampaignVariantData(r, withDental) {
+      if (!r || !r.campaign || !r.campaign.campaign) return null;
+      if (state.pay !== "mensual") return null;
+      const rule = withDental ? r.campaignRuleCon : r.campaignRuleSin;
+      if (!rule) return null;
+      const monthly = withDental ? (r.monthly && r.monthly.con) : (r.monthly && r.monthly.sin);
+      if (monthly === null || monthly === undefined || monthly <= 0) return null;
+
+      const pnCheck = (r.product || "").toLowerCase();
+      const isPymesTotal = pnCheck.includes("pymes total");
+      const isNIF = pnCheck.includes("nif");
+      const isSeniorsForGift = pnCheck.includes("seniors");
+      const newCampaignGeneratesPoints = !(isPymesTotal || isNIF);
+
+      // Tarjeta Regalo base (campaña antigua)
+      const activePromos = loadActivePromosFiltered(state.effectiveDate);
+      const regaloPromo = activePromos.find(p => p.type === "per_insured" && p.location === "above_desglose") || null;
+      const regaloAplica = regaloPromo && !isPymesTotal;
+      let regaloBase = 0;
+      if (regaloAplica) {
+        if (withDental) {
+          if (isSeniorsForGift) {
+            const regaloSinBase = getPromoValue(regaloPromo, r.product, r.numAseguradosTotal, false);
+            regaloBase = regaloSinBase * 1.5;
+          } else {
+            regaloBase = getPromoValue(regaloPromo, r.product, r.numAseguradosTotal, true);
+          }
+        } else {
+          regaloBase = getPromoValue(regaloPromo, r.product, r.numAseguradosTotal, false);
+        }
+      }
+
+      // Puntos nuevos campaña convertidos a euros (1 pt = 0,10 €)
+      const camp = r.campaign.campaign;
+      const newPoints = newCampaignGeneratesPoints ? (camp.points_per_insured || 0) * r.numAseguradosTotal : 0;
+      const eurPerPoint = camp.eur_per_point || 0;
+      const newPointsEur = newPoints * eurPerPoint;
+      const truncateTo50 = v => Math.floor((v || 0) / 50) * 50;
+      const regaloTotal = (regaloBase || 0) + newPointsEur;
+      // Para Seniors/SeniorsTotal: conversión directa sin truncar; resto: bloques de 50€
+      const cheque = isSeniorsForGift ? regaloTotal : truncateTo50(regaloTotal);
+
+      // Meses gratis del año 1 (sólo si la regla tiene months > 0; con discount no hay meses)
+      let m1 = 0;
+      if (rule.months > 0) {
+        m1 = getFreeMonthOffsets(rule.category, r.numAseguradosTotal, 1).length;
+      }
+
+      // Prorrata Año = ((precio × 12) - (precio × m1) - cheque) / 12
+      const prorrata = ((monthly * 12) - (monthly * m1) - cheque) / 12;
+      const hasData = (cheque > 0) || (m1 > 0) || (rule.discount > 0);
+
+      return { cheque, prorrata, m1, hasData };
+    }
+
     function buildCampaignSection(r) {
       if (!r || !r.campaign || !r.campaign.campaign) return null;
       const camp = r.campaign.campaign;
@@ -1726,13 +1783,7 @@
             inner += row("Meses gratis", `${totalGratis}`);
             if (m1 > 0) inner += row("Año 1", monthsTextForYear(category, r.numAseguradosTotal, 1), { sub: true });
             if (m2 > 0) inner += row("Año 2", monthsTextForYear(category, r.numAseguradosTotal, 2), { sub: true });
-
-            // 3) Prorrata Año = ((precio × 12) - (precio × meses_gratis_año_1) - cheque_regalo) / 12
-            //    Misma fórmula para productos TOTAL y resto.
-            inner += `<hr style="${dividerStyle}">`;
-            const tarjeta = regalo || 0;
-            const prorrata = ((monthlyPrice * 12) - (monthlyPrice * m1) - tarjeta) / 12;
-            inner += row("Prorrata Año", fmtEUR2(prorrata));
+            // (la Prorrata Año se muestra fuera del desplegable, junto a los precios)
           }
         }
 
@@ -2555,6 +2606,25 @@
           }
 
           content.appendChild(prices);
+
+          // === PRORRATA AÑO visible directamente bajo el precio Con Dental ===
+          const prorrData = computeCampaignVariantData(r, true);
+          if (prorrData && prorrData.hasData) {
+            const prorrLine = document.createElement("div");
+            prorrLine.className = "priceLine";
+            prorrLine.style.marginTop = "8px";
+            prorrLine.style.background = "rgba(37,99,235,0.06)";
+            prorrLine.style.border = "1px solid rgba(37,99,235,0.20)";
+            prorrLine.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:14px; color:#1e3a8a;">Prorrata Año</b>
+                  <span class="val" style="font-size:17px; color:#1d4ed8; font-weight:1000;">${fmtEUR2(prorrData.prorrata)}</span>
+                </div>
+              </div>
+            `;
+            content.appendChild(prorrLine);
+          }
 
           // === PROMOS — sólo en pago mensual y dentro del rango de la promo ===
           if (state.pay === "mensual") {
