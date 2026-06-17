@@ -2550,6 +2550,26 @@
           const prices = document.createElement("div");
           prices.className = "prices";
 
+          // Helper: crea una línea de Prorrata Año (azul claro) bajo un precio
+          const makeProrrLine = (withDental) => {
+            const d = computeCampaignVariantData(r, withDental);
+            if (!d || !d.hasData) return null;
+            const el = document.createElement("div");
+            el.className = "priceLine";
+            el.style.marginTop = "4px";
+            el.style.background = "rgba(37,99,235,0.06)";
+            el.style.border = "1px solid rgba(37,99,235,0.20)";
+            el.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <b style="font-size:13px; color:#1e3a8a;">Prorrata Año</b>
+                  <span class="val" style="font-size:16px; color:#1d4ed8; font-weight:1000;">${fmtEUR2(d.prorrata)}</span>
+                </div>
+              </div>
+            `;
+            return el;
+          };
+
           if (r.isOnlyConDental) {
             // Productos Total/Pymes: solo un precio ("Con Dental" / precio único)
             const lineOnly = document.createElement("div");
@@ -2563,6 +2583,8 @@
               </div>
             `;
             prices.appendChild(lineOnly);
+            const prorrCon = makeProrrLine(true);
+            if (prorrCon) prices.appendChild(prorrCon);
           } else if (r.hasDental) {
             // Products with separate Sin/Con dental
             const lineSin = document.createElement("div");
@@ -2576,6 +2598,8 @@
               </div>
             `;
             prices.appendChild(lineSin);
+            const prorrSin = makeProrrLine(false);
+            if (prorrSin) prices.appendChild(prorrSin);
 
             const lineCon = document.createElement("div");
             lineCon.className = "priceLine";
@@ -2589,6 +2613,8 @@
               </div>
             `;
             prices.appendChild(lineCon);
+            const prorrCon = makeProrrLine(true);
+            if (prorrCon) prices.appendChild(prorrCon);
 
           } else {
             // Only one price line
@@ -2603,28 +2629,11 @@
               </div>
             `;
             prices.appendChild(lineBase);
+            const prorrSingle = makeProrrLine(false);
+            if (prorrSingle) prices.appendChild(prorrSingle);
           }
 
           content.appendChild(prices);
-
-          // === PRORRATA AÑO visible directamente bajo el precio Con Dental ===
-          const prorrData = computeCampaignVariantData(r, true);
-          if (prorrData && prorrData.hasData) {
-            const prorrLine = document.createElement("div");
-            prorrLine.className = "priceLine";
-            prorrLine.style.marginTop = "8px";
-            prorrLine.style.background = "rgba(37,99,235,0.06)";
-            prorrLine.style.border = "1px solid rgba(37,99,235,0.20)";
-            prorrLine.innerHTML = `
-              <div style="width:100%;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <b style="font-size:14px; color:#1e3a8a;">Prorrata Año</b>
-                  <span class="val" style="font-size:17px; color:#1d4ed8; font-weight:1000;">${fmtEUR2(prorrData.prorrata)}</span>
-                </div>
-              </div>
-            `;
-            content.appendChild(prorrLine);
-          }
 
           // === PROMOS — sólo en pago mensual y dentro del rango de la promo ===
           if (state.pay === "mensual") {
