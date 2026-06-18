@@ -1647,17 +1647,19 @@
       // Para Seniors/SeniorsTotal: conversión directa sin truncar; resto: bloques de 50€
       const cheque = isSeniorsForGift ? regaloTotal : truncateTo50(regaloTotal);
 
-      // Meses gratis del año 1 (sólo si la regla tiene months > 0; con discount no hay meses)
-      let m1 = 0;
+      // Total de meses gratis (año 1 + año 2). Si hay discount % la regla no tiene meses.
+      let totalMonths = 0;
       if (rule.months > 0) {
-        m1 = getFreeMonthOffsets(rule.category, r.numAseguradosTotal, 1).length;
+        const m1 = getFreeMonthOffsets(rule.category, r.numAseguradosTotal, 1).length;
+        const m2 = getFreeMonthOffsets(rule.category, r.numAseguradosTotal, 2).length;
+        totalMonths = m1 + m2;
       }
 
-      // Prorrata Año = ((precio × 12) - (precio × m1) - cheque) / 12
-      const prorrata = ((monthly * 12) - (monthly * m1) - cheque) / 12;
-      const hasData = (cheque > 0) || (m1 > 0) || (rule.discount > 0);
+      // Prorrata Año = ((precio × 12) - (precio × meses_gratis_totales) - cheque) / 12
+      const prorrata = ((monthly * 12) - (monthly * totalMonths) - cheque) / 12;
+      const hasData = (cheque > 0) || (totalMonths > 0) || (rule.discount > 0);
 
-      return { cheque, prorrata, m1, hasData };
+      return { cheque, prorrata, totalMonths, hasData };
     }
 
     function buildCampaignSection(r) {
