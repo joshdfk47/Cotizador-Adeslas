@@ -958,6 +958,25 @@
       background: rgba(0, 123, 196, 0.05);
       transform: scale(1.05);
     }
+
+    /* ===== Datos copiables =====
+       Hace que los números y datos se puedan seleccionar/copiar con cursor de
+       texto. La "mano" (cursor:pointer) se conserva en <summary> y botones para
+       abrir desplegables y ejecutar acciones. No afecta a la lógica ni al
+       reordenado por arrastre de las tarjetas. */
+    .priceLine, .priceLine *,
+    .detailBox, .detailBox *,
+    .detailRow, .detailRow *,
+    .val, .val *,
+    .card-content,
+    .routeCurrent,
+    summary .sumRow > span:not(.pm) {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+      cursor: text;
+    }
   </style>
 </head>
 
