@@ -789,11 +789,13 @@
     /* ==========================
        DRAG & DROP (reordenar productos)
        ========================== */
-    .card[draggable="true"] {
+    .card h3[draggable="true"] {
       cursor: grab;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
-    .card[draggable="true"]:active {
+    .card h3[draggable="true"]:active {
       cursor: grabbing;
     }
 
@@ -2508,7 +2510,6 @@
       computed.forEach(r => {
         const card = document.createElement("div");
         card.className = "card product-card";
-        card.setAttribute("draggable", "true");
         card.dataset.product = r.product;
 
         // Color corporativo
@@ -2518,6 +2519,7 @@
 
         const title = document.createElement("h3");
         title.textContent = r.product;
+        title.setAttribute("draggable", "true"); // solo la cabecera inicia el arrastre
         card.appendChild(title);
 
         const content = document.createElement("div");
@@ -3093,7 +3095,7 @@
     }
 
     function syncProductOrderFromDOM() {
-      const cards = Array.from(elResults.querySelectorAll(".card[draggable='true'][data-product]"));
+      const cards = Array.from(elResults.querySelectorAll(".card[data-product]"));
       const visibleOrder = cards.map(c => (c.dataset.product || "").trim()).filter(Boolean);
       if (!visibleOrder.length) return;
 
@@ -3104,7 +3106,7 @@
     }
 
     elResults.addEventListener("dragstart", (e) => {
-      const card = e.target && e.target.closest ? e.target.closest(".card[draggable='true']") : null;
+      const card = e.target && e.target.closest ? e.target.closest(".card[data-product]") : null;
       if (!card) return;
 
       __dragProduct = card.dataset.product || null;
@@ -3126,7 +3128,7 @@
     elResults.addEventListener("dragover", (e) => {
       e.preventDefault();
 
-      const overCard = e.target && e.target.closest ? e.target.closest(".card[draggable='true']") : null;
+      const overCard = e.target && e.target.closest ? e.target.closest(".card[data-product]") : null;
       clearDropTargets();
       if (overCard) overCard.classList.add("dropTarget");
 
@@ -3134,7 +3136,7 @@
     });
 
     elResults.addEventListener("dragleave", (e) => {
-      const overCard = e.target && e.target.closest ? e.target.closest(".card[draggable='true']") : null;
+      const overCard = e.target && e.target.closest ? e.target.closest(".card[data-product]") : null;
       if (!overCard) return;
       overCard.classList.remove("dropTarget");
     });
@@ -3150,12 +3152,12 @@
 
       ensureProductOrderState();
 
-      const fromSel = `.card[draggable='true'][data-product="${cssEscapeSafe(fromProduct)}"]`;
+      const fromSel = `.card[data-product="${cssEscapeSafe(fromProduct)}"]`;
       const dragEl = elResults.querySelector(fromSel);
       if (!dragEl) return;
 
       const directDropCard = (e.target && e.target.closest)
-        ? e.target.closest(".card[draggable='true']")
+        ? e.target.closest(".card[data-product]")
         : null;
 
       let insertBeforeEl = null;
@@ -3163,7 +3165,7 @@
       if (directDropCard && directDropCard !== dragEl) {
         insertBeforeEl = directDropCard;
       } else {
-        const cards = Array.from(elResults.querySelectorAll(".card[draggable='true'][data-product]"))
+        const cards = Array.from(elResults.querySelectorAll(".card[data-product]"))
           .filter(c => c !== dragEl);
 
         const y = e.clientY;
