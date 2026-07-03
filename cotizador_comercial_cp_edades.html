@@ -1482,6 +1482,24 @@
       return [];
     }
 
+    // ==========================
+    // SINCRONIZACIÓN GLOBAL (nube)
+    // El estado real de las promos (activa/pausada) vive en el servidor, así vale
+    // para todos los usuarios y PCs. localStorage queda como caché/fallback.
+    // ==========================
+    async function syncPromosFromCloud() {
+      try {
+        const res = await fetch("/api/promos", { cache: "no-store" });
+        if (!res.ok) return; // no configurado / sin conexión -> se usa la caché local
+        const data = await res.json();
+        if (data && Array.isArray(data.promos)) {
+          // La nube manda: sobrescribe la copia local y vuelve a pintar.
+          localStorage.setItem("adeslas_promos_v1", JSON.stringify(data.promos));
+          if (typeof renderAll === "function") renderAll();
+        }
+      } catch (e) { /* offline: se mantiene la caché local */ }
+    }
+
     // Comprueba si la Fecha de Efecto del cliente cae dentro del rango de la promo.
     // Si la promo no tiene fechas configuradas, se considera siempre válida.
     // Si no hay Fecha de Efecto introducida, también se considera válida (mostrar por defecto).
@@ -3182,6 +3200,9 @@
 
     // ====== INIT ======
     switchQuote(0);
+
+    // Trae el estado global de las promos desde el servidor (si está configurado).
+    syncPromosFromCloud();
 
     // ==========================
     // LOGOUT

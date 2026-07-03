@@ -883,6 +883,61 @@
 
     function savePromos(promos) {
       localStorage.setItem(PROMOS_KEY, JSON.stringify(promos));
+      // Propaga el estado a la nube para que valga para todos los PCs/usuarios.
+      if (CLOUD_ENABLED) pushPromosToCloud(promos);
+    }
+
+    // ============================================================
+    // SINCRONIZACIÓN GLOBAL (nube)  —  el estado de las promos vive en el
+    // servidor. Al abrir, la nube manda; al guardar, se escribe en la nube.
+    // ============================================================
+    let CLOUD_ENABLED = false; // se activa tras la primera reconciliación
+
+    function getAdminSecret() {
+      let s = localStorage.getItem("promos_admin_secret") || "";
+      if (!s) {
+        s = (prompt("Introduce la clave de administrador de promos:") || "").trim();
+        if (s) localStorage.setItem("promos_admin_secret", s);
+      }
+      return s;
+    }
+
+    async function pushPromosToCloud(promos) {
+      try {
+        const res = await fetch("/api/promos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-admin-secret": getAdminSecret() },
+          body: JSON.stringify({ promos: promos })
+        });
+        if (res.status === 401) {
+          localStorage.removeItem("promos_admin_secret");
+          alert("Clave de administrador incorrecta. Vuelve a intentarlo al guardar.");
+          return false;
+        }
+        if (res.status === 503) {
+          alert("El almacén en la nube todavía no está configurado en Vercel. Los cambios se han guardado solo en este equipo.");
+          return false;
+        }
+        return res.ok;
+      } catch (e) { return false; }
+    }
+
+    async function initCloudSync() {
+      try {
+        const res = await fetch("/api/promos", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.promos)) {
+            // La nube ya tiene estado: manda sobre lo local.
+            localStorage.setItem(PROMOS_KEY, JSON.stringify(data.promos));
+            renderPromoList();
+          } else {
+            // Nube vacía (primera vez): siembra con el estado local actual.
+            await pushPromosToCloud(loadPromos());
+          }
+        }
+      } catch (e) { /* sin conexión: se sigue en local */ }
+      CLOUD_ENABLED = true;
     }
 
     function generateId() {
@@ -1446,6 +1501,10 @@
         renderPromoList();
       }
     })();
+
+    // Reconciliación con la nube: tras preparar el estado local, la nube manda.
+    // (Si el almacén aún no está configurado, todo sigue funcionando en local.)
+    initCloudSync();
 
     // ============================================================
     // NAVIGATION
