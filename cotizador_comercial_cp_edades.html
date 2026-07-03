@@ -2355,10 +2355,6 @@
       let annualLoss = 0;
       if (!isGOProduct(product)) {
         effectiveDiscount = state.discount;
-        // PYMES TOTAL aplica el doble de descuento
-        if (product && product.toLowerCase().includes("pymes total")) {
-          effectiveDiscount = state.discount * 2;
-        }
 
         if (effectiveDiscount > 0) {
           // La base de la pérdida es el precio antes de aplicar el descuento manual
