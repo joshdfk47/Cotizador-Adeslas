@@ -691,6 +691,11 @@
     @media (max-width: 600px) {
       .camp-cells { grid-template-columns: 1fr; }
     }
+
+    /* Solo los admin pueden pausar/eliminar/crear promos. Se oculta por CSS
+       (con la clase en el body) para que persista aunque la lista se repinte. */
+    body.not-admin .promo-actions { display: none !important; }
+    body.not-admin #promoFormPanel { display: none !important; }
   </style>
 </head>
 
@@ -1549,12 +1554,10 @@
       // Only admin can see Admin button
       const btnAdmin = document.getElementById("btnOpenAdmin");
       if (role !== "admin" && btnAdmin) btnAdmin.style.display = "none";
-      // Only admin can create/delete promos (form hidden for non-admin)
+      // Only admin can pause/delete/create promos. Marcamos el body con una clase
+      // y el CSS oculta los controles aunque la lista se vuelva a pintar.
       if (role !== "admin") {
-        const formPanel = document.getElementById("promoFormPanel");
-        if (formPanel) formPanel.style.display = "none";
-        // Also hide delete/toggle buttons
-        document.querySelectorAll(".promo-actions").forEach(el => el.style.display = "none");
+        document.body.classList.add("not-admin");
       }
     })();
   </script>
