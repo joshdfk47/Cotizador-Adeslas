@@ -3922,3 +3922,6 @@ const DATA = {
     ]
   }
 };
+
+// Permite reutilizar DATA en Node (API serverless). Inofensivo en el navegador.
+if (typeof module !== "undefined" && module.exports) { module.exports = DATA; }
