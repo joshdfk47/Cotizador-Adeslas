@@ -1827,6 +1827,18 @@
         return `${count} ${count === 1 ? 'mes' : 'meses'} gratis`;
       };
 
+      // Formatea una lista de offsets (meses desde la fecha de efecto) a fechas concretas.
+      const monthsTextForOffsets = (offsets) => {
+        if (!offsets || !offsets.length) return "—";
+        if (effectiveDate) {
+          const months = offsets
+            .map(off => formatMonthYearEs(addMonthsToDate(effectiveDate, off)))
+            .filter(Boolean);
+          if (months.length) return months.join(" · ");
+        }
+        return `${offsets.length} ${offsets.length === 1 ? 'mes' : 'meses'} gratis`;
+      };
+
       const variantBlock = (label, rule, monthlyPrice, regalo) => {
         if (!rule) return "";
         if (rule.months <= 0 && rule.discount <= 0 && !(regalo > 0)) return "";
@@ -1843,16 +1855,22 @@
           inner += row("Descuento adicional", `-${rule.discount}%`);
         } else if (monthlyPrice && monthlyPrice > 0) {
           const category = rule.category;
-          const offsY1 = getFreeMonthOffsets(category, r.numAseguradosTotal, 1);
-          const offsY2 = getFreeMonthOffsets(category, r.numAseguradosTotal, 2);
-          const m1 = offsY1.length, m2 = offsY2.length;
-          const totalGratis = m1 + m2;
+          const allOffs = []
+            .concat(getFreeMonthOffsets(category, r.numAseguradosTotal, 1))
+            .concat(getFreeMonthOffsets(category, r.numAseguradosTotal, 2));
+          const totalGratis = allOffs.length;
 
           if (totalGratis > 0) {
-            // 2) Meses gratis (con detalle por año si tenemos fecha de efecto)
+            // Meses gratis agrupados por su ventana real de 12 meses (según la
+            // posición del mes desde la fecha de efecto):
+            //   Año 1 = meses 1-12, Año 2 = meses 13-24, Año 3 = meses 25-36.
+            const win1 = allOffs.filter(o => o >= 1 && o <= 12);
+            const win2 = allOffs.filter(o => o >= 13 && o <= 24);
+            const win3 = allOffs.filter(o => o >= 25 && o <= 36);
             inner += row("Meses gratis", `${totalGratis}`);
-            if (m1 > 0) inner += row("Año 1", monthsTextForYear(category, r.numAseguradosTotal, 1), { sub: true });
-            if (m2 > 0) inner += row("Año 2", monthsTextForYear(category, r.numAseguradosTotal, 2), { sub: true });
+            if (win1.length) inner += row("Año 1", monthsTextForOffsets(win1), { sub: true });
+            if (win2.length) inner += row("Año 2", monthsTextForOffsets(win2), { sub: true });
+            if (win3.length) inner += row("Año 3", monthsTextForOffsets(win3), { sub: true });
             // (la Prorrata Año se muestra fuera del desplegable, junto a los precios)
           }
         }
