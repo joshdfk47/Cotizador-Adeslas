@@ -30,7 +30,8 @@ const ZOHO_MAP = {
   "Adeslas Plena Total":         { single: "Precio_Plena_Total1" },
   "Plena Total Vital":           { single: "Precio_Plena_Total_Vital" },
   "Adeslas Plena Total Seniors": { single: "Precio_Seniors_Total" },
-  "Adeslas Pymes TOTAL":         { single: "Precio_Pymes_Total" }
+  "Adeslas Pymes TOTAL":         { single: "Precio_Pymes_Total" },
+  "Welcome (Extranjería)":       { single: "Welcome" }
 };
 
 async function getPromos() {

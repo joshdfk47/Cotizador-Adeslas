@@ -227,14 +227,15 @@
       finalCon *= (1 - actualK8);
     }
 
-    const payDisc = (PAY_DISCOUNT[state.pay] || 0);
+    // Welcome/anual_only: precio de tabla ya es final anual, sin descuentos.
+    const payDisc = rules.annual_only ? 0 : (PAY_DISCOUNT[state.pay] || 0);
     finalSin = applyDiscount(finalSin, payDisc);
     finalCon = applyDiscount(finalCon, payDisc);
 
     const isOnlyConDental = !!rules.only_con_dental;
 
     let effectiveDiscount = 0;
-    if (!isGOProduct(product)) {
+    if (!isGOProduct(product) && !rules.annual_only) {
       effectiveDiscount = state.discount || 0;
       finalSin = applyDiscount(finalSin, effectiveDiscount);
       finalCon = applyDiscount(finalCon, effectiveDiscount);
@@ -242,7 +243,7 @@
 
     if (rules.dental_mode === "total_at_end") finalCon = finalSin + dental_total_for_group;
 
-    const campaign = (state.pay === "mensual") ? loadActiveCampaign(state.promos, state.effectiveDate) : null;
+    const campaign = (state.pay === "mensual" && !rules.annual_only) ? loadActiveCampaign(state.promos, state.effectiveDate) : null;
     let campaignDiscSin = 0, campaignDiscCon = 0;
     if (campaign) {
       const cr1 = getCampaignRule(campaign, product, numAseguradosTotal, false);
@@ -255,6 +256,8 @@
 
     const showSin = isOnlyConDental ? null : roundPrice(finalSin);
     const showCon = isOnlyConDental ? roundPrice(finalSin) : roundPrice(finalCon);
+    // Welcome/anual_only: el precio ya es anual (no multiplicar ×12).
+    const annualMult = rules.annual_only ? 1 : 12;
 
     return {
       ok: true,
@@ -263,8 +266,8 @@
       isOnlyConDental,
       monthlySin: showSin,
       monthlyCon: showCon,
-      annualSin: showSin !== null ? roundPrice(finalSin * 12) : null,
-      annualCon: roundPrice((isOnlyConDental ? finalSin : finalCon) * 12),
+      annualSin: showSin !== null ? roundPrice(finalSin * annualMult) : null,
+      annualCon: roundPrice((isOnlyConDental ? finalSin : finalCon) * annualMult),
       manualDiscApplied: effectiveDiscount,
       campaignDiscSin,
       campaignDiscCon
