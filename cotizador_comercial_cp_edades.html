@@ -1691,20 +1691,38 @@
       // Para Seniors/SeniorsTotal: conversión directa sin truncar; resto: bloques de 50€
       const cheque = isSeniorsForGift ? regaloTotal : truncateTo50(regaloTotal);
 
-      // Total de meses gratis (año 1 + año 2). Si hay discount % la regla no tiene meses.
-      let totalMonths = 0;
+      // Meses gratis repartidos por ventanas de 12 meses según la posición real
+      // de cada mes gratis (offset desde la fecha de efecto):
+      //   Año 1 = meses 1-12, Año 2 = meses 13-24, Año 3 = meses 25-36.
+      let freeW1 = 0, freeW2 = 0, freeW3 = 0, totalMonths = 0;
       if (rule.months > 0) {
-        const m1 = getFreeMonthOffsets(rule.category, r.numAseguradosTotal, 1).length;
-        const m2 = getFreeMonthOffsets(rule.category, r.numAseguradosTotal, 2).length;
-        totalMonths = m1 + m2;
+        const offs = []
+          .concat(getFreeMonthOffsets(rule.category, r.numAseguradosTotal, 1))
+          .concat(getFreeMonthOffsets(rule.category, r.numAseguradosTotal, 2));
+        for (const o of offs) {
+          if (o >= 1 && o <= 12) freeW1++;
+          else if (o >= 13 && o <= 24) freeW2++;
+          else if (o >= 25 && o <= 36) freeW3++;
+        }
+        totalMonths = offs.length;
       }
 
-      // Prorrata Año = ((precio × 12) - (precio × meses_gratis_totales) - cheque) / 12
-      const prorrata = ((monthly * 12) - (monthly * totalMonths) - cheque) / 12;
+      // ¿Póliza TOTAL? (Plena Total, Plena Total Vital, Plena Total Seniors)
+      const isTotalPolicy = (rule.category === "plena_total" || rule.category === "plena_total_seniors");
+
+      // Prorrata (nueva fórmula):
+      //   Año 1 = (precio×12 − precio×mesesGratis[1-12] − cheque) / 12
+      //           El cheque/Tarjeta Regalo solo cuenta en el Año 1 (se consigue desde el mes 6).
+      //   Año 2 = (precio×12 − precio×mesesGratis[13-24]) / 12   (solo TOTAL, sin cheque)
+      //   Año 3 = (precio×12 − precio×mesesGratis[25-36]) / 12   (solo TOTAL, sin cheque)
+      const prorrata  = ((monthly * 12) - (monthly * freeW1) - cheque) / 12;
+      const prorrata2 = ((monthly * 12) - (monthly * freeW2)) / 12;
+      const prorrata3 = ((monthly * 12) - (monthly * freeW3)) / 12;
+
       // En GO siempre se muestra la línea (si no hay cheque, la prorrata queda = precio mensual)
       const hasData = isGOProd ? true : ((cheque > 0) || (totalMonths > 0) || (rule.discount > 0));
 
-      return { cheque, prorrata, totalMonths, hasData };
+      return { cheque, prorrata, prorrata2, prorrata3, isTotalPolicy, totalMonths, hasData };
     }
 
     function buildCampaignSection(r) {
@@ -2597,20 +2615,32 @@
           const makeProrrLine = (withDental) => {
             const d = computeCampaignVariantData(r, withDental);
             if (!d || !d.hasData) return null;
-            const el = document.createElement("div");
-            el.className = "priceLine";
-            el.style.marginTop = "4px";
-            el.style.background = "rgba(37,99,235,0.06)";
-            el.style.border = "1px solid rgba(37,99,235,0.20)";
-            el.innerHTML = `
-              <div style="width:100%;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <b style="font-size:13px; color:#1e3a8a;">Prorrata Año</b>
-                  <span class="val" style="font-size:16px; color:#1d4ed8; font-weight:1000;">${fmtEUR2(d.prorrata)}</span>
+            const frag = document.createDocumentFragment();
+            const addLine = (label, value) => {
+              const el = document.createElement("div");
+              el.className = "priceLine";
+              el.style.marginTop = "4px";
+              el.style.background = "rgba(37,99,235,0.06)";
+              el.style.border = "1px solid rgba(37,99,235,0.20)";
+              el.innerHTML = `
+                <div style="width:100%;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <b style="font-size:13px; color:#1e3a8a;">${label}</b>
+                    <span class="val" style="font-size:16px; color:#1d4ed8; font-weight:1000;">${fmtEUR2(value)}</span>
+                  </div>
                 </div>
-              </div>
-            `;
-            return el;
+              `;
+              frag.appendChild(el);
+            };
+            if (d.isTotalPolicy) {
+              // Pólizas TOTAL: prorrata de los 3 años.
+              addLine("Prorrata Año 1", d.prorrata);
+              addLine("Prorrata Año 2", d.prorrata2);
+              addLine("Prorrata Año 3", d.prorrata3);
+            } else {
+              addLine("Prorrata Año", d.prorrata);
+            }
+            return frag;
           };
 
           if (r.isOnlyConDental) {
