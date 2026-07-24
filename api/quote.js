@@ -77,7 +77,9 @@ module.exports = async function handler(req, res) {
   if (!ages.length) { res.status(400).json({ error: "faltan_edades" }); return; }
 
   const promos = await getPromos();
-  const result = engine.quote(DATA, { cp, ages, pay, promos });
+  // Solo los productos mapeados a Zoho (evita que productos nuevos del cotizador
+  // —p.ej. Welcome— se cuelen en la respuesta de la API).
+  const result = engine.quote(DATA, { cp, ages, pay, promos, products: Object.keys(ZOHO_MAP) });
 
   // Construir objeto plano de campos Zoho (API name -> valor, o null si no apto)
   const zohoFields = {};

@@ -10,9 +10,16 @@ const DATA = {
     "Adeslas Seniors",
     "Go",
     "Plena Total Vital",
-    "Plena Vital"
+    "Plena Vital",
+    "Welcome (Extranjería)"
   ],
   "price_table": {
+    "Welcome 1": [{"min":0,"max":24,"price":660},{"min":25,"max":44,"price":756},{"min":45,"max":54,"price":972},{"min":55,"max":59,"price":1572},{"min":60,"max":64,"price":1848},{"min":65,"max":69,"price":2520},{"min":70,"max":120,"price":2693}],
+    "Welcome 2": [{"min":0,"max":24,"price":672},{"min":25,"max":44,"price":792},{"min":45,"max":54,"price":996},{"min":55,"max":59,"price":1632},{"min":60,"max":64,"price":1908},{"min":65,"max":69,"price":2688},{"min":70,"max":120,"price":2735}],
+    "Welcome 3": [{"min":0,"max":24,"price":672},{"min":25,"max":44,"price":804},{"min":45,"max":54,"price":1008},{"min":55,"max":59,"price":1680},{"min":60,"max":64,"price":1956},{"min":65,"max":69,"price":2736},{"min":70,"max":120,"price":2798}],
+    "Welcome 4": [{"min":0,"max":24,"price":696},{"min":25,"max":44,"price":916},{"min":45,"max":54,"price":1044},{"min":55,"max":59,"price":1728},{"min":60,"max":64,"price":2064},{"min":65,"max":69,"price":2904},{"min":70,"max":120,"price":2946}],
+    "Welcome 5": [{"min":0,"max":24,"price":708},{"min":25,"max":44,"price":840},{"min":45,"max":54,"price":1056},{"min":55,"max":59,"price":1752},{"min":60,"max":64,"price":2160},{"min":65,"max":69,"price":3048},{"min":70,"max":120,"price":3115}],
+    "Welcome 6": [{"min":0,"max":24,"price":732},{"min":25,"max":44,"price":840},{"min":45,"max":54,"price":1104},{"min":55,"max":59,"price":1764},{"min":60,"max":64,"price":2184},{"min":65,"max":69,"price":3072},{"min":70,"max":120,"price":3136}],
     "Go 1": [
       {
         "min": 0,
@@ -3701,6 +3708,17 @@ const DATA = {
     }
   },
   "product_rules": {
+    "Welcome (Extranjería)": {
+      "base_name": "Welcome",
+      "annual_only": true,
+      "multi_discount": null,
+      "k6_applies": false,
+      "k8_applies": false,
+      "dental_mode": "none",
+      "age_min": 0,
+      "age_max": 120,
+      "pensionista_excluded": false
+    },
     "Go": {
       "base_name": "Go",
       "multi_discount": {

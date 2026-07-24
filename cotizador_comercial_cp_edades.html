@@ -1266,7 +1266,8 @@
         "Adeslas Seniors",
         "Adeslas Plena Total Seniors",
         "Adeslas NIF",
-        "Adeslas Pymes TOTAL"
+        "Adeslas Pymes TOTAL",
+        "Welcome (Extranjería)"
       ];
       return ORDER_MAIN;
     }
@@ -1282,6 +1283,10 @@
     function isGOProduct(productName) {
       const s = String(productName || "").trim().toLowerCase();
       return s === "go" || s.startsWith("go ");
+    }
+
+    function isWelcome(productName) {
+      return String(productName || "").toLowerCase().includes("welcome");
     }
 
     // ====== HELPERS ======
@@ -2370,8 +2375,8 @@
       }
 
 
-      // Descuento de pago
-      const payDisc = (PAY_DISCOUNT[state.pay] || 0);
+      // Descuento de pago (Welcome/anual_only: precio ya es final anual, sin descuento de pago)
+      const payDisc = rules.annual_only ? 0 : (PAY_DISCOUNT[state.pay] || 0);
       finalSin = applyDiscount(finalSin, payDisc);
       finalCon = applyDiscount(finalCon, payDisc);
 
@@ -2389,7 +2394,7 @@
       // Descuento manual (comisión) — debe ir después de declarar isOnlyConDental
       let effectiveDiscount = 0;
       let annualLoss = 0;
-      if (!isGOProduct(product)) {
+      if (!isGOProduct(product) && !rules.annual_only) {
         effectiveDiscount = state.discount;
 
         if (effectiveDiscount > 0) {
@@ -2408,7 +2413,7 @@
 
       // === CAMPAÑA (Promo Junio 2026) — descuento adicional aplicado al precio ===
       // SOLO se aplica en pago MENSUAL. Trimestral / Semestral / Anual NO tienen promo ni regalos.
-      const campaign = (state.pay === "mensual") ? loadActiveCampaign() : null;
+      const campaign = (state.pay === "mensual" && !rules.annual_only) ? loadActiveCampaign() : null;
       let campaignDiscSin = 0, campaignDiscCon = 0, campaignRuleSin = null, campaignRuleCon = null;
       if (campaign) {
         campaignRuleSin = getCampaignRule(campaign, product, numAseguradosTotal, false, state.pay);
@@ -2427,6 +2432,9 @@
       if (state.pay === "trimestral") { monthsPerPeriod = 3; periodLabel = "Trimestral"; periodSuffix = "trimestre"; }
       else if (state.pay === "semestral") { monthsPerPeriod = 6; periodLabel = "Semestral"; periodSuffix = "semestre"; }
       else if (state.pay === "anual") { monthsPerPeriod = 12; periodLabel = "Anual"; periodSuffix = "año"; }
+      // Welcome (Extranjería): el precio de la tabla YA es anual → se muestra tal cual (1×).
+      const annualMult = rules.annual_only ? 1 : 12;
+      if (rules.annual_only) { monthsPerPeriod = 1; periodLabel = "Anual"; periodSuffix = "año"; }
 
       // Valor a mostrar
       const showSin = isOnlyConDental ? null : roundPrice(finalSin);
@@ -2441,12 +2449,12 @@
         isOnlyConDental,
         monthly: { sin: showSin, con: showCon },
         annual: {
-          sin: showSin !== null ? roundPrice(finalSin * 12) : null,
-          con: roundPrice((isOnlyConDental ? finalSin : finalCon) * 12)
+          sin: showSin !== null ? roundPrice(finalSin * annualMult) : null,
+          con: roundPrice((isOnlyConDental ? finalSin : finalCon) * annualMult)
         },
         annualNoDisc: {
-          sin: showSin !== null ? roundPrice(finalSinNoManual * 12) : null,
-          con: roundPrice((isOnlyConDental ? finalSinNoManual : finalConNoManual) * 12)
+          sin: showSin !== null ? roundPrice(finalSinNoManual * annualMult) : null,
+          con: roundPrice((isOnlyConDental ? finalSinNoManual : finalConNoManual) * annualMult)
         },
         periodBase: showSin !== null ? roundPrice(finalSin * monthsPerPeriod) : null,
         periodWithDental: roundPrice((isOnlyConDental ? finalSin : finalCon) * monthsPerPeriod),
@@ -2499,9 +2507,16 @@
 
         const normalizedName = x.product.toLowerCase();
         // Filtros estrictos de visualización (por descuento/tipo)
-        if ((x.isGO || isGOProduct(x.product)) && state.discount > 0) {
+        if ((x.isGO || isGOProduct(x.product) || isWelcome(x.product)) && state.discount > 0) {
           x.ok = false;
           x.reason = "No se puede vender con descuento.";
+          x.keepPosition = true;
+        }
+
+        // Welcome (Extranjería): solo pago ANUAL
+        if (isWelcome(x.product) && state.pay !== "anual" && x.ok) {
+          x.ok = false;
+          x.reason = "⚠️ Recuerda que este producto solamente dispone de pago ANUAL";
           x.keepPosition = true;
         }
 
