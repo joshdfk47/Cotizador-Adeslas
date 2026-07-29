@@ -1034,7 +1034,7 @@
             <span>Fecha Nacimiento</span>
           </div>
           <div class="row">
-            <input id="dobInput" type="date" style="padding: 12px 10px;" />
+            <input id="dobInput" type="text" inputmode="numeric" placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off" style="padding: 12px 10px;" />
             <button class="btn primary" id="btnAddDob" type="button" title="Añadir por fecha">+</button>
           </div>
         </div>
@@ -3037,21 +3037,35 @@
       renderAll();
     }
 
-    function addAgeFromDob() {
-      const v = elDob.value;
-      if (!v) return;
-      const bDate = new Date(v);
-      const today = new Date();
-
-      let age = today.getFullYear() - bDate.getFullYear();
-      const m = today.getMonth() - bDate.getMonth();
-
-      // Si aún no ha pasado su cumpleaños este año, restamos 1 año a la edad
-      if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
-        age--;
+    // Convierte una fecha de nacimiento en edad. Acepta DD/MM/AAAA, DD-MM-AAAA,
+    // DD.MM.AAAA, DD/MM/AA e ISO AAAA-MM-DD. Devuelve null si no es válida.
+    function parseDobToAge(raw) {
+      const s = String(raw || "").trim();
+      if (!s) return null;
+      let d, m, y;
+      let mm = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/); // ISO AAAA-MM-DD
+      if (mm) { y = +mm[1]; m = +mm[2]; d = +mm[3]; }
+      else {
+        mm = s.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})$/); // DD/MM/AAAA (o - o .)
+        if (!mm) return null;
+        d = +mm[1]; m = +mm[2]; y = +mm[3];
+        if (y < 100) y += (y > 30 ? 1900 : 2000); // año de 2 dígitos → siglo
       }
+      if (m < 1 || m > 12 || d < 1 || d > 31) return null;
+      const bDate = new Date(y, m - 1, d);
+      // Rechaza fechas imposibles (p.ej. 31/02)
+      if (bDate.getFullYear() !== y || bDate.getMonth() !== m - 1 || bDate.getDate() !== d) return null;
+      const today = new Date();
+      let age = today.getFullYear() - bDate.getFullYear();
+      const mo = today.getMonth() - bDate.getMonth();
+      if (mo < 0 || (mo === 0 && today.getDate() < bDate.getDate())) age--;
+      if (age < 0 || age > 120) return null;
+      return age;
+    }
 
-      if (age < 0 || age > 120) return;
+    function addAgeFromDob() {
+      const age = parseDobToAge(elDob.value);
+      if (age === null) return;
       state.ages = normalizeAgesKeepDuplicates([...state.ages, age]);
       elDob.value = "";
       renderAll();
@@ -3105,6 +3119,12 @@
         e.preventDefault();
         addAgeFromDob();
       }
+    });
+    // Al pegar una fecha válida (DD/MM/AAAA, DD-MM-AAAA…), se añade automáticamente.
+    elDob.addEventListener("paste", () => {
+      setTimeout(() => {
+        if (parseDobToAge(elDob.value) !== null) addAgeFromDob();
+      }, 0);
     });
 
     elAge.addEventListener("keydown", (e) => {
