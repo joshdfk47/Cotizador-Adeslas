@@ -933,12 +933,16 @@
         if (res.ok) {
           const data = await res.json();
           if (data && Array.isArray(data.promos)) {
-            // La nube ya tiene estado: manda sobre lo local.
+            // La nube ya tiene estado (aunque sea []): MANDA sobre lo local.
+            // Si el admin borró/pausó algo, aquí se respeta y NO se resucita.
             localStorage.setItem(PROMOS_KEY, JSON.stringify(data.promos));
             renderPromoList();
           } else {
-            // Nube vacía (primera vez): siembra con el estado local actual.
-            await pushPromosToCloud(loadPromos());
+            // Nube NUNCA inicializada (primera vez): sembrar las promos por defecto.
+            const defaults = buildDefaultPromos();
+            localStorage.setItem(PROMOS_KEY, JSON.stringify(defaults));
+            await pushPromosToCloud(defaults);
+            renderPromoList();
           }
         }
       } catch (e) { /* sin conexión: se sigue en local */ }
@@ -1409,12 +1413,13 @@
     // ============================================================
     renderPromoList();
 
-    // Check if "Promo Regalo" promo already exists, if not seed it
-    (function seedDefaultPromo() {
-      const promos = loadPromos();
-      const hasRegalo = promos.some(p => p.name.toLowerCase().includes("regalo"));
-      if (!hasRegalo) {
-        const defaultPromo = {
+    // Promos por defecto — SOLO se usan la primera vez que se inicializa la nube
+    // (ver initCloudSync). NO se auto-crean en cada carga: así una promo borrada
+    // no reaparece nunca en ningún equipo.
+    function buildDefaultPromos() {
+      const now = new Date().toISOString();
+      return [
+        {
           id: "promo_regalo_default",
           name: "Tarjeta Regalo",
           icon: "🎁",
@@ -1422,7 +1427,7 @@
           location: "above_desglose",
           type: "per_insured",
           active: true,
-          createdAt: new Date().toISOString(),
+          createdAt: now,
           startDate: "2026-03-01",
           endDate: "2026-06-30",
           values: {
@@ -1431,12 +1436,28 @@
             otros_sin_dental: [50, 100, 300, 400, 500, 600, 700, 800, 900, 1000],
             otros_con_dental: [50, 150, 450, 600, 750, 900, 1050, 1200, 1350, 1500]
           }
-        };
-        promos.push(defaultPromo);
-        savePromos(promos);
-        renderPromoList();
-      }
-    })();
+        },
+        {
+          id: "promo_campaign_junio_2026",
+          name: "Promoción Junio 2026",
+          icon: "🌅",
+          description: "Meses gratis + 250 puntos/asegurado. Solo durante Junio. Se suma a la promo de Tarjetas Regalo.",
+          location: "below_prices",
+          type: "campaign",
+          active: true,
+          createdAt: now,
+          startDate: "2026-06-01",
+          endDate: "2026-12-31",
+          campaign: {
+            points_per_insured: 250,
+            eur_per_point: 0.10,
+            min_card_points: 500,
+            notice: "Solo durante Junio. Se suma a la promo de Tarjetas Regalo.",
+            rules: JSON.parse(JSON.stringify(DEFAULT_CAMPAIGN_RULES))
+          }
+        }
+      ];
+    }
 
     // Migración: gama_sin_dental "1" debe ser 1 mes (no 2)
     (function migrateGamaSinDental1() {
@@ -1477,35 +1498,8 @@
       } catch (e) {}
     })();
 
-    // Seed campaña "Promoción Junio 2026" (no destructivo — coexiste con la promo de Tarjetas Regalo)
-    (function seedJuneCampaign() {
-      const promos = loadPromos();
-      const hasCampaign = promos.some(p => p.type === "campaign" || (p.name || "").toLowerCase().includes("junio"));
-      if (!hasCampaign) {
-        const juneCampaign = {
-          id: "promo_campaign_junio_2026",
-          name: "Promoción Junio 2026",
-          icon: "🌅",
-          description: "Meses gratis + 250 puntos/asegurado. Solo durante Junio. Se suma a la promo de Tarjetas Regalo.",
-          location: "below_prices",
-          type: "campaign",
-          active: true,
-          createdAt: new Date().toISOString(),
-          startDate: "2026-06-01",
-          endDate: "2026-12-31",
-          campaign: {
-            points_per_insured: 250,
-            eur_per_point: 0.10,
-            min_card_points: 500,
-            notice: "Solo durante Junio. Se suma a la promo de Tarjetas Regalo.",
-            rules: JSON.parse(JSON.stringify(DEFAULT_CAMPAIGN_RULES))
-          }
-        };
-        promos.push(juneCampaign);
-        savePromos(promos);
-        renderPromoList();
-      }
-    })();
+    // (Los seeds ya no se auto-ejecutan aquí: buildDefaultPromos() solo se usa
+    //  dentro de initCloudSync la PRIMERA vez que la nube está sin inicializar.)
 
     // Reconciliación con la nube: tras preparar el estado local, la nube manda.
     // (Si el almacén aún no está configurado, todo sigue funcionando en local.)

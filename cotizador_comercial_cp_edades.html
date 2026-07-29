@@ -1430,26 +1430,9 @@
             }
           }
           if (changed) localStorage.setItem("adeslas_promos_v1", JSON.stringify(all));
-        } else {
-          // No promos exist (cache cleared) — auto-create the default promo
-          const defaultPromo = {
-            id: "promo_default_tarjetas",
-            name: "Tarjetas Regalo",
-            icon: "🎁",
-            description: "Tarjeta regalo por contratación",
-            location: "above_desglose",
-            type: "per_insured",
-            active: true,
-            createdAt: new Date().toISOString(),
-            values: {
-              go_sin_dental:    [...CORRECT_PROMO_VALUES.go_sin_dental],
-              go_con_dental:    [...CORRECT_PROMO_VALUES.go_con_dental],
-              otros_sin_dental: [...CORRECT_PROMO_VALUES.otros_sin_dental],
-              otros_con_dental: [...CORRECT_PROMO_VALUES.otros_con_dental]
-            }
-          };
-          localStorage.setItem("adeslas_promos_v1", JSON.stringify([defaultPromo]));
         }
+        // NO se auto-crea ninguna promo: la nube (/api/promos) es la fuente de verdad.
+        // Si el admin borra/pausa una promo, no debe reaparecer en ningún equipo.
       } catch (e) { }
     })();
 
@@ -3286,6 +3269,11 @@
 
     // Trae el estado global de las promos desde el servidor (si está configurado).
     syncPromosFromCloud();
+    // Re-sincroniza al volver a la pestaña (para equipos que dejan el cotizador
+    // abierto: si el admin borra/pausa una promo, se refleja sin recargar).
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") syncPromosFromCloud();
+    });
 
     // ==========================
     // LOGOUT
