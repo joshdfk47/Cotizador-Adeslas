@@ -2407,11 +2407,6 @@
         finalCon = applyDiscount(finalCon, effectiveDiscount);
       }
 
-      // Dental al final del total (NIF, Seniors) - Se aplica después de todos los descuentos
-      if (rules.dental_mode === "total_at_end") {
-        finalCon = finalSin + dental_total_for_group;
-      }
-
       // === CAMPAÑA (Promo Junio 2026) — descuento adicional aplicado al precio ===
       // SOLO se aplica en pago MENSUAL. Trimestral / Semestral / Anual NO tienen promo ni regalos.
       const campaign = (state.pay === "mensual" && !rules.annual_only) ? loadActiveCampaign() : null;
@@ -2423,6 +2418,12 @@
         campaignDiscCon = (campaignRuleCon && campaignRuleCon.discount) || 0;
         if (campaignDiscSin > 0) finalSin = applyDiscount(finalSin, campaignDiscSin);
         if (campaignDiscCon > 0) finalCon = applyDiscount(finalCon, campaignDiscCon);
+      }
+
+      // Dental al final del total (NIF): importe FIJO, se suma DESPUÉS de todos los
+      // descuentos (pago, comisión y campaña). El dental NO lleva ningún descuento.
+      if (rules.dental_mode === "total_at_end") {
+        finalCon = finalSin + dental_total_for_group;
       }
 
       const hasDental = (rules.dental_mode !== null && rules.dental_mode !== "none") || isOnlyConDental;

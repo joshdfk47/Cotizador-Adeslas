@@ -241,8 +241,6 @@
       finalCon = applyDiscount(finalCon, effectiveDiscount);
     }
 
-    if (rules.dental_mode === "total_at_end") finalCon = finalSin + dental_total_for_group;
-
     const campaign = (state.pay === "mensual" && !rules.annual_only) ? loadActiveCampaign(state.promos, state.effectiveDate) : null;
     let campaignDiscSin = 0, campaignDiscCon = 0;
     if (campaign) {
@@ -253,6 +251,10 @@
       if (campaignDiscSin > 0) finalSin = applyDiscount(finalSin, campaignDiscSin);
       if (campaignDiscCon > 0) finalCon = applyDiscount(finalCon, campaignDiscCon);
     }
+
+    // Dental de NIF (total_at_end): importe FIJO, se suma DESPUÉS de todos los
+    // descuentos (pago, comisión, campaña). El dental NO lleva descuento.
+    if (rules.dental_mode === "total_at_end") finalCon = finalSin + dental_total_for_group;
 
     const showSin = isOnlyConDental ? null : roundPrice(finalSin);
     const showCon = isOnlyConDental ? roundPrice(finalSin) : roundPrice(finalCon);
