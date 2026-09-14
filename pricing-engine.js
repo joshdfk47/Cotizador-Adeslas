@@ -101,6 +101,7 @@
     if (isSeniorsNormal) {
       let cUnder50 = countIf(a => a < 50);
       if (cUnder50 > 0) return { ok: false, reason: "No apto: Seniors no permite menores de 50 años" };
+      if (countIf(a => a > 84) > 0) return { ok: false, reason: "Edad máxima permitida: 84 años" };
       let c55 = countIf(a => a >= 55), cUnder55 = countIf(a => a < 55);
       if (c55 === 0) return { ok: false, reason: "Apto si hay al menos una persona con 55 años o más" };
       if (cUnder55 > 1) return { ok: false, reason: "Solo se permite un acompañante menor de 55 años" };
