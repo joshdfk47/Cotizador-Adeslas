@@ -2154,10 +2154,77 @@
     }
 
     // ==== IBIZA COLECTIVO CPs ====
-    const IBIZA_CPS = new Set([
+    // Lista de CPs y tarifas del colectivo: DATA.ibiza_colectivo (data_autogen.js)
+    const IBIZA_CPS = new Set((DATA.ibiza_colectivo && DATA.ibiza_colectivo.cps) || [
       "07800","07810","07811","07812","07813","07814","07815","07816","07817","07819",
       "07820","07828","07829","07830","07839","07840","07850","07860","07870","07871","07872"
     ]);
+
+    function getIbizaColectivo(product) {
+      const col = DATA.ibiza_colectivo;
+      return (col && col.productos && col.productos[product]) || null;
+    }
+
+    // Colectivo Ibiza-Formentera: tarifa mensual propia, solo SIN dental y SIN
+    // descuentos (ni pago, ni comisión, ni campaña). Descuento por nº de
+    // asegurados en standby: solo si DATA.ibiza_colectivo.multi_discount === true.
+    function computeIbizaColectivo(product, state, col, constraints, rules) {
+      const numAseguradosTotal = state.ages.length;
+      let multiFactor = 1.0;
+      if (DATA.ibiza_colectivo.multi_discount === true && rules.multi_discount) {
+        if (rules.multi_discount.threshold && numAseguradosTotal >= rules.multi_discount.threshold) {
+          multiFactor = rules.multi_discount.factor;
+        } else if (rules.multi_discount.graduated) {
+          for (const level of rules.multi_discount.graduated) {
+            if (numAseguradosTotal >= level.min_count) { multiFactor = level.factor; break; }
+          }
+        }
+      }
+      let total = 0;
+      const breakdown = [];
+      for (const age of state.ages) {
+        let base = 0;
+        for (const r of col.tarifas) { if (age >= r.min && age <= r.max) { base = r.price; break; } }
+        total += base * multiFactor;
+        breakdown.push({ age, base, multi: multiFactor, pens: 1, k6: 1 });
+      }
+      if (total === 0) return { ok: false, reason: "No hay asegurables en este rango de edad", product, constraints };
+
+      let monthsPerPeriod = 1, periodLabel = "Mensual", periodSuffix = "mes";
+      if (state.pay === "trimestral") { monthsPerPeriod = 3; periodLabel = "Trimestral"; periodSuffix = "trimestre"; }
+      else if (state.pay === "semestral") { monthsPerPeriod = 6; periodLabel = "Semestral"; periodSuffix = "semestre"; }
+      else if (state.pay === "anual") { monthsPerPeriod = 12; periodLabel = "Anual"; periodSuffix = "año"; }
+
+      return {
+        ok: true,
+        product,
+        constraints,
+        numAseguradosTotal,
+        hasDental: false,
+        isOnlyConDental: false,
+        isIbiza: true,
+        colectivo: col.colectivo,
+        monthly: { sin: roundPrice(total), con: null },
+        annual: { sin: roundPrice(total * 12), con: null },
+        annualNoDisc: { sin: roundPrice(total * 12), con: null },
+        periodBase: roundPrice(total * monthsPerPeriod),
+        periodWithDental: null,
+        periodLabel,
+        periodSuffix,
+        monthsPerPeriod,
+        breakdown,
+        payDisc: 0,
+        manualDiscApplied: 0,
+        dentalPer: null,
+        isGO: isGOProduct(product),
+        annualLoss: 0,
+        campaign: null,
+        campaignRuleSin: null,
+        campaignRuleCon: null,
+        campaignDiscSin: 0,
+        campaignDiscCon: 0
+      };
+    }
 
     function isIbizaCP(cp) {
       return IBIZA_CPS.has(String(cp || "").trim());
@@ -2277,6 +2344,12 @@
       const constraints = getProductConstraints(product);
       const rules = constraints.rawRules;
 
+      // Colectivo Ibiza-Formentera: solo GO, Plena Plus y Plena Vital
+      const ibizaCol = isIbizaCP(state.cp) ? getIbizaColectivo(product) : null;
+      if (isIbizaCP(state.cp) && !ibizaCol) {
+        return { ok: false, reason: "No disponible en el Colectivo Ibiza-Formentera", product, constraints, ibizaExcluded: true };
+      }
+
       const k6_val = (DATA.discounts && DATA.discounts.k6 !== undefined) ? DATA.discounts.k6 : 0;
       const k8_val = (DATA.discounts && DATA.discounts.k8 !== undefined) ? DATA.discounts.k8 : 0;
       const pensionista = (DATA.discounts && DATA.discounts.pensionista) || false;
@@ -2336,6 +2409,8 @@
       if (!allowedCheck.ok) {
         return { ok: false, reason: allowedCheck.reason || "No cumple las reglas de contratación", product, constraints };
       }
+
+      if (ibizaCol) return computeIbizaColectivo(product, state, ibizaCol, constraints, rules);
 
       for (const age of state.ages) {
         const basePrice = getPrice(productLookup, state.zona, age);
@@ -2507,6 +2582,7 @@
 
       computed = computed.filter(x => {
         if (!allowedSet.has(x.product)) return false;
+        if (x.ibizaExcluded) return false; // fuera del Colectivo Ibiza-Formentera
 
         const normalizedName = x.product.toLowerCase();
         // Filtros estrictos de visualización (por descuento/tipo)
@@ -2583,7 +2659,7 @@
             ibizaDiv.className = "no";
             ibizaDiv.style.textAlign = "center";
             ibizaDiv.style.padding = "10px";
-            ibizaDiv.textContent = "COLECTIVO IBIZA";
+            ibizaDiv.textContent = "COLECTIVO IBIZA-FORMENTERA";
             content.appendChild(ibizaDiv);
           }
           const noDiv = document.createElement("div");
@@ -2604,7 +2680,7 @@
           ibizaDiv.className = "no";
           ibizaDiv.style.textAlign = "center";
           ibizaDiv.style.padding = "10px";
-          ibizaDiv.textContent = "COLECTIVO IBIZA";
+          ibizaDiv.textContent = "COLECTIVO IBIZA-FORMENTERA" + (r.colectivo ? " · Nº " + r.colectivo : "");
           content.appendChild(ibizaDiv);
 
           // Also show the age requirement info for this product
@@ -2714,7 +2790,7 @@
             lineBase.innerHTML = `
               <div style="width:100%;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <b style="font-size:15px; color:#1e293b;">Total Salud</b>
+                  <b style="font-size:15px; color:#1e293b;">${r.isIbiza ? "Sin Dental" : "Total Salud"}</b>
                   <span class="val" style="font-size:18px;">${fmtEUR(r.periodBase)}</span>
                 </div>
               </div>
@@ -2727,7 +2803,7 @@
           content.appendChild(prices);
 
           // === PROMOS — sólo en pago mensual y dentro del rango de la promo ===
-          if (state.pay === "mensual") {
+          if (state.pay === "mensual" && !r.isIbiza) {
             const campaignEl = buildCampaignSection(r);
             if (campaignEl) {
               content.appendChild(campaignEl);
@@ -2788,7 +2864,7 @@
               </div>
             </div>
           `;
-          box.appendChild(drow);
+          if (!r.isIbiza) box.appendChild(drow);
 
           if (r.payDisc > 0) {
             const prow1 = document.createElement("div");
@@ -2934,7 +3010,7 @@
           };
 
           if (isTotal) {
-             const label = r.isOnlyConDental ? "CON DENTAL" : "TOTAL SALUD";
+             const label = r.isOnlyConDental ? "CON DENTAL" : (r.isIbiza ? "SIN DENTAL" : "TOTAL SALUD");
              const cDisc = r.isOnlyConDental ? (r.campaignDiscCon || 0) : (r.campaignDiscSin || 0);
              boxAnual.innerHTML = createBlock(label, r.annual.sin || r.annual.con, r.annualNoDisc.sin || r.annualNoDisc.con, cDisc);
           } else {

@@ -3547,6 +3547,29 @@ const DATA = {
     "Plena Extra 150": 1.0,
     "Plena Total Vital": 1.0
   },
+  "ibiza_colectivo": {
+    "nombre": "COLECTIVO IBIZA-FORMENTERA",
+    "cps": [
+      "07800", "07810", "07811", "07812", "07813", "07814", "07815", "07816", "07817", "07819",
+      "07820", "07828", "07829", "07830", "07839", "07840", "07850",
+      "07860", "07870", "07871", "07872"
+    ],
+    "multi_discount": false,
+    "productos": {
+      "Go": {
+        "colectivo": "666036302",
+        "tarifas": [{"min":0,"max":54,"price":70.5},{"min":55,"max":69,"price":124.5},{"min":70,"max":120,"price":163.5}]
+      },
+      "Adeslas Plena Plus": {
+        "colectivo": "666036300",
+        "tarifas": [{"min":0,"max":24,"price":152},{"min":25,"max":44,"price":174},{"min":45,"max":54,"price":231},{"min":55,"max":59,"price":367.5},{"min":60,"max":64,"price":455.5},{"min":65,"max":69,"price":640},{"min":70,"max":120,"price":653.5}]
+      },
+      "Plena Vital": {
+        "colectivo": "666036301",
+        "tarifas": [{"min":0,"max":24,"price":85},{"min":25,"max":44,"price":108},{"min":45,"max":54,"price":133},{"min":55,"max":59,"price":206},{"min":60,"max":64,"price":254},{"min":65,"max":69,"price":338},{"min":70,"max":120,"price":364}]
+      }
+    }
+  },
   "config": {
     "users": {
       "admin": {

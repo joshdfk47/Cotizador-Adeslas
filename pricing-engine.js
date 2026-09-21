@@ -24,6 +24,54 @@
     return { provCode, provincia: rec.provincia, zonaRaw: rec.zona, zona: (rec.zona === 0 ? 1 : rec.zona), fallback: (rec.zona === 0) };
   }
 
+  // --- COLECTIVO IBIZA-FORMENTERA (datos en DATA.ibiza_colectivo) ---
+  function isIbizaCP(DATA, cp) {
+    const col = DATA.ibiza_colectivo;
+    return !!(col && Array.isArray(col.cps) && col.cps.includes(String(cp || "").trim()));
+  }
+  function getIbizaColectivo(DATA, product) {
+    const col = DATA.ibiza_colectivo;
+    return (col && col.productos && col.productos[product]) || null;
+  }
+  // Tarifa mensual propia del colectivo: solo SIN dental y SIN descuentos
+  // (ni pago, ni comisión, ni campaña). Descuento por nº de asegurados en
+  // standby: solo se aplica si DATA.ibiza_colectivo.multi_discount === true.
+  function computeIbizaColectivo(DATA, product, state, col, rules) {
+    const numAseguradosTotal = state.ages.length;
+    let multiFactor = 1.0;
+    if (DATA.ibiza_colectivo.multi_discount === true && rules.multi_discount) {
+      if (rules.multi_discount.threshold && numAseguradosTotal >= rules.multi_discount.threshold) {
+        multiFactor = rules.multi_discount.factor;
+      } else if (rules.multi_discount.graduated) {
+        for (const level of rules.multi_discount.graduated) {
+          if (numAseguradosTotal >= level.min_count) { multiFactor = level.factor; break; }
+        }
+      }
+    }
+    let total = 0;
+    for (const age of state.ages) {
+      let base = 0;
+      for (const r of col.tarifas) { if (age >= r.min && age <= r.max) { base = r.price; break; } }
+      total += base * multiFactor;
+    }
+    if (total === 0) return { ok: false, reason: "No hay asegurables en este rango de edad", product };
+    return {
+      ok: true,
+      product,
+      numAsegurados: numAseguradosTotal,
+      isOnlyConDental: false,
+      isIbiza: true,
+      colectivo: col.colectivo,
+      monthlySin: roundPrice(total),
+      monthlyCon: null,
+      annualSin: roundPrice(total * 12),
+      annualCon: null,
+      manualDiscApplied: 0,
+      campaignDiscSin: 0,
+      campaignDiscCon: 0
+    };
+  }
+
   function getPrice(DATA, base, zone, age) {
     const key = base + " " + zone;
     const rows = DATA.price_table[key] || null;
@@ -165,6 +213,12 @@
     const constraints = getProductConstraints(DATA, product);
     const rules = constraints.rawRules;
 
+    // Colectivo Ibiza-Formentera: solo GO, Plena Plus y Plena Vital
+    const ibizaCol = isIbizaCP(DATA, state.cp) ? getIbizaColectivo(DATA, product) : null;
+    if (isIbizaCP(DATA, state.cp) && !ibizaCol) {
+      return { ok: false, reason: "No disponible en el Colectivo Ibiza-Formentera", product, ibizaExcluded: true };
+    }
+
     const k6_val = (DATA.discounts && DATA.discounts.k6 !== undefined) ? DATA.discounts.k6 : 0;
     const k8_val = (DATA.discounts && DATA.discounts.k8 !== undefined) ? DATA.discounts.k8 : 0;
     const pensionista = (DATA.discounts && DATA.discounts.pensionista) || false;
@@ -203,6 +257,8 @@
 
     const allowedCheck = isProductAllowed(product, state.ages);
     if (!allowedCheck.ok) return { ok: false, reason: allowedCheck.reason || "No cumple las reglas de contratación", product };
+
+    if (ibizaCol) return computeIbizaColectivo(DATA, product, state, ibizaCol, rules);
 
     for (const age of state.ages) {
       const basePrice = getPrice(DATA, productLookup, state.zona, age);
