@@ -518,6 +518,7 @@
                         // Guardar sesión: usamos "true" (string) para mayor compatibilidad
                         localStorage.setItem(STORAGE_KEY_ADMIN, "true");
                         localStorage.setItem(STORAGE_KEY_ROLE, found.role);
+                        localStorage.setItem("adeslas_user", u);
                         // Also set the TOJUCHATIS token to avoid double password entry
                         localStorage.setItem('tojuchatis_token', btoa("adeslas2026"));
                     } catch (e) { }

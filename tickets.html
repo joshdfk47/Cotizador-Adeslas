@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tickets · Soporte</title>
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: rgba(15, 23, 42, 0.10);
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow2: 0 6px 18px rgba(15, 23, 42, 0.07);
+      --radius: 16px;
+      --radius2: 12px;
+      --accent: #2563eb;
+      --good: #16a34a;
+      --bad: #ef4444;
+      --warn: #f59e0b;
+      --brand: #007bc4;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .main-header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow2);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-logo { height: 46px; width: auto; }
+    .header-nav { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; justify-content: center; }
+
+    .btn-nav {
+      border: 2px solid var(--brand);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--brand);
+      background: #fff;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .2s ease;
+    }
+
+    .btn-nav:hover { background: rgba(0, 123, 196, 0.08); }
+    .btn-nav.active { background: var(--brand); color: #fff; }
+    .btn-nav.tickets-btn { border-color: #7c3aed; color: #7c3aed; }
+    .btn-nav.tickets-btn.active { background: #7c3aed; color: #fff; }
+
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 22px 18px 60px; }
+    .topTitle h1 { margin: 0 0 4px; font-size: 24px; }
+    .topTitle p { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel h2 { margin: 0 0 14px; font-size: 17px; }
+
+    .form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .field { flex: 1; min-width: 180px; }
+    .label { font-size: 12px; font-weight: 800; color: var(--muted); margin-bottom: 5px; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+
+    textarea { min-height: 120px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: 2px solid rgba(37, 99, 235, .20); border-color: var(--accent); }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: var(--radius2);
+      padding: 11px 18px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s ease;
+    }
+
+    .btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .btn.primary:hover { filter: brightness(1.08); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+
+    .msg { margin-top: 12px; padding: 11px 14px; border-radius: var(--radius2); font-size: 14px; font-weight: 700; display: none; }
+    .msg.ok { display: block; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .msg.err { display: block; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .msg.warn { display: block; background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+
+    .ticket {
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      padding: 13px 15px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+
+    .ticket-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .ticket-asunto { font-weight: 900; font-size: 15px; flex: 1; min-width: 180px; }
+    .ticket-meta { font-size: 12px; color: var(--muted); font-weight: 700; margin-top: 4px; }
+    .ticket-msg { white-space: pre-wrap; margin-top: 9px; font-size: 14px; color: #1e293b; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; }
+
+    .chip { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; }
+    .chip.abierto { background: rgba(245, 158, 11, .12); color: #b45309; border-color: rgba(245, 158, 11, .25); }
+    .chip.en_curso { background: rgba(37, 99, 235, .10); color: #1d4ed8; border-color: rgba(37, 99, 235, .25); }
+    .chip.resuelto { background: rgba(22, 163, 74, .10); color: #15803d; border-color: rgba(22, 163, 74, .25); }
+    .chip.alta { background: rgba(239, 68, 68, .10); color: #b91c1c; border-color: rgba(239, 68, 68, .25); }
+    .chip.media { background: rgba(245, 158, 11, .10); color: #b45309; border-color: rgba(245, 158, 11, .22); }
+    .chip.baja { background: rgba(100, 116, 139, .10); color: #475569; }
+    .chip.cat { background: rgba(124, 58, 237, .10); color: #6d28d9; border-color: rgba(124, 58, 237, .22); }
+
+    .ticket-actions { display: flex; gap: 6px; }
+    .ticket-actions button { border: 1px solid var(--border); background: #fff; border-radius: 8px; padding: 4px 9px; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .ticket-actions button:hover { background: rgba(15, 23, 42, .04); }
+    body.not-admin .ticket-actions { display: none !important; }
+
+    .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .filtros button { border: 1px solid var(--border); background: #fff; border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 800; cursor: pointer; color: var(--muted); }
+    .filtros button.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+    .vacio { color: var(--muted); font-size: 14px; padding: 10px 2px; }
+
+    @media (max-width: 700px) {
+      .header-nav { justify-content: flex-start; }
+      .brand-logo { height: 36px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="main-header">
+    <div class="header-wrap">
+      <div class="brand-block">
+        <img class="brand-logo" src="buscador patologias/logo-adeslas.png" alt="Adeslas">
+      </div>
+      <nav class="header-nav" aria-label="Navegación superior">
+        <a class="btn-nav" href="cotizador_comercial_cp_edades.html">Cotizador</a>
+        <a class="btn-nav" href="buscador patologias/buscador_patologias_base_interna_v2.html">Buscador Patologías</a>
+        <a class="btn-nav" href="calculadoraIMC.html">Calculadora IMC</a>
+        <a class="btn-nav" href="promos.html">🎁 Promos</a>
+        <a class="btn-nav tickets-btn active" href="tickets.html">🎫 Tickets</a>
+        <a class="btn-nav tojudoc" href="https://tojudoc.vercel.app/" target="_blank" rel="noopener">TojuDoc</a>
+      </nav>
+      <div class="header-right">
+        <button id="btnLogout" class="btn-nav" style="background:#000;border-color:#000;color:#fff;" title="Cerrar sesión">⬤ Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="topTitle">
+      <h1>🎫 Tickets de soporte</h1>
+      <p>Envía incidencias, dudas o mejoras. Llegan al equipo por correo y quedan registradas aquí.</p>
+    </div>
+
+    <div class="panel">
+      <h2>➕ Nuevo ticket</h2>
+
+      <div class="form-row">
+        <div class="field">
+          <div class="label">Tu nombre</div>
+          <input type="text" id="tkUsuario" placeholder="Ej: María (comercial Valencia)" />
+        </div>
+        <div class="field">
+          <div class="label">Tu email (para responderte, opcional)</div>
+          <input type="email" id="tkEmail" placeholder="tucorreo@ejemplo.com" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <div class="label">Categoría</div>
+          <select id="tkCategoria">
+            <option>Error / Fallo</option>
+            <option>Precio incorrecto</option>
+            <option>Mejora</option>
+            <option>Duda</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="label">Prioridad</div>
+          <select id="tkPrioridad">
+            <option>Baja</option>
+            <option selected>Media</option>
+            <option>Alta</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="label">¿Dónde ocurre? (opcional)</div>
+          <input type="text" id="tkPagina" placeholder="Ej: Cotizador, CP 46020" />
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:12px;">
+        <div class="label">Asunto</div>
+        <input type="text" id="tkAsunto" maxlength="160" placeholder="Resume el problema en una línea" />
+      </div>
+
+      <div class="field" style="margin-bottom:14px;">
+        <div class="label">Descripción</div>
+        <textarea id="tkMensaje" maxlength="4000" placeholder="Cuenta qué ha pasado, con qué datos (CP, edades, producto) y qué esperabas que saliera."></textarea>
+      </div>
+
+      <button class="btn primary" id="btnEnviarTicket" type="button">📨 Enviar ticket</button>
+      <div class="msg" id="tkMsg"></div>
+    </div>
+
+    <div class="panel">
+      <h2>📋 Tickets enviados</h2>
+      <div class="filtros" id="tkFiltros">
+        <button class="on" data-f="todos">Todos</button>
+        <button data-f="abierto">Abiertos</button>
+        <button data-f="en_curso">En curso</button>
+        <button data-f="resuelto">Resueltos</button>
+      </div>
+      <div id="tkLista"><div class="vacio">Cargando…</div></div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // TICKETS — guarda en /api/tickets (Upstash) y avisa por email
+    // ============================================================
+    const ADMIN_SECRET_KEY = "promos_admin_secret"; // misma clave de admin que las promos
+    let TICKETS = [];
+    let filtroActual = "todos";
+
+    const $ = id => document.getElementById(id);
+    const esAdmin = () => (localStorage.getItem("adeslas_user_role") || "user") === "admin";
+
+    function msg(texto, tipo) {
+      const el = $("tkMsg");
+      el.className = "msg " + (tipo || "ok");
+      el.textContent = texto;
+      if (tipo === "ok") setTimeout(() => { el.className = "msg"; }, 6000);
+    }
+
+    function fechaEs(iso) {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleDateString("es-ES") + " " + d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+      } catch (e) { return iso || ""; }
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement("div");
+      d.textContent = str == null ? "" : String(str);
+      return d.innerHTML;
+    }
+
+    function getAdminSecret() {
+      let s = localStorage.getItem(ADMIN_SECRET_KEY) || "";
+      if (!s) {
+        s = (prompt("Introduce la clave de administrador:") || "").trim();
+        if (s) localStorage.setItem(ADMIN_SECRET_KEY, s);
+      }
+      return s;
+    }
+
+    async function cargarTickets() {
+      const lista = $("tkLista");
+      try {
+        const r = await fetch("/api/tickets", { cache: "no-store" });
+        if (!r.ok) {
+          lista.innerHTML = '<div class="vacio">No se pudo cargar el listado (el almacén aún no está configurado).</div>';
+          return;
+        }
+        const data = await r.json();
+        TICKETS = Array.isArray(data.tickets) ? data.tickets : [];
+        pintarTickets();
+      } catch (e) {
+        lista.innerHTML = '<div class="vacio">Sin conexión con el servidor.</div>';
+      }
+    }
+
+    function pintarTickets() {
+      const lista = $("tkLista");
+      const items = TICKETS.filter(t => filtroActual === "todos" || (t.estado || "abierto") === filtroActual);
+      if (!items.length) {
+        lista.innerHTML = '<div class="vacio">No hay tickets' + (filtroActual === "todos" ? " todavía." : " en este estado.") + '</div>';
+        return;
+      }
+      lista.innerHTML = items.map(t => {
+        const estado = t.estado || "abierto";
+        const prio = (t.prioridad || "Media").toLowerCase();
+        const aviso = t.emailEnviado === false
+          ? '<span class="chip" style="background:#fffbeb;color:#92400e;border-color:#fde68a;" title="' + escapeHtml(t.emailError || "") + '">✉️ sin enviar</span>'
+          : '';
+        return `
+          <div class="ticket">
+            <div class="ticket-head">
+              <span class="ticket-asunto">${escapeHtml(t.asunto)}</span>
+              <span class="chip ${estado}">${estado === "en_curso" ? "En curso" : estado.charAt(0).toUpperCase() + estado.slice(1)}</span>
+              <span class="chip ${prio}">${escapeHtml(t.prioridad || "Media")}</span>
+              <span class="chip cat">${escapeHtml(t.categoria || "Otro")}</span>
+              ${aviso}
+              <span class="ticket-actions">
+                <button data-act="en_curso" data-id="${t.id}">En curso</button>
+                <button data-act="resuelto" data-id="${t.id}">Resolver</button>
+                <button data-act="abierto" data-id="${t.id}">Reabrir</button>
+                <button data-act="borrar" data-id="${t.id}">🗑️</button>
+              </span>
+            </div>
+            <div class="ticket-meta">
+              ${escapeHtml(t.usuario || "Anónimo")}${t.email ? " · " + escapeHtml(t.email) : ""} · ${fechaEs(t.fecha)}${t.pagina ? " · " + escapeHtml(t.pagina) : ""}
+            </div>
+            <div class="ticket-msg">${escapeHtml(t.mensaje)}</div>
+          </div>`;
+      }).join("");
+
+      lista.querySelectorAll(".ticket-actions button").forEach(b => {
+        b.addEventListener("click", () => accionAdmin(b.dataset.act, b.dataset.id));
+      });
+    }
+
+    async function accionAdmin(act, id) {
+      if (act === "borrar" && !confirm("¿Eliminar este ticket?")) return;
+      const payload = act === "borrar" ? { action: "borrar", id } : { action: "estado", id, estado: act };
+      try {
+        const r = await fetch("/api/tickets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-admin-secret": getAdminSecret() },
+          body: JSON.stringify(payload)
+        });
+        if (r.status === 401) {
+          localStorage.removeItem(ADMIN_SECRET_KEY);
+          msg("Clave de administrador incorrecta. Inténtalo de nuevo.", "err");
+          return;
+        }
+        if (!r.ok) { msg("No se pudo actualizar el ticket.", "err"); return; }
+        const data = await r.json();
+        TICKETS = data.tickets || TICKETS;
+        pintarTickets();
+      } catch (e) { msg("Sin conexión con el servidor.", "err"); }
+    }
+
+    $("btnEnviarTicket").addEventListener("click", async () => {
+      const asunto = $("tkAsunto").value.trim();
+      const mensaje = $("tkMensaje").value.trim();
+      if (!asunto || !mensaje) { msg("Pon un asunto y una descripción.", "err"); return; }
+
+      const btn = $("btnEnviarTicket");
+      btn.disabled = true; btn.textContent = "Enviando…";
+      try {
+        const usuario = $("tkUsuario").value.trim();
+        const email = $("tkEmail").value.trim();
+        if (usuario) localStorage.setItem("adeslas_user_name", usuario);
+        if (email) localStorage.setItem("adeslas_user_email", email);
+
+        const r = await fetch("/api/tickets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            asunto, mensaje, usuario, email,
+            categoria: $("tkCategoria").value,
+            prioridad: $("tkPrioridad").value,
+            pagina: $("tkPagina").value.trim()
+          })
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) { msg("No se pudo enviar el ticket: " + (data.error || r.status), "err"); return; }
+
+        $("tkAsunto").value = ""; $("tkMensaje").value = ""; $("tkPagina").value = "";
+        if (data.email && data.email.enviado) msg("✅ Ticket enviado. Te responderemos por correo.", "ok");
+        else msg("✅ Ticket registrado. (El aviso por correo aún no está activo, pero queda guardado aquí.)", "warn");
+        await cargarTickets();
+      } catch (e) {
+        msg("Sin conexión con el servidor.", "err");
+      } finally {
+        btn.disabled = false; btn.textContent = "📨 Enviar ticket";
+      }
+    });
+
+    $("tkFiltros").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      filtroActual = b.dataset.f;
+      $("tkFiltros").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+      pintarTickets();
+    });
+
+    // Logout
+    $("btnLogout").addEventListener("click", () => {
+      try {
+        localStorage.setItem("diblafe_admin_logged_v4", "false");
+        localStorage.removeItem("adeslas_user_role");
+      } catch (e) { }
+      location.href = "login.html";
+    });
+
+    // Auth + arranque
+    (function init() {
+      let logged = false;
+      try {
+        const v = localStorage.getItem("diblafe_admin_logged_v4");
+        logged = (v === "true" || v === "1");
+      } catch (e) { }
+      if (!logged) { location.replace("login.html"); return; }
+
+      if (!esAdmin()) document.body.classList.add("not-admin");
+      $("tkUsuario").value = localStorage.getItem("adeslas_user_name") || localStorage.getItem("adeslas_user") || "";
+      $("tkEmail").value = localStorage.getItem("adeslas_user_email") || "";
+      cargarTickets();
+    })();
+  </script>
+</body>
+
+</html>

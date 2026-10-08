@@ -140,6 +140,15 @@
       pointer-events: none;
     }
 
+    .btn-nav.tickets-btn {
+      border-color: #7c3aed;
+      color: #7c3aed;
+    }
+
+    .btn-nav.tickets-btn:hover {
+      background: rgba(124, 58, 237, 0.08);
+    }
+
     .btn-nav.promo-btn {
       background: linear-gradient(135deg, #f59e0b, #f97316) !important;
       color: #ffffff !important;
@@ -375,6 +384,10 @@
       transform: scale(1.08);
     }
 
+    .promo-actions .btn-edit:hover {
+      background: rgba(37, 99, 235, 0.10);
+      border-color: rgba(37, 99, 235, 0.35);
+    }
     .promo-actions .btn-del:hover {
       background: #fef2f2;
       border-color: #ef4444;
@@ -713,6 +726,7 @@
         <a class="btn-nav imc" href="#" id="btnOpenIMC">Calculadora IMC</a>
         <a class="btn-nav promo-btn active" href="#" id="btnOpenPromos">🎁 Promos</a>
         <a class="btn-nav admin" href="#" id="btnOpenAdmin">Admin</a>
+        <a class="btn-nav tickets-btn" href="tickets.html">🎫 Tickets</a>
         <a class="btn-nav tojudoc" href="https://tojudoc.vercel.app/" target="_blank" rel="noopener">TojuDoc</a>
       </nav>
 
@@ -1130,6 +1144,7 @@
               </div>
             </div>
             <div class="promo-actions">
+              <button class="btn-edit" title="Editar promo" data-idx="${idx}">✏️</button>
               <button class="btn-toggle" title="${p.active ? 'Desactivar' : 'Activar'}" data-idx="${idx}">
                 ${p.active ? '⏸️' : '▶️'}
               </button>
@@ -1160,6 +1175,14 @@
           promos[i].active = !promos[i].active;
           savePromos(promos);
           renderPromoList();
+        });
+      });
+
+      // Wire edit buttons
+      list.querySelectorAll(".btn-edit").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          cargarPromoEnFormulario(parseInt(btn.dataset.idx));
         });
       });
 
@@ -1345,6 +1368,73 @@
     // ============================================================
     // SAVE NEW PROMO
     // ============================================================
+    // ============================================================
+    // EDITAR PROMO — carga la promo en el formulario y entra en modo edición
+    // ============================================================
+    let editingPromoId = null;
+
+    function setModoEdicion(on, nombre) {
+      editingPromoId = on ? editingPromoId : null;
+      const titulo = document.querySelector("#promoFormPanel h2");
+      const btnSave = document.getElementById("btnSavePromo");
+      const btnCancel = document.getElementById("btnCancelPromo");
+      if (titulo) titulo.textContent = on ? ("✏️ Editando: " + nombre) : "➕ Crear nueva promoción";
+      if (btnSave) btnSave.textContent = on ? "💾 Guardar cambios" : "💾 Guardar Promo";
+      if (btnCancel) btnCancel.textContent = on ? "✖️ Cancelar edición" : "Cancelar";
+    }
+
+    function limpiarFormularioPromo() {
+      document.getElementById("promoName").value = "";
+      document.getElementById("promoDesc").value = "";
+      document.getElementById("promoIcon").value = "🎁";
+      document.getElementById("promoStartDate").value = "";
+      document.getElementById("promoEndDate").value = "";
+      document.getElementById("campPoints").value = "";
+      document.getElementById("campEurPerPoint").value = "";
+      document.getElementById("campMinCardPoints").value = "";
+      document.getElementById("campNotice").value = "";
+      buildGrid("gridGoSin", defaultGoSin);
+      buildGrid("gridGoCon", defaultGoCon);
+      buildGrid("gridOtrosSin", defaultOtrosSin);
+      buildGrid("gridOtrosCon", defaultOtrosCon);
+      buildCampaignGrid(DEFAULT_CAMPAIGN_RULES);
+      editingPromoId = null;
+      setModoEdicion(false);
+    }
+
+    function cargarPromoEnFormulario(idx) {
+      const promos = loadPromos();
+      const p = promos[idx];
+      if (!p) return;
+      editingPromoId = p.id;
+
+      document.getElementById("promoName").value = p.name || "";
+      document.getElementById("promoIcon").value = p.icon || "🎁";
+      document.getElementById("promoDesc").value = p.description || "";
+      document.getElementById("promoLocation").value = p.location || "above_desglose";
+      document.getElementById("promoType").value = p.type || "per_insured";
+      document.getElementById("promoStartDate").value = p.startDate || "";
+      document.getElementById("promoEndDate").value = p.endDate || "";
+      toggleTypeSections();
+
+      if (p.type === "campaign" && p.campaign) {
+        document.getElementById("campPoints").value = p.campaign.points_per_insured ?? "";
+        document.getElementById("campEurPerPoint").value = p.campaign.eur_per_point ?? "";
+        document.getElementById("campMinCardPoints").value = p.campaign.min_card_points ?? "";
+        document.getElementById("campNotice").value = p.campaign.notice || "";
+        buildCampaignGrid(p.campaign.rules || DEFAULT_CAMPAIGN_RULES);
+      } else if (p.values) {
+        buildGrid("gridGoSin", p.values.go_sin_dental || defaultGoSin);
+        buildGrid("gridGoCon", p.values.go_con_dental || defaultGoCon);
+        buildGrid("gridOtrosSin", p.values.otros_sin_dental || defaultOtrosSin);
+        buildGrid("gridOtrosCon", p.values.otros_con_dental || defaultOtrosCon);
+      }
+
+      setModoEdicion(true, p.name || "");
+      const panel = document.getElementById("promoFormPanel");
+      if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
     document.getElementById("btnSavePromo").addEventListener("click", () => {
       const name = document.getElementById("promoName").value.trim();
       if (!name) {
@@ -1384,8 +1474,19 @@
       }
 
       const promos = loadPromos();
-      promos.push(promo);
+      if (editingPromoId) {
+        const i = promos.findIndex(x => x.id === editingPromoId);
+        if (i === -1) { alert("No se encontró la promo a editar"); return; }
+        // Conserva id, fecha de creación y estado activo/pausado
+        promo.id = promos[i].id;
+        promo.createdAt = promos[i].createdAt || promo.createdAt;
+        promo.active = promos[i].active;
+        promos[i] = promo;
+      } else {
+        promos.push(promo);
+      }
       savePromos(promos);
+      const eraEdicion = !!editingPromoId;
 
       // Reset form
       document.getElementById("promoName").value = "";
@@ -1398,14 +1499,14 @@
       buildGrid("gridOtrosSin", defaultOtrosSin);
       buildGrid("gridOtrosCon", defaultOtrosCon);
       buildCampaignGrid(DEFAULT_CAMPAIGN_RULES);
+      limpiarFormularioPromo();
 
       renderPromoList();
-      alert("✅ Promo guardada correctamente");
+      alert(eraEdicion ? "✅ Cambios guardados correctamente" : "✅ Promo guardada correctamente");
     });
 
     document.getElementById("btnCancelPromo").addEventListener("click", () => {
-      document.getElementById("promoName").value = "";
-      document.getElementById("promoDesc").value = "";
+      limpiarFormularioPromo();
     });
 
     // ============================================================

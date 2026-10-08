@@ -873,6 +873,15 @@
     }
 
     /* Promo nav button */
+    .btn-nav.tickets-btn {
+      border-color: #7c3aed;
+      color: #7c3aed;
+    }
+
+    .btn-nav.tickets-btn:hover {
+      background: rgba(124, 58, 237, 0.08);
+    }
+
     .btn-nav.promo-btn {
       background: linear-gradient(135deg, #f59e0b, #f97316) !important;
       color: #ffffff !important;
@@ -996,6 +1005,7 @@
         <a class="btn-nav imc" href="#" id="btnOpenIMC">Calculadora IMC</a>
         <a class="btn-nav promo-btn" href="#" id="btnOpenPromos">🎁 Promos</a>
         <a class="btn-nav admin" href="#" id="btnOpenAdmin">Admin</a>
+        <a class="btn-nav tickets-btn" href="tickets.html">🎫 Tickets</a>
         <a class="btn-nav tojudoc" href="https://tojudoc.vercel.app/" target="_blank" rel="noopener">TojuDoc</a>
       </nav>
 
@@ -1081,6 +1091,22 @@
             <span>Fecha de Efecto</span>
           </div>
           <input id="effectiveDateInput" type="date" style="padding: 12px 10px;" />
+        </div>
+
+        <div class="field" id="vencField">
+          <div class="label">
+            <span>Fecha de Vencimiento</span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:stretch;">
+            <div style="flex:1; min-width:118px; border:1px solid var(--border); border-radius:10px; padding:7px 10px; background:rgba(15,23,42,0.02);">
+              <div style="font-size:10.5px; font-weight:800; color:var(--muted); letter-spacing:.3px;">ANUAL</div>
+              <div id="vencAnual" style="font-size:15px; font-weight:1000; color:#1e293b;">—</div>
+            </div>
+            <div style="flex:1; min-width:118px; border:1px solid var(--border); border-radius:10px; padding:7px 10px; background:rgba(15,23,42,0.02);">
+              <div style="font-size:10.5px; font-weight:800; color:var(--muted); letter-spacing:.3px;">TRIANUAL</div>
+              <div id="vencTrianual" style="font-size:15px; font-weight:1000; color:#1e293b;">—</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1198,6 +1224,7 @@
       if (elFilter) elFilter.value = state.filter || "";
       const elEff = document.getElementById("effectiveDateInput");
       if (elEff) elEff.value = state.effectiveDate || "";
+      updateVencimientos();
 
       renderAll();
     }
@@ -3222,10 +3249,42 @@
       renderAll();
     });
 
+    // ==========================
+    // FECHAS DE VENCIMIENTO (a partir de la Fecha de Efecto)
+    //   Anual    = efecto + 1 año
+    //   Trianual = efecto + 3 años
+    // Se ajusta el 29/02: si el año destino no lo tiene, pasa al 28/02.
+    // ==========================
+    function addYearsSafe(isoDate, years) {
+      if (!isoDate) return null;
+      const parts = String(isoDate).split("-");
+      if (parts.length !== 3) return null;
+      const y = +parts[0], m = +parts[1], d = +parts[2];
+      if (!y || !m || !d) return null;
+      const target = new Date(y + years, m - 1, d);
+      if (target.getMonth() !== m - 1) target.setDate(0); // 29/02 → 28/02
+      return target;
+    }
+    function fmtFechaEs(dt) {
+      if (!dt) return "—";
+      const dd = String(dt.getDate()).padStart(2, "0");
+      const mm = String(dt.getMonth() + 1).padStart(2, "0");
+      return dd + "/" + mm + "/" + dt.getFullYear();
+    }
+    function updateVencimientos() {
+      const a = document.getElementById("vencAnual");
+      const t = document.getElementById("vencTrianual");
+      if (!a || !t) return;
+      const eff = state.effectiveDate || "";
+      a.textContent = fmtFechaEs(addYearsSafe(eff, 1));
+      t.textContent = fmtFechaEs(addYearsSafe(eff, 3));
+    }
+
     const elEffectiveDate = document.getElementById("effectiveDateInput");
     if (elEffectiveDate) {
       elEffectiveDate.addEventListener("change", () => {
         state.effectiveDate = elEffectiveDate.value || "";
+        updateVencimientos();
         renderAll();
       });
     }
