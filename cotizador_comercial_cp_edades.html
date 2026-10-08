@@ -3251,19 +3251,18 @@
 
     // ==========================
     // FECHAS DE VENCIMIENTO (a partir de la Fecha de Efecto)
-    //   Anual    = efecto + 1 año
-    //   Trianual = efecto + 3 años
-    // Se ajusta el 29/02: si el año destino no lo tiene, pasa al 28/02.
+    //   Es el ÚLTIMO DÍA DEL MES ANTERIOR al del efecto, con el año +1 (anual)
+    //   o +3 (trianual). Ej: efecto 08/10/2026 → anual 30/09/2027, trianual 30/09/2029.
+    //   new Date(año, mes-1, 0) da justo el último día del mes anterior y además
+    //   resuelve solo el salto de año (efecto en enero → 31/12 del año anterior).
     // ==========================
-    function addYearsSafe(isoDate, years) {
+    function vencimientoDesdeEfecto(isoDate, years) {
       if (!isoDate) return null;
       const parts = String(isoDate).split("-");
       if (parts.length !== 3) return null;
-      const y = +parts[0], m = +parts[1], d = +parts[2];
-      if (!y || !m || !d) return null;
-      const target = new Date(y + years, m - 1, d);
-      if (target.getMonth() !== m - 1) target.setDate(0); // 29/02 → 28/02
-      return target;
+      const y = +parts[0], m = +parts[1];
+      if (!y || !m) return null;
+      return new Date(y + years, m - 1, 0);
     }
     function fmtFechaEs(dt) {
       if (!dt) return "—";
@@ -3276,8 +3275,8 @@
       const t = document.getElementById("vencTrianual");
       if (!a || !t) return;
       const eff = state.effectiveDate || "";
-      a.textContent = fmtFechaEs(addYearsSafe(eff, 1));
-      t.textContent = fmtFechaEs(addYearsSafe(eff, 3));
+      a.textContent = fmtFechaEs(vencimientoDesdeEfecto(eff, 1));
+      t.textContent = fmtFechaEs(vencimientoDesdeEfecto(eff, 3));
     }
 
     const elEffectiveDate = document.getElementById("effectiveDateInput");
